@@ -1,0 +1,5 @@
+[19:30:01] [Render thread/INFO]: Setting user: Frostbyte
+[19:30:44] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.NullPointerException: Cannot invoke "net.minecraft.world.entity.Entity.getId()" because "entity" is null
+	at net.minecraft.client.multiplayer.ClientLevel.tickNonPassenger(ClientLevel.java:311)
+	at net.minecraft.client.Minecraft.tick(Minecraft.java:1990)

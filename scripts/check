@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+step() {
+  printf '\n== %s ==\n' "$1"
+  shift
+  "$@"
+}
+
+step "typecheck" npm run --silent typecheck
+step "lint" npm run --silent lint
+step "format" npm run --silent format:check
+step "test" npm run --silent test -- --reporter=dot
+
+printf '\ncheck: all green\n'

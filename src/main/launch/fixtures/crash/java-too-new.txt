@@ -1,0 +1,3 @@
+[MC Monitor] minecraft=1.16.5 version=1.16.5-forge-36.2.39 loader=forge java=C:\Games\MC\runtime\java-runtime-gamma\bin\javaw.exe memory=4096MB join=none
+Exception in thread "main" java.lang.ClassCastException: class jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to class java.net.URLClassLoader
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:66)

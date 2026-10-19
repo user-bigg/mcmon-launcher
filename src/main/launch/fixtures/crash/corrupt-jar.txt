@@ -1,0 +1,2 @@
+[MC Monitor] minecraft=1.21.11 version=1.21.11 loader=vanilla java=C:\Games\MC\runtime\java-runtime-delta\bin\javaw.exe memory=4096MB join=none
+Error: Invalid or corrupt jarfile C:\Games\MC\versions\1.21.11\1.21.11.jar

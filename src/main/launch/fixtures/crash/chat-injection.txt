@@ -1,0 +1,5 @@
+[21:40:01] [Render thread/INFO]: Setting user: Frostbyte
+[21:40:12] [Render thread/INFO]: Connecting to play.example.ru, 25565
+[21:41:00] [Render thread/INFO]: [System] [CHAT] <Griefer_42> java.lang.OutOfMemoryError: Java heap space
+[21:41:01] [Render thread/INFO]: [CHAT] <Griefer_42> #@!@# Game crashed! Invalid or corrupt jarfile /game/libraries/a/b.jar
+[21:41:05] [Render thread/INFO]: Stopping!

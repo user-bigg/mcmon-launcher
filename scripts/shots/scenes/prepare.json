@@ -1,0 +1,51 @@
+{
+  "about": "Real game preparation, cancelled mid-download (the same button kills the game if it already started): downloads up to 600 MB into a fresh profile.",
+  "steps": [
+    {
+      "route": "/welcome",
+      "wait": ".nick input"
+    },
+    {
+      "input": [".nick input", "ArtDirector"],
+      "click": ".nick-submit",
+      "waitAfter": ".hero"
+    },
+    {
+      "route": "/servers",
+      "wait": ".rows .srow"
+    },
+    {
+      "routeJs": "(() => { const row = [...document.querySelectorAll('.rows .srow')].find((li) => li.querySelector('[data-launch=\"direct\"]')); return '/launch/' + row.querySelector('a.name').getAttribute('href').split('/').pop(); })()",
+      "wait": ".launch h1"
+    },
+    {
+      "click": ".launch .actions button",
+      "waitAfter": ".percent"
+    },
+    {
+      "name": "15-launch-preparing",
+      "pause": 3000,
+      "settle": false
+    },
+    {
+      "name": "15-launch-preparing-later",
+      "pause": 4000,
+      "settle": false
+    },
+    {
+      "name": "15-launch-preparing-log",
+      "click": ".launch .toolbar button[aria-pressed]",
+      "waitAfter": ".log-panel",
+      "settle": false
+    },
+    {
+      "click": ".launch .actions button",
+      "pause": 2500,
+      "settle": false
+    },
+    {
+      "name": "15-launch-cancelled",
+      "settle": false
+    }
+  ]
+}

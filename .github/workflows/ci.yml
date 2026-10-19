@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+      - name: npm audit (all dependencies are bundled)
+        run: npm audit --audit-level=high
+        continue-on-error: true
+      - run: bash scripts/check
+
+  build-windows:
+    runs-on: windows-latest
+    needs: check
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tests on Windows paths
+        run: npx vitest run
+      - run: npm run dist:win -- --publish never
+      - run: bash scripts/verify-fuses release/win-unpacked/MCMonitorLauncher.exe
+      - run: bash scripts/report-size release
+      - run: bash scripts/smoke-run release/win-unpacked/MCMonitorLauncher.exe
+      - run: bash scripts/verify-asar-integrity release/win-unpacked MCMonitorLauncher.exe
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: windows-installer
+          path: |
+            release/mcmonitor-launcher-*-win-x64.exe
+            release/mcmonitor-launcher-*-win-x64.exe.blockmap
+          if-no-files-found: error
+
+  build-mac:
+    runs-on: macos-15
+    needs: check
+    timeout-minutes: 30
+    env:
+      APP: release/mac-arm64/MC Monitor Launcher.app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tests that run only on macOS (unpacking and swapping the app)
+        run: npx vitest run src/main/update
+      - run: npm run build
+      - run: npx electron-builder --mac --arm64 --publish never
+      - run: bash scripts/verify-fuses "$APP"
+      - run: codesign --verify --deep --strict --verbose=2 "$APP"
+      - run: bash scripts/verify-mac-update release/mcmonitor-launcher-*-mac-arm64.zip
+      - run: bash scripts/smoke-run "$APP/Contents/MacOS/MC Monitor Launcher"
+      - run: bash scripts/verify-asar-integrity "$APP" "Contents/MacOS/MC Monitor Launcher"

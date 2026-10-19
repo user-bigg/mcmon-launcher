@@ -1,0 +1,19 @@
+{
+  "about": "Site responses delayed: loading state on home.",
+  "env": {
+    "MCMONITOR_DEBUG_SLOW_MS": "4000"
+  },
+  "steps": [
+    {
+      "name": "11-loading-home",
+      "route": "/",
+      "wait": "[data-loading]",
+      "settle": false
+    },
+    {
+      "name": "11-loading-home-done",
+      "gone": "[data-loading]",
+      "wait": ".hero"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+[19:02:11] [Render thread/INFO]: Backend library: LWJGL version 3.3.3-snapshot
+[19:02:12] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.IllegalStateException: Failed to create window
+	at com.mojang.blaze3d.platform.Window.<init>(Window.java:98)

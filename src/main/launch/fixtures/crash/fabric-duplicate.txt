@@ -1,0 +1,4 @@
+[10:01:55] [main/INFO]: Loading Minecraft 1.21.1 with Fabric Loader 0.16.10
+[10:01:55] [main/ERROR]: Uncaught exception in thread "main"
+net.fabricmc.loader.impl.FormattedException: Mod resolution encountered an incompatible mod set!
+Found a duplicate mod 'lithium' at mods/lithium-fabric-0.13.1+mc1.21.1.jar, mods/lithium-fabric-0.14.3+mc1.21.1.jar

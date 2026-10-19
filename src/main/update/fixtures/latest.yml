@@ -1,0 +1,13 @@
+version: 0.2.0
+files:
+  - url: mcmonitor-launcher-0.2.0-win-x64.exe
+    sha512: Q0ly/4VcMkhW3KPj3b11n0XYudx+v3GQltjEy9kK8PWf9xJBXL4A+hg9D5JYujSg5Efwro87vUqA3uwFCXRtlg==
+    size: 98304512
+    isAdminRightsRequired: false
+path: mcmonitor-launcher-0.2.0-win-x64.exe
+sha512: Q0ly/4VcMkhW3KPj3b11n0XYudx+v3GQltjEy9kK8PWf9xJBXL4A+hg9D5JYujSg5Efwro87vUqA3uwFCXRtlg==
+releaseDate: '2026-10-10T09:00:00.000Z'
+stagingPercentage: 20
+releaseNotes: |
+  <h2>0.2.0</h2>
+  <ul><li>Updates install when you quit the launcher</li><li>Ping &amp; online in the catalog</li></ul>

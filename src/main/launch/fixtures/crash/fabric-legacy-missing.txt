@@ -1,0 +1,2 @@
+[16:55:10] [main/ERROR]: Could not find required mod: appleskin requires {fabric @ [>=0.28.0]}
+net.fabricmc.loader.discovery.ModResolutionException: Could not find required mod: appleskin requires {fabric @ [>=0.28.0]}

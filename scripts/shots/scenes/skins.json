@@ -1,0 +1,464 @@
+{
+  "about": "Skin and cape: the figure, the sets from the staging site, the worn and the tried item side by side, a refusal for pressing too often, saving, the capes tab with the figure turned back, the smallest window, a player without a skin, no nickname, a guest, no connection. The account and the answers to saving are made up in the steps; the sets and textures come from the staging site, so the made-up account wears textures by their cache names.",
+  "steps": [
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "skin": {
+              "id": "skeleton-tophat",
+              "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+              "model": "classic"
+            },
+            "cape": {
+              "id": "cape-pumpkin-smile",
+              "url": "app://launcher/cache/icons/b1b061ca14bfc5895d3a047cd227a07c.png"
+            },
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": {
+                "id": "skeleton-tophat",
+                "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+                "model": "classic"
+              },
+              "cape": {
+                "id": "cape-pumpkin-smile",
+                "url": "app://launcher/cache/icons/b1b061ca14bfc5895d3a047cd227a07c.png"
+              },
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": ["[data-grid=\"skins\"] [data-card]", "[data-figure=\"solid\"]"],
+      "pause": 1500
+    },
+    {
+      "reload": true,
+      "route": "/skins",
+      "wait": ["[data-grid=\"skins\"] [data-card]", "[data-figure=\"solid\"]"],
+      "pause": 2500,
+      "name": "skins-01-skins"
+    },
+    {
+      "click": "[data-preset=\"skeleton-hoodie\"]",
+      "waitAfter": "[data-skins-undo]",
+      "pause": 1200,
+      "name": "skins-02-worn-and-tried"
+    },
+    {
+      "ipc": {
+        "account:wear": {
+          "ok": false,
+          "error": {
+            "code": "rate_limited",
+            "retryAfterS": 60
+          }
+        }
+      },
+      "click": "[data-skins-save]",
+      "waitAfter": "[data-skins-error]",
+      "name": "skins-03-too-often"
+    },
+    {
+      "ipc": {
+        "account:wear": {
+          "ok": true,
+          "value": {
+            "seq": 101,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": {
+                "id": "skeleton-hoodie",
+                "url": "app://launcher/cache/icons/4ae7cda4f83ae30e019ca8b14da1bfd0.png",
+                "model": "classic"
+              },
+              "cape": {
+                "id": "cape-pumpkin-smile",
+                "url": "app://launcher/cache/icons/b1b061ca14bfc5895d3a047cd227a07c.png"
+              },
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        }
+      },
+      "click": "[data-skins-save]",
+      "waitAfter": "[data-skins-status] .bi",
+      "pause": 600,
+      "name": "skins-04-saved"
+    },
+    {
+      "click": "[data-tab=\"capes\"]",
+      "waitAfter": ["[data-grid=\"capes\"] [data-card]", "[data-side=\"back\"]"],
+      "pause": 2500,
+      "name": "skins-05-capes"
+    },
+    {
+      "click": "[data-preset=\"cape-web\"]",
+      "waitAfter": "[data-skins-undo]",
+      "pause": 2500,
+      "name": "skins-06-cape-worn-and-tried"
+    },
+    {
+      "size": "960x600",
+      "click": "[data-tab=\"skins\"]",
+      "waitAfter": "[data-grid=\"skins\"] [data-card]",
+      "pause": 2500,
+      "name": "skins-07-min-window"
+    },
+    {
+      "scroll": 520,
+      "pause": 600,
+      "name": "skins-08-min-window-scrolled"
+    },
+    {
+      "size": "1100x700",
+      "scroll": 520,
+      "pause": 1200,
+      "name": "skins-09-scrolled"
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 102,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "skin": null,
+            "cape": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 102,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": null,
+              "cape": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [
+            {
+              "id": "ms-1",
+              "nick": "Kotofey",
+              "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+              "status": "ready"
+            }
+          ],
+          "login": null,
+          "error": null
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": ["[data-grid=\"skins\"] [data-card]", "[data-figure=\"solid\"]"],
+      "pause": 2500,
+      "name": "skins-10-standard-license"
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 103,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": null,
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "skin": null,
+            "cape": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 103,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": null,
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": null,
+              "cape": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": "[data-skins=\"no-nick\"]",
+      "name": "skins-11-no-nick"
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 104,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 104,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": "[data-skins=\"guest\"]",
+      "name": "skins-12-guest"
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 105,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "skin": {
+              "id": "skeleton-tophat",
+              "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+              "model": "classic"
+            },
+            "cape": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 105,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": {
+                "id": "skeleton-tophat",
+                "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+                "model": "classic"
+              },
+              "cape": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "site:look-presets": {
+          "ok": false,
+          "error": {
+            "code": "offline"
+          }
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": "[data-skins=\"error\"]",
+      "name": "skins-13-error"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+diff --git a/node_modules/@xmcl/bytebuffer/package.json b/node_modules/@xmcl/bytebuffer/package.json
+--- a/node_modules/@xmcl/bytebuffer/package.json
++++ b/node_modules/@xmcl/bytebuffer/package.json
+@@ -45,19 +45,19 @@
+       "import": "./dist/index.mjs",
+       "require": "./dist/index.js"
+     },
+-    "debug": {
++    "./debug": {
+       "import": "./dist/debug.mjs",
+       "require": "./dist/debug.js"
+     },
+-    "hex": {
++    "./hex": {
+       "import": "./dist/hex.mjs",
+       "require": "./dist/hex.js"
+     },
+-    "varint32": {
++    "./varint32": {
+       "import": "./dist/varint32.mjs",
+       "require": "./dist/varint32.js"
+     },
+-    "varint64": {
++    "./varint64": {
+       "import": "./dist/varint64.mjs",
+       "require": "./dist/varint64.js"
+     }

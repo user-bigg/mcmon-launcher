@@ -1,0 +1,11 @@
+---- Minecraft Crash Report ----
+// Ooh. Shiny.
+
+Time: 03.10.26 12:00
+Description: Initializing game
+
+org.lwjgl.LWJGLException: Pixel format not accelerated
+	at org.lwjgl.opengl.WindowsPeerInfo.nChoosePixelFormat(Native Method)
+	at org.lwjgl.opengl.WindowsPeerInfo.choosePixelFormat(WindowsPeerInfo.java:52)
+	at org.lwjgl.opengl.Display.create(Display.java:888)
+	at net.minecraft.client.Minecraft.createDisplay(Minecraft.java:597)

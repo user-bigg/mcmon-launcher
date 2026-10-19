@@ -1,0 +1,79 @@
+{
+  "description_md": "## MineLegacy: Анархия\n\nМы делаем упор на стабильность: быстрый сервер, регулярные обновления и понятные правила.\n\n### Что есть на сервере\n\n- Ежедневные награды за вход\n- Приватные регионы и защита построек\n- Сезонные ивенты с призами\n- Кланы и клановые войны по выходным\n\nПравила короткие: без читов",
+  "rules_md": null,
+  "links": {
+    "site": "https://legacy.example",
+    "discord": "https://discord.gg/example",
+    "telegram": "https://t.me/example",
+    "vk": "https://vk.com/example",
+    "youtube": "https://youtube.com/@example",
+    "tiktok": null
+  },
+  "language": "ru",
+  "added_at": "2026-07-05T05:55:00Z",
+  "uptime_90d": 0.9937,
+  "chart_24h": [
+    {
+      "at": "2026-10-02T06:30:00Z",
+      "online": 1439
+    },
+    {
+      "at": "2026-10-02T06:35:00Z",
+      "online": 1539
+    },
+    {
+      "at": "2026-10-02T06:40:00Z",
+      "online": 1464
+    }
+  ],
+  "peak_24h": {
+    "at": "2026-10-02T17:40:00Z",
+    "online": 2683
+  },
+  "last_outage": {
+    "at": "2026-09-22T00:30:00Z",
+    "seconds": 2100
+  },
+  "votes": {
+    "month": 118,
+    "today": 13
+  },
+  "id": 3,
+  "slug": "minelegacy",
+  "name": "MineLegacy",
+  "address": {
+    "host": "play.legacy.example",
+    "port": 25565
+  },
+  "edition": "java",
+  "description": "Выживание SMP, анархия, SkyBlock и BedWars. Кланы, арена, сезонные вайпы.",
+  "tags": ["anarchy", "skyblock"],
+  "versions": {
+    "from": "1.8",
+    "to": "26.2"
+  },
+  "status": "online",
+  "online": 1518,
+  "max_players": 9999,
+  "rank": 1,
+  "points": 120,
+  "weekly_trend": -3,
+  "votes_month": 37,
+  "icon_url": "https://mc-mon.ru/icons/6c3697ba32986d88d34d27893077f5d31e6b9326d2963d57a7958798d1aa5cea.png",
+  "cover": {
+    "scene": "anarchy",
+    "time": "auto"
+  },
+  "access": {
+    "license": true,
+    "nick": false
+  },
+  "is_verified": true,
+  "wipe_label": null,
+  "top_slot": null,
+  "launch": {
+    "kind": "direct",
+    "minecraft": "26.2"
+  },
+  "site_url": "https://mc-mon.ru/server/minelegacy"
+}

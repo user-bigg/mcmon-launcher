@@ -1,0 +1,332 @@
+{
+  "about": "The ban screen in its four combinations of term and reason, a term the launcher could not read, a reason with markup, and the line about what the server learns: shown to a signed-in player with a pinned nickname, hidden from a guest. IPC answers are made up in the steps.",
+  "steps": [
+    {
+      "clock": "2026-10-13T09:00:00Z"
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "site:server": {
+          "ok": true,
+          "value": {
+            "id": 68,
+            "slug": "minedest",
+            "name": "MineDest",
+            "address": {
+              "host": "top.example",
+              "port": 25565
+            },
+            "edition": "java",
+            "description": "Survival, SkyBlock and BedWars",
+            "tags": ["anarchy", "bedwars", "skyblock", "survival"],
+            "versions": {
+              "from": "1.8.9",
+              "to": "1.21.11"
+            },
+            "status": "online",
+            "online": 220,
+            "max_players": 353,
+            "rank": 34,
+            "points": 0,
+            "unstable": false,
+            "weekly_trend": null,
+            "votes_month": 0,
+            "icon_url": null,
+            "cover": {
+              "scene": "minedest",
+              "time": "day"
+            },
+            "access": {
+              "license": true,
+              "nick": true
+            },
+            "is_verified": false,
+            "wipe_label": null,
+            "down_since": null,
+            "topSlot": null,
+            "launch": {
+              "kind": "direct",
+              "minecraft": "1.21.11",
+              "skins": true
+            },
+            "site_url": "https://mc-mon.ru/server/minedest",
+            "description_md": "Survival, SkyBlock and BedWars with clans and an arena.",
+            "rules_md": null,
+            "links": {
+              "site": "https://minedest.example"
+            },
+            "language": "ru",
+            "added_at": "2026-10-03T04:15:46Z",
+            "uptime_30d": 0.999,
+            "uptime_90d": 0.999,
+            "chart_24h": [],
+            "peak_24h": null,
+            "last_outage": null,
+            "votes": {
+              "month": 0,
+              "today": 0
+            },
+            "downtimes": [],
+            "report": null
+          },
+          "stale": false,
+          "fetchedAt": "2026-10-13T08:00:00Z"
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".side",
+      "name": "ban-session-note"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": "spawn griefing",
+            "until": "2026-10-20T18:00:00Z",
+            "forever": false
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-until-reason"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": null,
+            "until": "2026-10-20T18:00:00Z",
+            "forever": false
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-until"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": "spawn griefing",
+            "until": null,
+            "forever": true
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-forever-reason"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": null,
+            "until": null,
+            "forever": true
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-forever"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": "<img src=x onerror=alert(1)> <a href=\"https://example.com\">spawn griefing</a> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "until": "2026-10-20T18:00:00Z",
+            "forever": false
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-reason-markup"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": "spawn griefing",
+            "until": null,
+            "forever": false
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-term-unread"
+    },
+    {
+      "ipc": {
+        "launch:launch": {
+          "ok": false,
+          "error": {
+            "code": "banned",
+            "reason": "spawn griefing",
+            "until": "2026-10-20T18:00:00Z",
+            "forever": false
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".actions button",
+      "click": ".actions button",
+      "waitAfter": "[data-ban]",
+      "name": "ban-narrow",
+      "size": "940x600"
+    },
+    {
+      "size": "1100x700",
+      "route": "/settings",
+      "wait": "tr[data-privacy=play-session]",
+      "name": "ban-privacy",
+      "scroll": {
+        "to": "tr[data-privacy=play-session]"
+      }
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/68",
+      "wait": ".launch h1",
+      "name": "ban-guest-no-note"
+    },
+    {
+      "clock": null
+    }
+  ]
+}

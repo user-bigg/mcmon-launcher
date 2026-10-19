@@ -1,0 +1,143 @@
+{
+  "about": "Skins of MC Monitor: the launch screen and the server page with Fabric, a server with skins turned off, the mod in the about block. The table comes from the staging site; the card of the server without skins is made up in the step.",
+  "steps": [
+    {
+      "ipc": {
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/launch/71",
+      "wait": ".launch h1",
+      "name": "skinmod-launch-fabric"
+    },
+    {
+      "route": "/server/71",
+      "wait": ".is-launch",
+      "name": "skinmod-server-fabric"
+    },
+    {
+      "ipc": {
+        "site:server": {
+          "ok": true,
+          "value": {
+            "id": 71,
+            "slug": "minedest",
+            "name": "MineDest",
+            "address": {
+              "host": "top.example",
+              "port": 25565
+            },
+            "edition": "java",
+            "description": "Survival, SkyBlock and BedWars",
+            "tags": ["anarchy", "bedwars", "skyblock", "survival"],
+            "versions": {
+              "from": "1.8.9",
+              "to": "1.21.11"
+            },
+            "status": "online",
+            "online": 220,
+            "max_players": 353,
+            "rank": 34,
+            "points": 0,
+            "unstable": false,
+            "weekly_trend": null,
+            "votes_month": 0,
+            "icon_url": null,
+            "cover": {
+              "scene": "minedest",
+              "time": "day"
+            },
+            "access": {
+              "license": true,
+              "nick": true
+            },
+            "is_verified": false,
+            "wipe_label": null,
+            "down_since": null,
+            "topSlot": null,
+            "launch": {
+              "kind": "direct",
+              "minecraft": "1.21.11",
+              "skins": false
+            },
+            "site_url": "https://mc-mon.ru/server/minedest",
+            "description_md": "Survival, SkyBlock and BedWars with clans and an arena.",
+            "rules_md": null,
+            "links": {
+              "site": "https://minedest.example",
+              "vk": "https://vk.com/example"
+            },
+            "language": "ru",
+            "added_at": "2026-10-03T04:15:46Z",
+            "uptime_30d": 0.999,
+            "uptime_90d": 0.999,
+            "chart_24h": [],
+            "peak_24h": null,
+            "last_outage": {
+              "at": "2026-10-05T20:55:25Z",
+              "seconds": 877
+            },
+            "votes": {
+              "month": 0,
+              "today": 0
+            },
+            "downtimes": [],
+            "report": null
+          },
+          "stale": false,
+          "fetchedAt": "2026-10-13T08:00:00Z"
+        }
+      },
+      "reload": true,
+      "route": "/server/71",
+      "wait": ".is-launch",
+      "name": "skinmod-server-no-mods"
+    },
+    {
+      "route": "/launch/71",
+      "wait": ".launch h1",
+      "name": "skinmod-launch-no-mods"
+    },
+    {
+      "route": "/settings",
+      "wait": "tr[data-privacy=skins]",
+      "name": "skinmod-privacy",
+      "scroll": {
+        "to": "tr[data-privacy=skins]"
+      }
+    },
+    {
+      "scroll": "bottom",
+      "name": "skinmod-about"
+    }
+  ]
+}

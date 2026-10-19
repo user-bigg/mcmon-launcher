@@ -1,0 +1,342 @@
+{
+  "updated_at": "2026-10-18T09:00:00Z",
+  "mods": [
+    {
+      "slug": "fabric-api",
+      "kind": "mod",
+      "title": "Fabric API",
+      "short": "Fabric API",
+      "summary": "Библиотека для других модов",
+      "group": "optimization",
+      "player": false,
+      "server": false,
+      "often_forbidden": false,
+      "requires": [],
+      "modrinth_id": "P7dR8mSH",
+      "license": "Apache-2.0",
+      "source_url": "https://github.com/FabricMC/fabric",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.16.10",
+          "version": "0.139.4+1.21.11",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/P7dR8mSH/versions/42715dbe/fabric-api-0.139.4+1.21.11.jar",
+            "https://mc-mon.ru/storage/mods/7c2fbd453970752c3d769a90b8afe192244dc4a81fc916e1990a964ff413c3ae.jar"
+          ],
+          "sha256": "7c2fbd453970752c3d769a90b8afe192244dc4a81fc916e1990a964ff413c3ae",
+          "size": 2310000,
+          "requires": []
+        },
+        {
+          "minecraft": "26.2",
+          "loader": "fabric",
+          "loader_min": "0.18.4",
+          "version": "0.140.1+26.2",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/P7dR8mSH/versions/8e70ff90/fabric-api-0.140.1+26.2.jar",
+            "https://mc-mon.ru/storage/mods/b7a58b9fab279624dc009139954959af4d81a22020dc048e47e522a8de938410.jar"
+          ],
+          "sha256": "b7a58b9fab279624dc009139954959af4d81a22020dc048e47e522a8de938410",
+          "size": 2400000,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "slug": "reeses-sodium-options",
+      "kind": "mod",
+      "title": "Reese's Sodium Options",
+      "short": "Настройки Sodium",
+      "summary": "Меню настроек графики",
+      "group": "optimization",
+      "player": false,
+      "server": false,
+      "often_forbidden": false,
+      "requires": [],
+      "modrinth_id": "Bh37bMuy",
+      "license": "MIT",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.16.10",
+          "version": "mc1.21.11-1.8.4+fabric",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/Bh37bMuy/versions/fc7973c3/reeses-sodium-options-mc1.21.11-1.8.4+fabric.jar",
+            "https://mc-mon.ru/storage/mods/c252d7a2b09384a10dc8334f38a028e57f1ab647a3c64a5a2540bd9f33dd4b28.jar"
+          ],
+          "sha256": "c252d7a2b09384a10dc8334f38a028e57f1ab647a3c64a5a2540bd9f33dd4b28",
+          "size": 480000,
+          "requires": []
+        },
+        {
+          "minecraft": "26.2",
+          "loader": "fabric",
+          "loader_min": "0.16.10",
+          "version": "mc26.2-1.9.0+fabric",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/Bh37bMuy/versions/89d01f43/reeses-sodium-options-mc26.2-1.9.0+fabric.jar",
+            "https://mc-mon.ru/storage/mods/4b9c66d8fdd2c642b08be637c855167b937a0b83312a41edf694fdad3528a6bb.jar"
+          ],
+          "sha256": "4b9c66d8fdd2c642b08be637c855167b937a0b83312a41edf694fdad3528a6bb",
+          "size": 490000,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "slug": "sodium",
+      "kind": "mod",
+      "title": "Sodium и Reese's Sodium Options",
+      "short": "Sodium",
+      "summary": "Игра идёт плавнее, настройки графики понятнее",
+      "group": "optimization",
+      "player": true,
+      "server": false,
+      "often_forbidden": false,
+      "requires": ["reeses-sodium-options"],
+      "modrinth_id": "AANobbMI",
+      "license": "Polyform-Shield-1.0.0",
+      "source_url": "https://github.com/CaffeineMC/sodium",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.17.2",
+          "version": "mc1.21.11-0.8.0-fabric",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/AANobbMI/versions/9755fe8d/sodium-mc1.21.11-0.8.0-fabric.jar",
+            "https://mc-mon.ru/storage/mods/5757a870213473ba204a238e8ce21397611858e9ed1c5808c280ea8116d6eb4c.jar"
+          ],
+          "sha256": "5757a870213473ba204a238e8ce21397611858e9ed1c5808c280ea8116d6eb4c",
+          "size": 1120000,
+          "requires": ["reeses-sodium-options"]
+        },
+        {
+          "minecraft": "26.2",
+          "loader": "fabric",
+          "loader_min": "0.18.4",
+          "version": "mc26.2-0.8.2-fabric",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/AANobbMI/versions/01063f7f/sodium-mc26.2-0.8.2-fabric.jar",
+            "https://mc-mon.ru/storage/mods/9aaeb3d39abb5129d2250f58b2f735380112ed749938d477d986c3c9cfab7f2f.jar"
+          ],
+          "sha256": "9aaeb3d39abb5129d2250f58b2f735380112ed749938d477d986c3c9cfab7f2f",
+          "size": 1150000,
+          "requires": ["reeses-sodium-options"]
+        }
+      ]
+    },
+    {
+      "slug": "iris",
+      "kind": "mod",
+      "title": "Iris",
+      "short": "Шейдеры",
+      "summary": "Можно включить шейдеры с живым светом и тенями",
+      "group": "graphics",
+      "player": true,
+      "server": false,
+      "often_forbidden": false,
+      "requires": ["sodium"],
+      "modrinth_id": "YL57xq9U",
+      "license": "LGPL-3.0-only",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.16.10",
+          "version": "1.9.6+1.21.11-fabric",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/YL57xq9U/versions/93a55603/iris-1.9.6+1.21.11-fabric.jar",
+            "https://mc-mon.ru/storage/mods/4d18d8b273ce87e12cda1c95ffedc16946cf3a56ab1412f4a72366775039fa65.jar"
+          ],
+          "sha256": "4d18d8b273ce87e12cda1c95ffedc16946cf3a56ab1412f4a72366775039fa65",
+          "size": 2700000,
+          "requires": ["sodium"]
+        }
+      ]
+    },
+    {
+      "slug": "xaeros-minimap",
+      "kind": "mod",
+      "title": "Xaero’s Minimap",
+      "short": "Миникарта",
+      "summary": "В углу экрана видна карта местности",
+      "group": "interface",
+      "player": true,
+      "server": false,
+      "often_forbidden": true,
+      "requires": [],
+      "modrinth_id": "1bokaNcj",
+      "license": "All-Rights-Reserved",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.16.10",
+          "version": "25.2.10",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/1bokaNcj/versions/eae56f14/xaeros-minimap-25.2.10.jar",
+            "https://mc-mon.ru/storage/mods/1921c213f9c6567c4a0db029e4cd2018a96168f2eec9c9cdfbbef28f3f0901bb.jar"
+          ],
+          "sha256": "1921c213f9c6567c4a0db029e4cd2018a96168f2eec9c9cdfbbef28f3f0901bb",
+          "size": 3400000,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "slug": "simple-voice-chat",
+      "kind": "mod",
+      "title": "Simple Voice Chat",
+      "short": "Голосовой чат",
+      "summary": "С игроками рядом можно говорить голосом",
+      "group": "sound",
+      "player": true,
+      "server": true,
+      "often_forbidden": false,
+      "requires": [],
+      "modrinth_id": "9eGKb6K1",
+      "license": "All-Rights-Reserved",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.16.10",
+          "version": "fabric-1.21.11-2.6.24",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/9eGKb6K1/versions/137204fe/simple-voice-chat-fabric-1.21.11-2.6.24.jar",
+            "https://mc-mon.ru/storage/mods/0cceb0132b3573a354abcd72525da4dc2606b86f1837a14d41564248c9c0390e.jar"
+          ],
+          "sha256": "0cceb0132b3573a354abcd72525da4dc2606b86f1837a14d41564248c9c0390e",
+          "size": 2200000,
+          "requires": []
+        },
+        {
+          "minecraft": "26.2",
+          "loader": "fabric",
+          "loader_min": "0.18.4",
+          "version": "fabric-26.2-2.6.25",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/9eGKb6K1/versions/1f7595f3/simple-voice-chat-fabric-26.2-2.6.25.jar",
+            "https://mc-mon.ru/storage/mods/571718b0d48c54e611d57b321c9b243656030e75a3c3604e4ed0399902016339.jar"
+          ],
+          "sha256": "571718b0d48c54e611d57b321c9b243656030e75a3c3604e4ed0399902016339",
+          "size": 2210000,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "slug": "emotecraft",
+      "kind": "mod",
+      "title": "Emotecraft",
+      "short": "Эмоции",
+      "summary": "Персонаж машет, танцует и кланяется",
+      "group": "server",
+      "player": false,
+      "server": true,
+      "often_forbidden": false,
+      "requires": ["fabric-api"],
+      "modrinth_id": "pZ2wrerK",
+      "license": "GPL-3.0-only",
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": "fabric",
+          "loader_min": "0.19.1",
+          "version": "for1.21.11-2.5.4",
+          "channel": "beta",
+          "urls": [
+            "https://cdn.modrinth.com/data/pZ2wrerK/versions/73e41af6/emotecraft-for1.21.11-2.5.4.jar",
+            "https://mc-mon.ru/storage/mods/13ed894df01dcb5d75ef9096c0663f1a08fd7a261f40d67ab137fa6b7ecc3160.jar"
+          ],
+          "sha256": "13ed894df01dcb5d75ef9096c0663f1a08fd7a261f40d67ab137fa6b7ecc3160",
+          "size": 4300000,
+          "requires": ["fabric-api"]
+        }
+      ]
+    },
+    {
+      "slug": "makeup-ultra-fast",
+      "kind": "shader_pack",
+      "title": "MakeUp Ultra Fast",
+      "short": "Лёгкие шейдеры",
+      "summary": "Шейдеры для слабых компьютеров",
+      "group": "graphics",
+      "player": false,
+      "server": false,
+      "often_forbidden": false,
+      "requires": ["iris"],
+      "modrinth_id": "izsIPI7a",
+      "license": "CC-BY-NC-ND-4.0",
+      "options": {
+        "profile": "low"
+      },
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": null,
+          "version": "9.4c",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/izsIPI7a/versions/e088d69d/makeup-ultra-fast-9.4c.zip",
+            "https://mc-mon.ru/storage/mods/32eacf780ecdc805e70c4b54252444023fbb5b2c4d9ffa79e41f508db9365352.zip"
+          ],
+          "sha256": "32eacf780ecdc805e70c4b54252444023fbb5b2c4d9ffa79e41f508db9365352",
+          "size": 1100000,
+          "requires": ["iris"]
+        }
+      ]
+    },
+    {
+      "slug": "complementary-reimagined",
+      "kind": "shader_pack",
+      "title": "Complementary Reimagined",
+      "short": "Красивые шейдеры",
+      "summary": "Живой свет, тени и вода",
+      "group": "graphics",
+      "player": false,
+      "server": false,
+      "often_forbidden": false,
+      "requires": ["iris"],
+      "modrinth_id": "HVnmMxH1",
+      "license": "Complementary-License",
+      "credit": "Complementary Reimagined от Complementary Development",
+      "options": {
+        "profile": "HIGH",
+        "shadowDistance": "2.5"
+      },
+      "files": [
+        {
+          "minecraft": "1.21.11",
+          "loader": null,
+          "version": "r5.5.1",
+          "channel": "release",
+          "urls": [
+            "https://cdn.modrinth.com/data/HVnmMxH1/versions/ce62d378/complementary-reimagined-r5.5.1.zip"
+          ],
+          "sha256": "17a1a5984a1ed18df79e870e0fae74a3a92c888b06006704fb8c73490ac596b7",
+          "size": 1900000,
+          "requires": ["iris"]
+        }
+      ]
+    }
+  ],
+  "shaders": {
+    "light": "makeup-ultra-fast",
+    "beautiful": "complementary-reimagined"
+  }
+}

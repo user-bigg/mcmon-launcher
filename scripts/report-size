@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+source scripts/smoke-lib.sh
+
+release=${1:-release}
+
+size_of() {
+  node -e "process.stdout.write(String(require('node:fs').statSync(process.argv[1]).size))" "$1"
+}
+
+asar=$(find "$release" -name app.asar -type f | head -n 1)
+if [[ -z $asar ]]; then
+  echo "report-size: app.asar not found in $release" >&2
+  exit 1
+fi
+
+asar_bytes=$(size_of "$asar")
+budget=$(budget_value asarBytes)
+echo "report-size: $asar ${asar_bytes} bytes (budget ${budget})"
+
+status=0
+installer_budget=$(budget_value installerBytes)
+for installer in "$release"/mcmonitor-launcher-*.exe; do
+  if [[ ! -f $installer ]]; then
+    continue
+  fi
+  installer_bytes=$(size_of "$installer")
+  if [[ $installer_budget == null ]]; then
+    echo "report-size: $installer ${installer_bytes} bytes (budget not set, skipped)"
+    continue
+  fi
+  echo "report-size: $installer ${installer_bytes} bytes (budget ${installer_budget})"
+  if ((installer_bytes > installer_budget)); then
+    echo "report-size: $installer is over budget" >&2
+    status=1
+  fi
+done
+
+node --input-type=module -e "
+const asar = await import('@electron/asar');
+const manifest = JSON.parse(asar.extractFile(process.argv[1], 'package.json').toString());
+const leaked = ['scripts', 'devDependencies', 'dependencies'].filter((key) => key in manifest);
+console.log('report-size: package.json in app.asar has ' + Object.keys(manifest).join(', '));
+if (leaked.length > 0) {
+  console.error('report-size: package.json in app.asar leaks ' + leaked.join(', '));
+  process.exit(1);
+}
+" "$asar"
+
+if ((asar_bytes > budget)); then
+  echo "report-size: app.asar is over budget" >&2
+  status=1
+fi
+exit $status

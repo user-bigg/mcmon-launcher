@@ -1,0 +1,17 @@
+diff --git a/node_modules/dmg-builder/out/dmgUtil.js b/node_modules/dmg-builder/out/dmgUtil.js
+index 490d088..a81dc54 100644
+--- a/node_modules/dmg-builder/out/dmgUtil.js
++++ b/node_modules/dmg-builder/out/dmgUtil.js
+@@ -173,7 +173,11 @@ async function customizeDmg({ appPath, artifactPath, volumeName, specification,
+         settings.background = specification.background == null ? null : await transformBackgroundFileIfNeed(specification.background, packager.info.tempDirManager);
+     }
+     if (!(0, builder_util_1.isEmptyOrSpaces)(settings.background)) {
+-        const size = await getImageSizeUsingSips(settings.background);
++        const imageSize = await getImageSizeUsingSips(settings.background);
++        const window = specification.window;
++        // MC Monitor: an explicit window size wins over the background size, so a background drawn
++        // larger than the window still covers the window when the user enlarges it.
++        const size = (window === null || window === void 0 ? void 0 : window.width) != null && window.height != null ? { width: window.width, height: window.height } : imageSize;
+         settings.window = { position: { x: 400, y: Math.round((1440 - size.height) / 2) }, size, ...settings.window };
+     }
+     const workspaceRoot = await packager.info.getWorkspaceRoot();

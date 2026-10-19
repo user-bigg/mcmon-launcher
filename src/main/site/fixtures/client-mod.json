@@ -1,0 +1,42 @@
+{
+  "version": "0.1.0",
+  "license": "GPL-3.0-only",
+  "lines": [
+    {
+      "minecraft_from": "1.14",
+      "minecraft_to": "1.20.1",
+      "loader_version": "0.19.5",
+      "mod": {
+        "urls": [
+          "https://mc-mon.ru/storage/client-mod/e4dd3c85e78d6e8702ab1e0e2a439656a3fa8499cab8a09d66afafac6d474e37.jar"
+        ],
+        "sha256": "e4dd3c85e78d6e8702ab1e0e2a439656a3fa8499cab8a09d66afafac6d474e37",
+        "size": 32283
+      }
+    },
+    {
+      "minecraft_from": "1.20.2",
+      "minecraft_to": "1.21.11",
+      "loader_version": "0.19.5",
+      "mod": {
+        "urls": [
+          "https://mc-mon.ru/storage/client-mod/b2824036c27d7745b46ec8ec201d9216ad19ef6ac33fced6a54437088f93c90b.jar"
+        ],
+        "sha256": "b2824036c27d7745b46ec8ec201d9216ad19ef6ac33fced6a54437088f93c90b",
+        "size": 29138
+      }
+    },
+    {
+      "minecraft_from": "26.1",
+      "minecraft_to": null,
+      "loader_version": "0.19.5",
+      "mod": {
+        "urls": [
+          "https://mc-mon.ru/storage/client-mod/cbfac0381d6b57a7128df77cb0b733d1699b489bed087ce87db793c19d897193.jar"
+        ],
+        "sha256": "cbfac0381d6b57a7128df77cb0b733d1699b489bed087ce87db793c19d897193",
+        "size": 28955
+      }
+    }
+  ]
+}

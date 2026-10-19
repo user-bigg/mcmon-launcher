@@ -1,0 +1,35 @@
+diff --git a/node_modules/@xmcl/unzip/package.json b/node_modules/@xmcl/unzip/package.json
+--- a/node_modules/@xmcl/unzip/package.json
++++ b/node_modules/@xmcl/unzip/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "@xmcl/unzip",
+   "version": "2.2.0",
+-  "main": "./index.ts",
++  "main": "./dist/index.js",
+   "description": "A easy unzip interface based on yauzl",
+   "engines": {
+     "node": ">=20"
+@@ -20,7 +20,7 @@
+     "@xmcl/yauzl": "^2.10.0"
+   },
+   "dependencies": {
+-    "@xmcl/yauzl": "workspace:^*"
++    "@xmcl/yauzl": "^2.10.0"
+   },
+   "repository": {
+     "type": "git",
+@@ -41,11 +41,6 @@
+     "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+   },
+   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+-  "devDependencies": {
+-    "@xmcl/oxlint-config": "workspace:^*",
+-    "esbuild": "^0.25.12",
+-    "@types/node": "^24.13.3",
+-    "typescript": "^5.9.3",
+-    "vitest": "^4.1.0"
+-  }
++  "module": "./dist/index.mjs",
++  "types": "./dist/index.d.ts"
+ }

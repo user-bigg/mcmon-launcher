@@ -1,0 +1,3 @@
+[22:10:01] [Render thread/INFO] [minecraft/Minecraft]: Reloading ResourceManager: Default, Mod Resources
+[22:10:41] [Render thread/FATAL] [minecraft/Minecraft]: Out of Memory Error
+[22:10:41] [Render thread/INFO] [minecraft/Minecraft]: Stopping!

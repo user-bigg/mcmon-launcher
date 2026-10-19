@@ -1,0 +1,153 @@
+[MC Monitor] minecraft=1.16.5 version=1.16.5 loader=vanilla skins=table java=C:\Users\player\AppData\Local\MC Monitor\game\runtime\jre-legacy\bin\javaw.exe memory=3072MB join=legacy
+  <log4j:Event logger="djz" timestamp="1791948809018" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[Setting user: Player]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="djz" timestamp="1791948819189" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[Backend library: LWJGL version 3.2.2 build 10]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="dnt" timestamp="1791948838442" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[Connecting to play.example.net, 25565]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="acm" timestamp="1791948838658" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[Reloading ResourceManager: Default]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="dlk" timestamp="1791948872643" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[[CHAT] Example | Ожидайте завершения проверки...]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="ekd" timestamp="1791948873671" level="WARN" thread="Render thread">
+    <log4j:Message><![CDATA[Failed to load texture: minecraft:textures/atlas/blocks.png]]></log4j:Message>
+    <log4j:Throwable><![CDATA[java.io.FileNotFoundException: minecraft:textures/atlas/blocks.png
+	at acb.a(SourceFile:67)
+	at acm.a(SourceFile:64)
+	at ejy$a.a(SourceFile:81)
+	at ejy.b(SourceFile:57)
+	at ejy.a(SourceFile:28)
+	at ekd.c(SourceFile:96)
+	at ekd.a(SourceFile:68)
+	at ekd.d(SourceFile:61)
+	at ekd.a(SourceFile:51)
+	at ean$o.a(SourceFile:206)
+	at ean$o$$Lambda$2486/1897439673.run(Unknown Source)
+	at ean.a(SourceFile:32)
+	at eao$a$$Lambda$3453/1976064230.accept(Unknown Source)
+	at com.google.common.collect.ImmutableList.forEach(ImmutableList.java:408)
+	at eao$a.b(SourceFile:838)
+	at eao$a$$Lambda$2550/1250983514.run(Unknown Source)
+	at ean.a(SourceFile:32)
+	at eae.a(SourceFile:1463)
+	at eae.a(SourceFile:1153)
+	at dzz.a(SourceFile:727)
+	at dzz.a(SourceFile:546)
+	at djz.e(SourceFile:1048)
+	at djz.e(SourceFile:681)
+	at net.minecraft.client.main.Main.main(SourceFile:215)
+]]></log4j:Throwable>
+  </log4j:Event>
+  <log4j:Event logger="enr" timestamp="1791948883354" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[Sound engine started]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="ekb" timestamp="1791948887916" level="INFO" thread="Render thread">
+    <log4j:Message><![CDATA[Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas]]></log4j:Message>
+  </log4j:Event>
+  <log4j:Event logger="djz" timestamp="1791948895713" level="FATAL" thread="Render thread">
+    <log4j:Message><![CDATA[Reported exception thrown!]]></log4j:Message>
+    <log4j:Throwable><![CDATA[u: Tesselating block in world
+	at eax.a(SourceFile:68)
+	at ecu$c$b.a(SourceFile:512)
+	at ecu$c$b.a(SourceFile:434)
+	at ecu$c.k(SourceFile:399)
+	at ecu.a(SourceFile:181)
+	at eae.a(SourceFile:979)
+	at eae.a(SourceFile:1131)
+	at dzz.a(SourceFile:727)
+	at dzz.a(SourceFile:546)
+	at djz.e(SourceFile:1048)
+	at djz.e(SourceFile:681)
+	at net.minecraft.client.main.Main.main(SourceFile:215)
+Caused by: java.lang.NullPointerException
+	at eaz.a(SourceFile:42)
+	at eax.a(SourceFile:61)
+	... 11 more
+]]></log4j:Throwable>
+  </log4j:Event>
+---- Minecraft Crash Report ----
+// There are four lights!
+
+Time: 14.10.26 5:34
+Description: Tesselating block in world
+
+java.lang.NullPointerException: Tesselating block in world
+	at eaz.a(SourceFile:42)
+	at eax.a(SourceFile:61)
+	at ecu$c$b.a(SourceFile:512)
+	at ecu$c$b.a(SourceFile:434)
+	at ecu$c.k(SourceFile:399)
+	at ecu.a(SourceFile:181)
+	at eae.a(SourceFile:979)
+	at eae.a(SourceFile:1131)
+	at dzz.a(SourceFile:727)
+	at dzz.a(SourceFile:546)
+	at djz.e(SourceFile:1048)
+	at djz.e(SourceFile:681)
+	at net.minecraft.client.main.Main.main(SourceFile:215)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Render thread
+Stacktrace:
+	at eaz.a(SourceFile:42)
+
+-- Block being tesselated --
+Details:
+	Block: Block{minecraft:quartz_block}
+	Block location: World: (1008,64,1008), Chunk: (at 0,4,0 in 63,63; contains blocks 1008,0,1008 to 1023,255,1023), Region: (1,1; contains chunks 32,32 to 63,63, blocks 512,0,512 to 1023,255,1023)
+Stacktrace:
+	at eax.a(SourceFile:61)
+	at ecu$c$b.a(SourceFile:512)
+	at ecu$c$b.a(SourceFile:434)
+	at ecu$c.k(SourceFile:399)
+	at ecu.a(SourceFile:181)
+	at eae.a(SourceFile:979)
+	at eae.a(SourceFile:1131)
+	at dzz.a(SourceFile:727)
+
+-- Affected level --
+Details:
+	All players: 1 total; [dzm['Player'/1, l='ClientLevel', x=1016.00, y=65.00, z=1009.30]]
+	Chunk stats: Client Chunk Cache: 729, 16
+	Level dimension: minecraft:overworld
+	Level spawn location: World: (-2,127,0), Chunk: (at 14,7,0 in -1,0; contains blocks -16,0,0 to -1,255,15), Region: (-1,0; contains chunks -32,0 to -1,31, blocks -512,0,0 to -1,255,511)
+	Level time: 642 game time, 642 day time
+	Server brand: Example
+	Server type: Non-integrated multiplayer server
+Stacktrace:
+	at dwt.a(SourceFile:449)
+	at djz.c(SourceFile:2239)
+	at djz.e(SourceFile:699)
+	at net.minecraft.client.main.Main.main(SourceFile:215)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.16.5
+	Minecraft Version ID: 1.16.5
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_51, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 1809249776 bytes (1725 MB) / 2684354560 bytes (2560 MB) up to 3221225472 bytes (3072 MB)
+	CPUs: 4
+	JVM Flags: 8 total; -Xmx3072M -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M
+	Launched Version: 1.16.5
+	Backend library: LWJGL version 3.2.2 build 10
+	Backend API: Parallels using Metal (Apple M2 Pro) GL version 4.3 - Build 27.0.3, Parallels and Apple
+	GL Caps: Using framebuffer using OpenGL 3.0
+	Using VBOs: Yes
+	Is Modded: Probably not. Jar signature remains and client brand is untouched.
+	Type: Client (map_client.txt)
+	Graphics mode: fancy
+	Resource Packs: 
+	Current Language: English (US)
+	CPU: 4x Apple Silicon
+#@!@# Game crashed! Crash report saved to: #@!@# C:\Users\player\AppData\Local\MC Monitor\game\instances\server-5\crash-reports\crash-2026-10-14_05.34.55-client.txt

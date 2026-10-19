@@ -1,0 +1,8 @@
+[05:06:16] [Render thread/INFO]: Backend library: LWJGL version 3.3.3+5
+[05:06:33] [Render thread/WARN]: Failed to create window: 
+fyk$a: GLFW error 65544: WGL: Failed to retrieve pixel format attributes: Операция успешно завершена. 
+	at fyk.b(SourceFile:216)
+	at org.lwjgl.glfw.GLFWErrorCallbackI.callback(GLFWErrorCallbackI.java:43)
+	at org.lwjgl.system.JNI.invokePPPP(Native Method)
+	at org.lwjgl.glfw.GLFW.nglfwCreateWindow(GLFW.java:2058)
+	at org.lwjgl.glfw.GLFW.glfwCreateWindow(GLFW.java:2229)

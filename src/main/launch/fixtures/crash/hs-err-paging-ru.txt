@@ -1,0 +1,5 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 1073741824 bytes. Error detail: G1 virtual space
+#
+OpenJDK 64-Bit Server VM warning: INFO: os::commit_memory(0x0000000700000000, 1073741824, 0) failed; error='Файл подкачки слишком мал для завершения операции' (DOS error/errno=1455)

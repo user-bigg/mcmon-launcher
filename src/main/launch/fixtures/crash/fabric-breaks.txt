@@ -1,0 +1,6 @@
+[09:12:05] [main/ERROR]: Incompatible mods found!
+net.fabricmc.loader.impl.FormattedException: Some of your mods are incompatible with the game or each other!
+A potential solution has been determined, this may resolve your problem:
+	 - Remove mod 'OptiFabric' (optifabric) 1.14.3 (mods\optifabric-1.14.3.jar).
+More details:
+	 - Mod 'Iris' (iris) 1.8.1 is incompatible with any version of mod 'OptiFabric' (optifabric), yet a conflicting version is present: 1.14.3!

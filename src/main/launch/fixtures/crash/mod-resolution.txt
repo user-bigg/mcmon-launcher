@@ -1,0 +1,6 @@
+[12:44:01] [main/ERROR]: Uncaught exception in thread "main"
+net.fabricmc.loader.impl.FormattedException: Mod resolution encountered an incompatible mod set!
+A potential solution has been determined, this may resolve your problem:
+	 - Remove mod 'mystery' (mystery).
+More details:
+Incompatible mod set!

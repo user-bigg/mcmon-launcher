@@ -1,0 +1,61 @@
+{
+  "source": {
+    "key": "pulse11",
+    "hour": 11,
+    "taken": "2026-10-14"
+  },
+  "focus": 0.7,
+  "sky": "#357ad8",
+  "layers": [
+    {
+      "name": "sky",
+      "depth": 0
+    },
+    {
+      "name": "clouds",
+      "depth": 0.12,
+      "anim": {
+        "type": "drift",
+        "dur": 320,
+        "delay": 0,
+        "amp": 2,
+        "dir": 1,
+        "still": 1,
+        "steps": 384
+      }
+    },
+    {
+      "name": "far",
+      "depth": 0.16
+    },
+    {
+      "name": "mid",
+      "depth": 0.4
+    },
+    {
+      "name": "trestle",
+      "depth": 0.7
+    },
+    {
+      "name": "ground",
+      "depth": 1
+    },
+    {
+      "name": "fg",
+      "depth": 1.25,
+      "anim": {
+        "type": "sway",
+        "dur": 4.4,
+        "delay": 0,
+        "amp": 1.2,
+        "dir": 1,
+        "still": 1,
+        "steps": 0
+      }
+    }
+  ],
+  "framing": {
+    "keepRows": [31, 121],
+    "maxSink": 6
+  }
+}

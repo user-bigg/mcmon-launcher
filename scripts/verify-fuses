@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+app=${1:?path to .exe or .app}
+report=$(npx electron-fuses read --app "$app")
+echo "$report"
+
+expected=(
+  "RunAsNode is Disabled"
+  "EnableCookieEncryption is Enabled"
+  "EnableNodeOptionsEnvironmentVariable is Disabled"
+  "EnableNodeCliInspectArguments is Disabled"
+  "EnableEmbeddedAsarIntegrityValidation is Enabled"
+  "OnlyLoadAppFromAsar is Enabled"
+  "GrantFileProtocolExtraPrivileges is Disabled"
+)
+
+status=0
+for line in "${expected[@]}"; do
+  if ! grep -qF "$line" <<<"$report"; then
+    echo "verify-fuses: expected \"$line\"" >&2
+    status=1
+  fi
+done
+exit $status

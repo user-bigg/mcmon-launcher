@@ -1,0 +1,49 @@
+{
+  "created": {
+    "status": 201,
+    "body": { "my_report": { "at": "2026-10-03T12:00:00Z" } }
+  },
+  "email_unverified": {
+    "status": 422,
+    "body": {
+      "error": { "code": "email_unverified", "message": "Подтвердите почту, чтобы пожаловаться." }
+    }
+  },
+  "own_server": {
+    "status": 422,
+    "body": { "error": { "code": "own_server", "message": "Это ваш сервер." } }
+  },
+  "note_required": {
+    "status": 422,
+    "body": { "error": { "code": "note_required", "message": "Опишите, что не так." } }
+  },
+  "already_reported": {
+    "status": 422,
+    "body": {
+      "error": { "code": "already_reported", "message": "Вы пожаловались 1 октября" },
+      "at": "2026-10-01T09:30:00.000000Z"
+    }
+  },
+  "invalid_request": {
+    "status": 422,
+    "body": { "error": { "code": "invalid_request", "message": "The reason field is invalid." } }
+  },
+  "daily_limit": {
+    "status": 429,
+    "headers": { "Retry-After": "41400" },
+    "body": {
+      "error": { "code": "daily_limit", "message": "На сегодня это предел — 5 жалоб." },
+      "limit": 5,
+      "resets_at": "2026-10-04T07:30:00Z"
+    }
+  },
+  "too_frequent": {
+    "status": 429,
+    "headers": { "Retry-After": "2" },
+    "body": { "error": { "code": "too_frequent", "message": "Повторите через пару секунд." } }
+  },
+  "server_not_found": {
+    "status": 404,
+    "body": { "error": { "code": "server_not_found", "message": "Server not found." } }
+  }
+}

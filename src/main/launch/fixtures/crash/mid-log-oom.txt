@@ -1,0 +1,4 @@
+[20:01:00] [Server thread/WARN]: Exception in server tick loop recovered
+[20:01:00] [Server thread/ERROR]: Failed to save chunk
+java.lang.OutOfMemoryError: Requested array size exceeds VM limit
+	at net.minecraft.world.level.chunk.storage.RegionFile.write(RegionFile.java:300)

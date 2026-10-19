@@ -1,0 +1,5 @@
+[20:11:09] [Server thread/ERROR]: Failed to save level ./saves/Новый мир
+java.io.IOException: There is not enough space on the disk
+	at java.base/sun.nio.ch.FileDispatcherImpl.write0(Native Method)
+	at net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess.saveDataTag(LevelStorageSource.java:478)
+[20:11:09] [Render thread/ERROR]: Unreported exception thrown!

@@ -1,0 +1,3 @@
+[13:07:55] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.RuntimeException: Could not execute entrypoint stage 'client' due to errors, provided by 'modmenu' at 'com.terraformersmc.modmenu.ModMenu'!
+	at net.fabricmc.loader.impl.FabricLoaderImpl.lambda$invokeEntrypoints$2(FabricLoaderImpl.java:388)

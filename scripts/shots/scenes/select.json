@@ -1,0 +1,158 @@
+{
+  "about": "Every screen on the staging site with select-all before the shot: only content (names, addresses, descriptions, logs, paths, errors) should light up.",
+  "profile": "select",
+  "reset": true,
+  "steps": [
+    {
+      "name": "s01-welcome",
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "selectAll": true
+    },
+    {
+      "name": "s01-welcome-nick-error",
+      "input": [".nick input", "bad nick!"],
+      "click": ".nick-submit",
+      "waitAfter": "#nick-error",
+      "selectAll": true
+    },
+    {
+      "input": [".nick input", "ArtDirector"],
+      "click": ".nick-submit",
+      "waitAfter": ".hero"
+    },
+    {
+      "name": "s02-home",
+      "route": "/",
+      "wait": [".hero", ".lx-grid-3"],
+      "selectAll": true
+    },
+    {
+      "name": "s02-home-scrolled",
+      "scroll": "bottom",
+      "selectAll": true
+    },
+    {
+      "name": "s03-catalog",
+      "route": "/servers",
+      "wait": ".rows .srow",
+      "selectAll": true
+    },
+    {
+      "name": "s03-catalog-cards",
+      "click": ".catalog .seg button:nth-of-type(2)",
+      "waitAfter": ".cards .lx-grid-3, .lx-grid-3.cards",
+      "scroll": 0,
+      "selectAll": true
+    },
+    {
+      "click": ".catalog .seg button:nth-of-type(1)",
+      "waitAfter": ".rows .srow",
+      "scroll": 0
+    },
+    {
+      "name": "s03-catalog-search-empty",
+      "input": [".catalog .toolbar .search input", "zzqqxx"],
+      "waitAfter": ".catalog .state-notice",
+      "selectAll": true
+    },
+    {
+      "input": [".catalog .toolbar .search input", ""],
+      "waitAfter": ".rows .srow",
+      "after": "document.activeElement.blur()"
+    },
+    {
+      "name": "s04-server",
+      "routeJs": "document.querySelector('.rows a.name').getAttribute('href').slice(1)",
+      "wait": [".prose", ".stat dd"],
+      "selectAll": true
+    },
+    {
+      "name": "s04-server-about",
+      "scroll": {
+        "to": ".prose",
+        "offset": 70
+      },
+      "selectAll": true
+    },
+    {
+      "name": "s05-launch-server",
+      "routeJs": "'/launch/' + location.hash.split('/').pop()",
+      "wait": ".launch h1",
+      "selectAll": true
+    },
+    {
+      "name": "s05-launch-log",
+      "click": ".launch .toolbar button[aria-pressed]",
+      "waitAfter": ".log-panel",
+      "selectAll": true
+    },
+    {
+      "name": "s06-library-empty",
+      "route": "/library",
+      "wait": ".lx-content .state-notice",
+      "selectAll": true
+    },
+    {
+      "click": ".lx-content button[aria-expanded]",
+      "waitAfter": "form.create"
+    },
+    {
+      "input": ["form.create input.field:not(.lx-mono)", "My vanilla"]
+    },
+    {
+      "input": ["form.create input.lx-mono", "1.21.11"]
+    },
+    {
+      "click": "form.create .submit",
+      "waitAfter": ".inst h3"
+    },
+    {
+      "name": "s06-library-one",
+      "scroll": 0,
+      "selectAll": true
+    },
+    {
+      "name": "s06-library-bottom",
+      "scroll": "bottom",
+      "selectAll": true
+    },
+    {
+      "name": "s07-crash-missing",
+      "route": "/crash/no-such-instance",
+      "wait": ".lx-content",
+      "selectAll": true
+    },
+    {
+      "name": "s08-settings",
+      "route": "/settings",
+      "wait": ".lx-content",
+      "selectAll": true
+    },
+    {
+      "name": "s08-settings-storage",
+      "scroll": {
+        "to": "#settings-storage",
+        "offset": 16
+      },
+      "selectAll": true
+    },
+    {
+      "name": "s08-settings-bottom",
+      "scroll": "bottom",
+      "selectAll": true
+    },
+    {
+      "name": "s08-licenses",
+      "route": "/licenses",
+      "wait": ".notices",
+      "selectAll": true
+    },
+    {
+      "name": "s09-accounts",
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "selectAll": true
+    }
+  ]
+}

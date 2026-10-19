@@ -1,0 +1,4 @@
+[17:45:20] [Render thread/INFO]: Backend library: LWJGL version 3.3.3+5
+[17:45:20] [Render thread/ERROR]: GLFW error 65543: GLX: Failed to create context: GLXBadFBConfig
+[17:45:21] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.IllegalStateException: Failed to create window

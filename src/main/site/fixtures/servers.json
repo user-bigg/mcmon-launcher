@@ -1,0 +1,221 @@
+{
+  "data": [
+    {
+      "id": 3,
+      "slug": "minelegacy",
+      "name": "MineLegacy",
+      "address": {
+        "host": "play.legacy.example",
+        "port": 25565
+      },
+      "edition": "java",
+      "description": "Выживание SMP, анархия, SkyBlock и BedWars. Кланы, арена, сезонные вайпы.",
+      "tags": ["anarchy", "skyblock"],
+      "versions": {
+        "from": "1.8",
+        "to": "26.2"
+      },
+      "status": "online",
+      "online": 1518,
+      "max_players": 9999,
+      "rank": 1,
+      "points": 120,
+      "weekly_trend": -3,
+      "votes_month": 37,
+      "icon_url": "https://mc-mon.ru/icons/6c3697ba32986d88d34d27893077f5d31e6b9326d2963d57a7958798d1aa5cea.png",
+      "cover": {
+        "scene": "anarchy",
+        "time": "auto"
+      },
+      "access": {
+        "license": true,
+        "nick": false
+      },
+      "is_verified": true,
+      "wipe_label": null,
+      "top_slot": null,
+      "launch": {
+        "kind": "direct",
+        "minecraft": "26.2"
+      },
+      "site_url": "https://mc-mon.ru/server/minelegacy"
+    },
+    {
+      "id": 4,
+      "slug": "richday",
+      "name": "RichDay",
+      "address": {
+        "host": "play.richday.example",
+        "port": 25565
+      },
+      "edition": "java",
+      "description": "Анархия без правил и дуэли 1 на 1. Вайп каждую пятницу.",
+      "tags": ["anarchy", "duels"],
+      "versions": {
+        "from": "1.21.11",
+        "to": "1.21.11"
+      },
+      "status": "online",
+      "online": 559,
+      "max_players": 5000,
+      "rank": 2,
+      "points": 90,
+      "weekly_trend": -1,
+      "votes_month": 17,
+      "icon_url": "https://mc-mon.ru/icons/e7d3069741416e6292428c0b53517354fb94219fb349e06e55a8b1fcf1b11252.png",
+      "cover": {
+        "scene": "anarchy",
+        "time": "auto"
+      },
+      "access": {
+        "license": true,
+        "nick": false
+      },
+      "is_verified": true,
+      "wipe_label": "вайп через 2 дня",
+      "top_slot": null,
+      "launch": {
+        "kind": "direct",
+        "minecraft": "1.21.11"
+      },
+      "site_url": "https://mc-mon.ru/server/richday"
+    },
+    {
+      "id": 74,
+      "slug": "arcanequest",
+      "name": "ArcaneQuest",
+      "address": {
+        "host": "join.arcanequest.example",
+        "port": 25565
+      },
+      "edition": "java",
+      "description": "Своя карта и уникальные квесты.",
+      "tags": ["bedwars"],
+      "versions": {
+        "from": "1.19.4",
+        "to": "1.19.4"
+      },
+      "status": "online",
+      "online": 2,
+      "max_players": 20,
+      "rank": 3,
+      "points": 20,
+      "weekly_trend": -9,
+      "votes_month": 97,
+      "icon_url": "https://mc-mon.ru/icons/e35ef42fd1e87cd98d8f7d8728f8e89aba5e4d260cab9bf396713bb4a0f483e5.png",
+      "cover": {
+        "scene": "bedwars",
+        "time": "auto"
+      },
+      "access": {
+        "license": true,
+        "nick": true
+      },
+      "is_verified": true,
+      "wipe_label": null,
+      "top_slot": null,
+      "launch": {
+        "kind": "direct",
+        "minecraft": "1.19.4"
+      },
+      "site_url": "https://mc-mon.ru/server/arcanequest"
+    }
+  ],
+  "top_slots": {
+    "diamond": [
+      {
+        "id": 1,
+        "slug": "skyrealm",
+        "name": "SkyRealm",
+        "address": {
+          "host": "play.skyrealm.example",
+          "port": 25565
+        },
+        "edition": "java",
+        "description": "Острова, экономика и данжи. Новый сезон уже стартовал.",
+        "tags": ["skyblock"],
+        "versions": {
+          "from": "1.21.11",
+          "to": "1.21.11"
+        },
+        "status": "online",
+        "online": 1193,
+        "max_players": 5000,
+        "rank": null,
+        "points": 45,
+        "weekly_trend": -1,
+        "votes_month": 17,
+        "icon_url": "https://mc-mon.ru/icons/f7faac022a63eddd22b2461fb19714ba22640413f249011a8a3cac7b65881ff7.png",
+        "cover": {
+          "scene": "skyblock",
+          "time": "auto"
+        },
+        "access": {
+          "license": true,
+          "nick": false
+        },
+        "is_verified": true,
+        "wipe_label": null,
+        "top_slot": {
+          "tier": "diamond"
+        },
+        "launch": {
+          "kind": "direct",
+          "minecraft": "1.21.11"
+        },
+        "site_url": "https://mc-mon.ru/server/skyrealm"
+      }
+    ],
+    "gold": [
+      {
+        "id": 2,
+        "slug": "auroramc",
+        "name": "AuroraMC",
+        "address": {
+          "host": "play.auroramc.example",
+          "port": 25565
+        },
+        "edition": "java",
+        "description": "Выживание с экономикой, кланами и сезонными ивентами. Вайп раз в месяц.",
+        "tags": ["survival"],
+        "versions": {
+          "from": "26.2",
+          "to": "26.2"
+        },
+        "status": "online",
+        "online": 896,
+        "max_players": 3000,
+        "rank": null,
+        "points": 15,
+        "weekly_trend": null,
+        "votes_month": 37,
+        "icon_url": "https://mc-mon.ru/icons/b6688fafb21c96515a4fbed082224e7b8d266e20d1f4258161d32fee6471758f.png",
+        "cover": {
+          "scene": "meadow",
+          "time": "auto"
+        },
+        "access": {
+          "license": true,
+          "nick": true
+        },
+        "is_verified": true,
+        "wipe_label": "вайп завтра",
+        "top_slot": {
+          "tier": "gold"
+        },
+        "launch": {
+          "kind": "direct",
+          "minecraft": "26.2"
+        },
+        "site_url": "https://mc-mon.ru/server/auroramc"
+      }
+    ]
+  },
+  "meta": {
+    "page": 1,
+    "per_page": 5,
+    "total": 184,
+    "online_total": 35339,
+    "updated_at": "2026-10-03T06:24:57Z"
+  }
+}

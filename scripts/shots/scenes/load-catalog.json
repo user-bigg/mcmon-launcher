@@ -1,0 +1,19 @@
+{
+  "about": "Site responses delayed: loading state in the catalog.",
+  "env": {
+    "MCMONITOR_DEBUG_SLOW_MS": "4000"
+  },
+  "steps": [
+    {
+      "name": "11-loading-catalog",
+      "route": "/servers",
+      "wait": ".catalog [data-loading]",
+      "settle": false
+    },
+    {
+      "name": "11-loading-catalog-done",
+      "gone": "[data-loading]",
+      "wait": ".rows .srow"
+    }
+  ]
+}

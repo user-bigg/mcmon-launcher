@@ -1,0 +1,29 @@
+{
+  "about": "Catalog cache from \"main\", download server unreachable: the step error. Run main first.",
+  "profile": "main",
+  "unreachable": true,
+  "steps": [
+    {
+      "route": "/welcome",
+      "wait": ".nick input"
+    },
+    {
+      "input": [".nick input", "ArtDirector"],
+      "click": ".nick-submit",
+      "waitAfter": ".hero"
+    },
+    {
+      "route": "/servers",
+      "wait": ".rows .srow"
+    },
+    {
+      "routeJs": "(() => { const row = [...document.querySelectorAll('.rows .srow')].find((li) => li.querySelector('[data-launch=\"direct\"]')); return '/launch/' + row.querySelector('a.name').getAttribute('href').split('/').pop(); })()",
+      "wait": ".launch h1"
+    },
+    {
+      "name": "15-launch-error-offline",
+      "click": ".launch .actions button",
+      "waitAfter": ".notice.is-error"
+    }
+  ]
+}

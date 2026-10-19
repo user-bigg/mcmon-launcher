@@ -1,0 +1,3 @@
+[MC Monitor] minecraft=26.3 version=26.3 loader=vanilla java=/game/runtime/java-runtime-epsilon/jre.bundle/Contents/Home/bin/java memory=16MB join=none
+Error occurred during initialization of VM
+Too small maximum heap

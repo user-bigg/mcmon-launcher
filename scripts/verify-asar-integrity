@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root="$(cd "$(dirname "$0")/.." && pwd)"
+source "$root/scripts/smoke-lib.sh"
+
+app=${1:?path to win-unpacked or the .app bundle}
+exe=${2:?executable path inside the app, e.g. MCMonitorLauncher.exe}
+limit=${3:-30}
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+# Electron checks the hash of the asar header at startup and the block hashes of a file when it
+# is read, so bytes appended after the last file are not covered: "append" is reported, not required.
+attempt() {
+  local mode=$1
+  local copy="$work/$mode/$(basename "$app")"
+  mkdir -p "$work/$mode"
+  cp -R "$app" "$copy"
+  local asar
+  asar=$(find "$copy" -name app.asar -type f | head -n 1)
+  if [[ -z $asar ]]; then
+    echo "verify-asar-integrity: app.asar not found in $app" >&2
+    exit 1
+  fi
+  (cd "$root" && node scripts/tamper-asar.ts "$asar" "$mode") >/dev/null
+  local code
+  code=$(smoke_launch "$copy/$exe" "$work/$mode/smoke.json" "$limit" "$work/$mode/smoke.log")
+  tail -n 5 "$work/$mode/smoke.log"
+  echo "$code" >"$work/$mode/code"
+}
+
+status=0
+for mode in content header append; do
+  attempt "$mode"
+  code=$(cat "$work/$mode/code")
+  case $code in
+    0) verdict="started and passed smoke" ;;
+    124) verdict="hung and was killed after $limit s" ;;
+    *) verdict="refused to start (exit code $code)" ;;
+  esac
+  echo "verify-asar-integrity: $mode tampering: $verdict"
+  if [[ $mode != append && $code == 0 ]]; then
+    status=1
+  fi
+done
+
+if ((status != 0)); then
+  echo "verify-asar-integrity: tampered app.asar was accepted" >&2
+fi
+exit $status

@@ -1,0 +1,24 @@
+{
+  "about": "Site responses delayed: server page loading.",
+  "env": {
+    "MCMONITOR_DEBUG_SLOW_MS": "4000"
+  },
+  "steps": [
+    {
+      "route": "/servers",
+      "wait": ".rows .srow",
+      "waitMs": 60000
+    },
+    {
+      "name": "11-loading-server",
+      "routeJs": "document.querySelector('.rows a.name').getAttribute('href').slice(1)",
+      "wait": ".server [data-loading]",
+      "settle": false
+    },
+    {
+      "name": "11-loading-server-done",
+      "gone": "[data-loading]",
+      "wait": ".stat dd"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "about": "Sign-in screen with the site unreachable: the right side stays a calm dark fill.",
+  "unreachable": true,
+  "steps": [
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-no-network"
+    }
+  ]
+}

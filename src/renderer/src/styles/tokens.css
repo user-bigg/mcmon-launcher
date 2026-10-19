@@ -1,0 +1,142 @@
+/*
+ * MC Monitor design tokens shared by the site and the launcher. Dark theme only.
+ */
+
+:root,
+[data-bs-theme="dark"] {
+  /* Surfaces */
+  --mc-bg: #0a0e13;
+  --mc-surface: #10161d;
+  --mc-surface-2: #151d26;
+  --mc-surface-3: #1b2530;
+  --mc-border: #22303d;
+  --mc-border-strong: #2e3f50;
+
+  /* Text */
+  --mc-text: #e7edf3;
+  --mc-text-muted: #8a9aab;
+  --mc-text-dim: #5c6c7c;
+
+  /* Accent and statuses */
+  --mc-accent: #4ade80;          /* grass: main accent, online */
+  --mc-accent-strong: #22c55e;
+  --mc-accent-soft: rgba(74, 222, 128, .12);
+  --mc-gold: #f5b83d;            /* top places and the paid places above the rating */
+  --mc-gold-soft: rgba(245, 184, 61, .12);
+  --mc-votes: #60a5fa;           /* player votes */
+  --mc-diamond: #4de3e8;         /* the Diamond place above the rating */
+  --mc-diamond-soft: rgba(77, 227, 232, .12);
+  --mc-violet: #a78bfa;          /* the launcher and Play */
+  --mc-violet-soft: rgba(167, 139, 250, .12);
+  --mc-danger: #f87171;          /* offline */
+  --mc-warning: #fbbf24;
+
+  /* System fonts only, nothing is downloaded: SF Pro on Apple systems, Segoe UI on Windows,
+     Roboto on Android, whatever is installed on Linux. */
+  --mc-font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --mc-font-display: var(--mc-font-body);
+  --mc-font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Shape */
+  --mc-radius: 12px;
+  --mc-radius-sm: 8px;
+  --mc-radius-lg: 18px;
+  --mc-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+
+  /* Bootstrap mapping */
+  --bs-body-bg: var(--mc-bg);
+  --bs-body-color: var(--mc-text);
+  --bs-body-font-family: var(--mc-font-body);
+  --bs-secondary-color: var(--mc-text-muted);
+  --bs-tertiary-bg: var(--mc-surface-2);
+  --bs-border-color: var(--mc-border);
+  --bs-border-radius: var(--mc-radius-sm);
+  --bs-border-radius-lg: var(--mc-radius);
+  --bs-link-color: var(--mc-accent);
+  --bs-link-color-rgb: 74, 222, 128;
+  --bs-link-hover-color: #86efac;
+  --bs-primary: var(--mc-accent);
+  --bs-primary-rgb: 74, 222, 128;
+  --bs-success: var(--mc-accent);
+  --bs-success-rgb: 74, 222, 128;
+  --bs-danger-rgb: 248, 113, 113;
+  --bs-warning-rgb: 251, 191, 36;
+}
+
+body {
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  font-family: var(--mc-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .mc-display {
+  font-family: var(--mc-font-display);
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.mc-mono { font-family: var(--mc-font-mono); }
+
+/* Buttons */
+.btn-mc {
+  --bs-btn-color: #06210f;
+  --bs-btn-bg: var(--mc-accent);
+  --bs-btn-border-color: var(--mc-accent);
+  --bs-btn-hover-color: #06210f;
+  --bs-btn-hover-bg: #6ee7a0;
+  --bs-btn-hover-border-color: #6ee7a0;
+  --bs-btn-active-bg: var(--mc-accent-strong);
+  --bs-btn-active-border-color: var(--mc-accent-strong);
+  font-weight: 600;
+}
+.btn-mc-ghost {
+  --bs-btn-color: var(--mc-text);
+  --bs-btn-bg: var(--mc-surface-2);
+  --bs-btn-border-color: var(--mc-border);
+  --bs-btn-hover-color: var(--mc-text);
+  --bs-btn-hover-bg: var(--mc-surface-3);
+  --bs-btn-hover-border-color: var(--mc-border-strong);
+  font-weight: 500;
+}
+
+/* Surfaces */
+.mc-card {
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius);
+}
+
+/* Status dot */
+.mc-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--mc-accent);
+  box-shadow: 0 0 0 3px var(--mc-accent-soft);
+}
+.mc-dot.is-off { background: var(--mc-danger); box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+
+/* Tags */
+.mc-tag {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+  font-size: .75rem; font-weight: 500;
+  background: var(--mc-surface-3);
+  color: var(--mc-text-muted);
+  border: 1px solid var(--mc-border);
+  white-space: nowrap;
+}
+.mc-tag.is-accent { background: var(--mc-accent-soft); color: var(--mc-accent); border-color: transparent; }
+.mc-tag.is-gold   { background: var(--mc-gold-soft);   color: var(--mc-gold);   border-color: transparent; }
+.mc-tag.is-violet { background: var(--mc-violet-soft); color: var(--mc-violet); border-color: transparent; }
+
+/* Pixel server icon: the 64×64 favicon from the server ping */
+.mc-server-icon {
+  width: 56px; height: 56px;
+  border-radius: 10px;
+  image-rendering: pixelated;
+  background: var(--mc-surface-3);
+  flex-shrink: 0;
+}

@@ -1,0 +1,6 @@
+[12:01:09] [main/ERROR]: Unable to launch
+java.lang.SecurityException: SHA1 digest error for net/minecraft/client/Minecraft.class
+	at java.base/sun.security.util.ManifestEntryVerifier.verify(ManifestEntryVerifier.java:251)
+	at java.base/java.util.jar.JarVerifier.processEntry(JarVerifier.java:196)
+	at java.base/java.util.jar.JarFile.getInputStream(JarFile.java:889)
+	at cpw.mods.jarhandling.impl.Jar.open(/home/player/.mcmonitor/game/libraries/net/minecraft/client/1.20.1-20230612.114412/client-1.20.1-20230612.114412-srg.jar)

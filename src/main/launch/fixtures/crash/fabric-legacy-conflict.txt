@@ -1,0 +1,2 @@
+[09:33:41] [main/ERROR]: Found conflicting mods: optifabric conflicts with sodium
+net.fabricmc.loader.discovery.ModResolutionException: Found conflicting mods: optifabric conflicts with sodium

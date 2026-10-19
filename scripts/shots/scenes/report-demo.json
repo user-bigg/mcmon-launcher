@@ -1,0 +1,43 @@
+{
+  "about": "Server report form in the demo build (the demo has a signed-in MC Monitor account), run with SHOT_MAIN=dist/demo-out/main/index.js.",
+  "steps": [
+    {
+      "size": "1280x800"
+    },
+    {
+      "name": "15-report-link",
+      "route": "/server/107",
+      "wait": [".prose", "[data-report] .link"],
+      "scroll": "bottom"
+    },
+    {
+      "name": "15-report-form",
+      "click": "[data-report] .link",
+      "waitAfter": "[data-report-form]",
+      "scroll": "bottom",
+      "blur": false
+    },
+    {
+      "name": "15-report-other-short",
+      "after": "document.querySelector('[data-report-form] input[value=\"other\"]').click()",
+      "input": ["[data-report-form] textarea", "too short"],
+      "scroll": "bottom"
+    },
+    {
+      "name": "15-report-other-ready",
+      "input": ["[data-report-form] textarea", "The catalog address leads to another server"],
+      "scroll": "bottom"
+    },
+    {
+      "name": "15-report-sent",
+      "click": "[data-report-submit]",
+      "waitAfter": "[data-report-status] .sent",
+      "scroll": "bottom"
+    },
+    {
+      "name": "15-report-done",
+      "pause": 5500,
+      "scroll": "bottom"
+    }
+  ]
+}

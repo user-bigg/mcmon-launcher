@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 2 || $# -gt 3 || ($# -eq 3 && $3 != win && $3 != mac) ]]; then
+  echo "usage: scripts/update-yml-check <dir> <version> [win|mac]" >&2
+  exit 2
+fi
+
+dir="$1"
+version="$2"
+platform="${3:-win}"
+if [[ $platform == mac ]]; then
+  installer="mcmonitor-launcher-$version-mac-arm64.zip"
+  suffix="-mac"
+else
+  installer="mcmonitor-launcher-$version-win-x64.exe"
+  suffix=""
+fi
+
+fail() {
+  echo "update-yml-check: $1" >&2
+  exit 1
+}
+
+field() {
+  sed -n "s/^$1: //p" "$2" | head -n 1 | tr -d "'\"\r"
+}
+
+[[ -f "$dir/$installer" ]] || fail "$installer is missing"
+
+if [[ "$version" == *-* ]]; then
+  channels=(beta)
+  [[ ! -e "$dir/latest$suffix.yml" ]] || fail "prerelease $version must not write latest$suffix.yml"
+else
+  channels=(latest beta)
+fi
+
+sha512="$(node -e "process.stdout.write(require('node:crypto').createHash('sha512').update(require('node:fs').readFileSync(process.argv[1])).digest('base64'))" "$dir/$installer")"
+size="$(wc -c < "$dir/$installer" | tr -d ' ')"
+
+for channel in "${channels[@]}"; do
+  yml="$dir/$channel$suffix.yml"
+  [[ -f "$yml" ]] || fail "$channel$suffix.yml is missing"
+  [[ "$(field version "$yml")" == "$version" ]] || fail "$channel$suffix.yml has another version"
+  [[ "$(field path "$yml")" == "$installer" ]] || fail "$channel$suffix.yml points to another file"
+  [[ "$(field sha512 "$yml")" == "$sha512" ]] || fail "$channel$suffix.yml sha512 differs from $installer"
+  grep -q "^  - url: $installer\$" "$yml" || fail "$channel$suffix.yml does not list $installer"
+  listed_size="$(awk -v file="  - url: $installer" '$0 == file { found = 1; next } found && /^ *size: / { sub(/^ *size: /, ""); print; exit } /^  - url: / { found = 0 }' "$yml" | tr -d '\r')"
+  [[ "$listed_size" == "$size" ]] || fail "$channel$suffix.yml size differs from $installer"
+done
+
+echo "update-yml-check: ${channels[*]} match $installer"

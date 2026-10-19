@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+archive=${1:?path to the macOS update zip}
+app_id=com.mcmonitor.launcher
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+# The launcher updates itself from this zip, so check what it will unpack, not the build folder.
+ditto -x -k --noqtn "$archive" "$work"
+bundles=("$work"/*.app)
+if [[ ${#bundles[@]} -ne 1 || ! -d ${bundles[0]} ]]; then
+  echo "verify-mac-update: $archive must hold exactly one application" >&2
+  exit 1
+fi
+bundle=${bundles[0]}
+id=$(plutil -extract CFBundleIdentifier raw -o - "$bundle/Contents/Info.plist")
+if [[ $id != "$app_id" ]]; then
+  echo "verify-mac-update: the bundle is $id, not $app_id" >&2
+  exit 1
+fi
+codesign --verify --deep --strict --verbose=2 "$bundle"
+echo "verify-mac-update: $(basename "$bundle") from $(basename "$archive") is $app_id and its signature verifies"

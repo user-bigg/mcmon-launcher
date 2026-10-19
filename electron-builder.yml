@@ -1,0 +1,103 @@
+appId: com.mcmonitor.launcher
+productName: MC Monitor Launcher
+executableName: MCMonitorLauncher
+copyright: Copyright © 2026 MC Monitor
+artifactName: mcmonitor-launcher-${version}-${os}-${arch}.${ext}
+
+directories:
+  buildResources: build
+  output: release
+
+files:
+  - out/**
+  - package.json
+
+extraResources:
+  - from: LICENSE
+    to: LICENSE
+  - from: out/resources/THIRD_PARTY_NOTICES.txt
+    to: THIRD_PARTY_NOTICES.txt
+
+protocols:
+  - name: MC Monitor
+    schemes:
+      - mcmonitor
+
+asar: true
+npmRebuild: false
+electronLanguages:
+  - ru
+  - en-US
+
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+  grantFileProtocolExtraPrivileges: false
+  resetAdHocDarwinSignature: true
+
+win:
+  icon: build/icon.ico
+  signtoolOptions:
+    publisherName: MC Monitor
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: true
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  shortcutName: MC Monitor Launcher
+  uninstallDisplayName: MC Monitor Launcher
+  include: build/installer.nsh
+
+mac:
+  icon: build/icon-mac.png
+  executableName: MC Monitor Launcher
+  category: public.app-category.games
+  # No Developer ID: electron-builder skips signing and the fuses step signs the bundle ad hoc,
+  # which Apple Silicon needs to run it at all.
+  identity: null
+  minimumSystemVersion: '13.0'
+  target:
+    - target: dmg
+      arch:
+        - arm64
+    - target: zip
+      arch:
+        - arm64
+
+# The launcher updates itself from the zip; electron-builder also repeats the disk image in the
+# update files once per channel, so it is left out of them.
+dmg:
+  title: MC Monitor Launcher
+  writeUpdateInfo: false
+  background: build/dmg-background.png
+  iconSize: 112
+  iconTextSize: 13
+  window:
+    width: 660
+    height: 400
+  contents:
+    - x: 160
+      y: 168
+    - x: 460
+      y: 168
+      type: link
+      path: /Applications
+
+generateUpdatesFilesForAllChannels: true
+
+publish:
+  provider: generic
+  url: https://mc-mon.ru/downloads/launcher/

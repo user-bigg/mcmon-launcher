@@ -1,0 +1,19 @@
+{
+  "about": "Site responses delayed: launch screen waits for the catalog.",
+  "env": {
+    "MCMONITOR_DEBUG_SLOW_MS": "4000"
+  },
+  "steps": [
+    {
+      "name": "11-loading-launch",
+      "route": "/launch/1",
+      "wait": ".launch[data-loading]",
+      "settle": false
+    },
+    {
+      "name": "11-loading-launch-done",
+      "gone": "[data-loading]",
+      "wait": ".launch, .lx-content"
+    }
+  ]
+}

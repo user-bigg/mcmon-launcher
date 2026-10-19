@@ -1,0 +1,6 @@
+[10:15:02] [Render thread/INFO]: Backend library: LWJGL version 3.3.3+5
+[10:15:02] [Render thread/ERROR]: GLFW error during init: [0x10007]WGL: The driver does not appear to support OpenGL
+[10:15:03] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.IllegalStateException: GLFW error before init: [0x10007]WGL: The driver does not appear to support OpenGL
+	at com.mojang.blaze3d.platform.GLX.lambda$initGlfw$1(GLX.java:84)
+	at org.lwjgl.glfw.GLFWErrorCallbackI.callback(GLFWErrorCallbackI.java:43)

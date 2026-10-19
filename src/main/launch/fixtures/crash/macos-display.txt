@@ -1,0 +1,3 @@
+[08:30:12] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.IllegalStateException: GLFW error before init: [0x10008]Cocoa: Failed to find service port for display
+	at com.mojang.blaze3d.platform.GLX.lambda$initGlfw$1(GLX.java:84)

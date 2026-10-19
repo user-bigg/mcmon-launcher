@@ -1,0 +1,25 @@
+{
+  "about": "Cache from the \"main\" profile, site unreachable: the stale-data note. Run main first.",
+  "profile": "main",
+  "unreachable": true,
+  "steps": [
+    {
+      "name": "13-stale-home",
+      "route": "/",
+      "wait": ".hero",
+      "quiet": 1000
+    },
+    {
+      "name": "13-stale-catalog",
+      "route": "/servers",
+      "wait": ".rows .srow",
+      "quiet": 1000
+    },
+    {
+      "name": "13-stale-server",
+      "routeJs": "document.querySelector('.rows a.name').getAttribute('href').slice(1)",
+      "wait": ".stat dd",
+      "quiet": 1000
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "about": "Site responses delayed: favorites in the sidebar while their cards are on the way, then loaded. A guest; the stars are put into the local list from the second page of the catalog, which the window has not shown yet.",
+  "env": {
+    "MCMONITOR_DEBUG_SLOW_MS": "4000"
+  },
+  "steps": [
+    {
+      "route": "/",
+      "wait": ".sidebar",
+      "after": "window.launcher.site.servers({ sort: 'online', page: 2, per_page: 50 }).then((list) => { const ids = list.ok ? list.value.data.slice(0, 4).map((row) => row.id) : []; localStorage.setItem('mcmonitor.favorites', JSON.stringify(ids)); return ids; })",
+      "settle": false
+    },
+    {
+      "reload": true,
+      "route": "/",
+      "wait": "[data-favorites=\"loading\"] li.ghost",
+      "settle": false,
+      "pause": 500,
+      "name": "sidebar-00-loading"
+    },
+    {
+      "wait": "[data-favorites=\"ready\"] a.favorite",
+      "name": "sidebar-01-ready"
+    }
+  ]
+}

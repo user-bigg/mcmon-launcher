@@ -1,0 +1,500 @@
+[
+  {
+    "key": "bedwars",
+    "name": "Острова BedWars",
+    "pack": "modes",
+    "purpose": "library",
+    "focus": 0.6,
+    "skies": {
+      "day": "#3f82ea",
+      "sunset": "#1e1c58",
+      "night": "#02040f"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "near",
+          "depth": 0.8
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "near",
+          "depth": 0.8
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "near",
+          "depth": 0.8
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ]
+    }
+  },
+  {
+    "key": "village",
+    "name": "Деревня на закате",
+    "pack": "modes",
+    "purpose": "library",
+    "focus": 0.55,
+    "skies": {
+      "day": "#4e8ff0",
+      "sunset": "#2a1f5c",
+      "night": "#05050f"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "near",
+          "depth": 0.8
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "near",
+          "depth": 0.8
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "near",
+          "depth": 0.8
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ]
+    }
+  },
+  {
+    "key": "taiga",
+    "name": "Заснеженная тайга у гор",
+    "pack": "nature",
+    "purpose": "library",
+    "focus": 0.5,
+    "skies": {
+      "day": "#4f86cc",
+      "sunset": "#22265e",
+      "night": "#01030c"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "range",
+          "depth": 0.22
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "lake",
+          "depth": 0.75
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "range",
+          "depth": 0.22
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "lake",
+          "depth": 0.75
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "range",
+          "depth": 0.22
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "lake",
+          "depth": 0.75
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ]
+    }
+  },
+  {
+    "key": "welcome-peaks",
+    "name": "Зубчатые пики ночью",
+    "pack": "moods",
+    "purpose": "mood",
+    "moods": ["welcome", "night"],
+    "focus": 0.5,
+    "skies": {
+      "day": "#01030c",
+      "sunset": "#01030c",
+      "night": "#01030c"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "range",
+          "depth": 0.18
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "cloudsea",
+          "depth": 0.42
+        },
+        {
+          "name": "mid",
+          "depth": 0.62
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        },
+        {
+          "name": "snow",
+          "depth": 1.2
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "range",
+          "depth": 0.18
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "cloudsea",
+          "depth": 0.42
+        },
+        {
+          "name": "mid",
+          "depth": 0.62
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        },
+        {
+          "name": "snow",
+          "depth": 1.2
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "range",
+          "depth": 0.18
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "cloudsea",
+          "depth": 0.42
+        },
+        {
+          "name": "mid",
+          "depth": 0.62
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        },
+        {
+          "name": "snow",
+          "depth": 1.2
+        }
+      ]
+    }
+  },
+  {
+    "key": "waiting-taiga",
+    "name": "Костёр у озера",
+    "pack": "moods",
+    "purpose": "mood",
+    "moods": ["waiting", "calm"],
+    "focus": 0.62,
+    "skies": {
+      "day": "#22265e",
+      "sunset": "#22265e",
+      "night": "#22265e"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "range",
+          "depth": 0.22
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "lake",
+          "depth": 0.75
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "range",
+          "depth": 0.22
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "lake",
+          "depth": 0.75
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15
+        },
+        {
+          "name": "range",
+          "depth": 0.22
+        },
+        {
+          "name": "far",
+          "depth": 0.3
+        },
+        {
+          "name": "mid",
+          "depth": 0.55
+        },
+        {
+          "name": "lake",
+          "depth": 0.75
+        },
+        {
+          "name": "ground",
+          "depth": 1
+        }
+      ]
+    }
+  }
+]

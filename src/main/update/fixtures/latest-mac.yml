@@ -1,0 +1,11 @@
+version: 0.2.0
+files:
+  - url: mcmonitor-launcher-0.2.0-mac-arm64.zip
+    sha512: VfkSq7GApcCl1CRuwf//5BU2U/ezscjeLyzaOUbF8bfve/vjqAHe0pZ3mXXyf1SXgzO2ltZFE4K54PTYa+hcbg==
+    size: 113866236
+  - url: mcmonitor-launcher-0.2.0-mac-arm64.dmg
+    sha512: lokeejP9Gl07WTD+kPfWRn52qNcOb2iQ34CfCv3oRpQ1PdR1PciVFwfqFI2E+oAFfVxO0kqeQhyRzxmYgOGsUQ==
+    size: 117513581
+path: mcmonitor-launcher-0.2.0-mac-arm64.zip
+sha512: VfkSq7GApcCl1CRuwf//5BU2U/ezscjeLyzaOUbF8bfve/vjqAHe0pZ3mXXyf1SXgzO2ltZFE4K54PTYa+hcbg==
+releaseDate: '2026-10-19T04:08:34.096Z'

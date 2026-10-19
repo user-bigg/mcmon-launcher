@@ -1,0 +1,70 @@
+[17:47:19] [Client thread/INFO]: Setting user: Player
+[17:47:21] [Client thread/WARN]: Skipping bad option: lastServer:
+[17:47:21] [Client thread/INFO]: LWJGL Version: 2.9.4
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] 
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] OptiFine_1.12.2_HD_U_C6
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Build: null
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] OS: Windows 10 (amd64) version 10.0
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Java: 1.8.0-internal, Oracle Corporation
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] VM: OpenJDK 64-Bit Server VM (mixed mode), Oracle Corporation
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] LWJGL: 2.9.4
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] OpenGL: GeForce GTX 1060 6GB/PCIe/SSE2, version 4.6.0 NVIDIA 388.13, NVIDIA Corporation
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] OpenGL Version: 4.6.0
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Maximum texture size: 32768x32768
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] ShadersMod version: 2.4.12
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] OpenGL Version: 4.6.0 NVIDIA 388.13
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] Vendor:  NVIDIA Corporation
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] Renderer: GeForce GTX 1060 6GB/PCIe/SSE2
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] Capabilities:  2.0  2.1  3.0  3.2  4.0 
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] GL_MAX_DRAW_BUFFERS: 8
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] GL_MAX_COLOR_ATTACHMENTS_EXT: 8
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] GL_MAX_TEXTURE_IMAGE_UNITS: 32
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] Load ShadersMod configuration.
+[17:47:22] [Client thread/INFO]: [shadersmod.common.SMCLog] [Shaders] No shaderpack loaded.
+[17:47:22] [Client thread/INFO]: net.minecraft.client.resources.LanguageManager finished work in 1
+[17:47:22] [Client thread/INFO]: Reloading ResourceManager: Default, !             Latenci 16x FPS.zip
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] *** Reloading textures ***
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Resource packs: !             Latenci 16x FPS.zip
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Getting
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Loading
+[17:47:22] [Client thread/INFO]: [optifine.Config] [OptiFine] Done reloading
+[17:47:22] [Client thread/INFO]: net.minecraft.client.renderer.texture.TextureManager finished work in 2
+[17:47:23] [Client thread/INFO]: net.minecraft.client.audio.SoundHandler finished work in 565
+[17:47:23] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[17:47:23] [Client thread/INFO]: [optifine.Config] [OptiFine] Loading mcpatcher/font/ascii.properties
+[17:47:23] [Client thread/INFO]: net.minecraft.client.gui.FontRenderer finished work in 12
+[17:47:23] [Client thread/INFO]: [optifine.Config] [OptiFine] Loading mcpatcher/font/ascii_sga.properties
+[17:47:23] [Client thread/INFO]: net.minecraft.client.gui.FontRenderer finished work in 15
+[17:47:23] [Client thread/INFO]: net.minecraft.client.resources.GrassColorReloadListener finished work in 8
+[17:47:23] [Client thread/INFO]: net.minecraft.client.resources.FoliageColorReloadListener finished work in 7
+[17:47:23] [Thread-11/INFO]: Initializing LWJGL OpenAL
+[17:47:23] [Thread-11/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[17:47:25] [Thread-11/INFO]: OpenAL initialized.
+[17:47:25] [Sound Library Loader/INFO]: Sound engine started
+[17:47:25] [Client thread/INFO]: [optifine.Config] [OptiFine] Mipmap levels: 4
+[17:47:25] [Client thread/INFO]: [optifine.Config] [OptiFine] Multitexture: false
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Black Glass/glass_black.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Blue Glass/glass_blue.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Brown Glass/glass_brown.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Cyan Glass/glass_cyan.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Green Glass/glass_green.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Grey Glass/glass_gray.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Light Blue Glass/glass_light_blue.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Light Grey Glass/glass_silver.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Lime Glass/glass_lime.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Magenta Glass/glass_magenta.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Normal/glass.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Orange Glass/glass_orange.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Pink Glass/glass_pink.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Purple Glass/glass_purple.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Red Glass/glass_red.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/White Glass/glass_white.properties
+[17:47:25] [Client thread/WARN]: [optifine.Config] [OptiFine] Skipping non-lowercase path: mcpatcher/ctm/glass/Yellow Glass/glass_yellow.properties
+[17:47:25] [Client thread/INFO]: [optifine.Config] [OptiFine] Multipass connected textures: false
+[17:47:25] [Client thread/INFO]: [optifine.Config] [OptiFine] Multipass connected textures: false
+[17:47:25] [Client thread/INFO]: [optifine.Config] [OptiFine] BetterGrass: Parsing default configuration optifine/bettergrass.properties
+[17:47:26] [Client thread/INFO]: Created: 2048x2048 textures-atlas
+[17:47:27] [Client thread/INFO]: net.minecraft.client.renderer.block.model.ModelManager finished work in 3476
+[17:47:27] [Client thread/INFO]: net.minecraft.client.renderer.RenderItem finished work in 0
+[17:47:27] [Client thread/INFO]: net.minecraft.client.renderer.EntityRenderer finished work in 0
+[17:47:27] [Client thread/INFO]: net.minecraft.client.renderer.BlockRendererDispatcher finished work in 0

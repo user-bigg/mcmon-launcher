@@ -1,0 +1,10 @@
+[21:42:07] [Render thread/INFO]: Setting user: Frostbyte
+[21:42:07] [Render thread/INFO]: Backend library: LWJGL version 3.3.3+5
+[21:42:31] [Render thread/INFO]: Connecting to play.example.org, 25565
+[21:44:18] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2145ms or 42 ticks behind
+[21:44:21] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.OutOfMemoryError: Java heap space
+	at net.minecraft.client.renderer.chunk.SectionRenderDispatcher$RenderSection.compileAsync(SectionRenderDispatcher.java:412)
+	at net.minecraft.client.renderer.LevelRenderer.compileSections(LevelRenderer.java:1702)
+	at net.minecraft.client.Minecraft.runTick(Minecraft.java:1205)
+[21:44:21] [Render thread/INFO]: Stopping!

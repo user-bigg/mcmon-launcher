@@ -1,0 +1,40 @@
+{
+  "about": "Demo build with select-all before the shot (crash text, logs, library), run with SHOT_MAIN=dist/demo-out/main/index.js.",
+  "steps": [
+    {
+      "name": "s14-demo-home",
+      "route": "/",
+      "wait": ".hero",
+      "selectAll": true
+    },
+    {
+      "name": "s14-demo-library",
+      "route": "/library",
+      "wait": ".inst h3",
+      "selectAll": true
+    },
+    {
+      "name": "s14-demo-crash-oom",
+      "route": "/crash/server-103",
+      "wait": ".lx-content",
+      "selectAll": true
+    },
+    {
+      "name": "s14-demo-crash-oom-bottom",
+      "scroll": "bottom",
+      "selectAll": true
+    },
+    {
+      "name": "s14-demo-crash-mods",
+      "route": "/crash/server-102",
+      "wait": ".lx-content",
+      "selectAll": true
+    },
+    {
+      "name": "s14-demo-accounts",
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "selectAll": true
+    }
+  ]
+}

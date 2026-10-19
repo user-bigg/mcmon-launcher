@@ -1,0 +1,18 @@
+{
+  "about": "Site responses delayed: welcome without the landscape, then with it.",
+  "env": {
+    "MCMONITOR_DEBUG_SLOW_MS": "4000"
+  },
+  "steps": [
+    {
+      "name": "11-loading-welcome",
+      "route": "/welcome",
+      "wait": ".login .scene:empty",
+      "settle": false
+    },
+    {
+      "name": "11-loading-welcome-done",
+      "wait": ".login .scene .art"
+    }
+  ]
+}

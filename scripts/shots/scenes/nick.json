@@ -1,0 +1,701 @@
+{
+  "about": "The nickname pinned to an MC Monitor account: the account screen in every state and the sign-in screen with a taken nickname. IPC answers are made up in the steps.",
+  "steps": [
+    {
+      "clock": "2026-10-13T09:00:00Z"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-nick-pinned"
+    },
+    {
+      "click": "[data-mc=change]",
+      "waitAfter": "[data-nick-pin]",
+      "name": "account-nick-change"
+    },
+    {
+      "ipc": {
+        "account:set-nick": {
+          "ok": false,
+          "error": {
+            "code": "nick_taken"
+          }
+        }
+      },
+      "input": ["[data-nick-pin] input", "Kotofey"],
+      "click": "[data-nick-pin] button[type=submit]",
+      "waitAfter": "[data-nick-pin] [role=alert]",
+      "name": "account-nick-change-taken"
+    },
+    {
+      "ipc": {
+        "account:set-nick": {
+          "ok": false,
+          "error": {
+            "code": "invalid_nick"
+          }
+        }
+      },
+      "input": ["[data-nick-pin] input", "ab"],
+      "click": "[data-nick-pin] button[type=submit]",
+      "waitAfter": "[data-nick-pin] [role=alert]",
+      "name": "account-nick-change-rules"
+    },
+    {
+      "ipc": {
+        "account:set-nick": {
+          "ok": false,
+          "error": {
+            "code": "nick_change_too_soon",
+            "changeAt": "2026-11-11T21:30:00Z"
+          }
+        }
+      },
+      "input": ["[data-nick-pin] input", "Kotofey"],
+      "click": "[data-nick-pin] button[type=submit]",
+      "waitAfter": "[data-nick-pin] [role=alert]",
+      "name": "account-nick-change-too-soon"
+    },
+    {
+      "ipc": {
+        "account:set-nick": {
+          "ok": false,
+          "error": {
+            "code": "failed"
+          }
+        }
+      },
+      "input": ["[data-nick-pin] input", "Kotofey_2"],
+      "click": "[data-nick-pin] button[type=submit]",
+      "waitAfter": "[data-nick-pin] [role=alert]",
+      "name": "account-nick-change-failed"
+    },
+    {
+      "ipc": {
+        "account:set-nick": {
+          "ok": false,
+          "error": {
+            "code": "offline"
+          }
+        }
+      },
+      "input": ["[data-nick-pin] input", "Kotofey_3"],
+      "click": "[data-nick-pin] button[type=submit]",
+      "waitAfter": "[data-nick-pin] [role=alert]",
+      "name": "account-nick-change-offline"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": null,
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": null,
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-nick-pin]",
+      "blur": false,
+      "name": "account-nick-pick"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": null,
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": null,
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-nick-pin]",
+      "blur": false,
+      "name": "account-nick-pick-empty"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": "2026-11-11T21:30:00Z"
+            },
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": "2026-11-11T21:30:00Z"
+              },
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-mc=change-from]",
+      "name": "account-nick-wait"
+    },
+    {
+      "click": "[data-mc=change]",
+      "waitAfter": "[data-nick-pin]",
+      "name": "account-nick-wait-form"
+    },
+    {
+      "input": ["[data-nick-pin] input", "Kotofey"],
+      "click": "[data-nick-pin] button[type=submit]",
+      "waitAfter": "[data-nick-pin] [role=alert]",
+      "name": "account-nick-wait-too-soon"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": null,
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": null,
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-nick-old-site"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/settings",
+      "wait": ".lx-content",
+      "name": "settings-neighbour"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "account:play-check": {
+          "kind": "nick_taken"
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "input": [".nick input", "Test_User"],
+      "click": ".nick-submit",
+      "waitAfter": "#nick-error",
+      "name": "login-nick-taken"
+    },
+    {
+      "clock": null
+    }
+  ]
+}

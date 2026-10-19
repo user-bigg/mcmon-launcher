@@ -1,0 +1,6 @@
+[11:20:30] [main/ERROR] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Failed to read mod file
+java.util.zip.ZipException: zip END header not found
+	at java.base/java.util.zip.ZipFile$Source.findEND(ZipFile.java:1469)
+	at java.base/java.util.zip.ZipFile$Source.initCEN(ZipFile.java:1477)
+	at cpw.mods.jarhandling.impl.Jar.<init>(Jar.java:68)
+[11:20:30] [main/WARN] [ne.mi.fm.lo.mo.ModDiscoverer/SCAN]: Mod file C:\Users\Vasya\AppData\Roaming\MC Monitor\game\instances\server-12\mods\create-1.20.1-0.5.1.f.jar is broken and will be skipped

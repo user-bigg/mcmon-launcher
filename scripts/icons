@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+source="${ICON_SOURCE:-logo}"
+out=build
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+grid_to_png() {
+  local grid="$1" side="$2" png="$3"
+  awk -v side="$side" '
+    BEGIN {
+      color["."] = "(0,0,0,0)"
+      color["T"] = "(124,196,74,255)"
+      color["g"] = "(98,164,61,255)"
+      color["h"] = "(93,158,58,255)"
+      color["L"] = "(200,255,138,255)"
+      color["d"] = "(128,96,63,255)"
+      color["e"] = "(122,86,59,255)"
+      color["k"] = "(102,70,48,255)"
+      printf "# ImageMagick pixel enumeration: %d,%d,0,255,srgba\n", side, side
+    }
+    {
+      if (length($0) != side) { print "icons: row " NR " is not " side " wide" > "/dev/stderr"; exit 1 }
+      for (x = 1; x <= side; x++) {
+        letter = substr($0, x, 1)
+        if (!(letter in color)) { print "icons: unknown letter " letter > "/dev/stderr"; exit 1 }
+        printf "%d,%d: %s\n", x - 1, NR - 1, color[letter]
+      }
+    }
+    END { if (NR != side) { print "icons: " NR " rows instead of " side > "/dev/stderr"; exit 1 } }
+  ' "$grid" >"$tmp/grid-$side.txt"
+  magick "txt:$tmp/grid-$side.txt" "PNG32:$png"
+}
+
+# Every size is made from a pixel drawing without smoothing. The mark is one 16x16 drawing; the
+# candidate has two, and a frame takes the one that fills it best: 24 is drawn for the Windows
+# taskbar and the large frames, 16 for the title bar and its whole enlargements.
+case "$source" in
+  logo)
+    magick -background none design/shared/logo.svg "PNG32:$tmp/mark-16.png"
+    drawing_for() { echo 16; }
+    large=16
+    ;;
+  candidate)
+    grid_to_png design/icons/mark-16.txt 16 "$tmp/mark-16.png"
+    grid_to_png design/icons/mark-24.txt 24 "$tmp/mark-24.png"
+    drawing_for() {
+      case "$1" in
+        24 | 48 | 128 | 256) echo 24 ;;
+        *) echo 16 ;;
+      esac
+    }
+    large=24
+    ;;
+  *)
+    echo "icons: ICON_SOURCE is logo or candidate, not $source" >&2
+    exit 2
+    ;;
+esac
+
+# The tray shrinks this picture to 32 and 18 points, so it stays a whole enlargement of 16.
+magick "$tmp/mark-16.png" -scale 1024x1024 -type TrueColorAlpha "$out/icon.png"
+
+# Windows: a size that is not a multiple of the drawing gets the nearest whole enlargement on a
+# transparent field instead of a smoothed picture.
+sizes=(16 20 24 32 40 48 64 128 256)
+frames=()
+for s in "${sizes[@]}"; do
+  drawing=$(drawing_for "$s")
+  inner=$((s / drawing * drawing))
+  magick "$tmp/mark-$drawing.png" -scale "${inner}x${inner}" -background none -gravity center \
+    -extent "${s}x${s}" "$tmp/icon-$s.png"
+  frames+=("$tmp/icon-$s.png")
+done
+magick "${frames[@]}" -type TrueColorAlpha "$out/icon.ico"
+
+# macOS: the Dock grid puts the artwork in a rounded square of 824 on a canvas of 1024, with a
+# soft shadow under it.
+canvas=1024
+body=824
+radius=185.4
+# The Dock icon is always the logo filling the plate: the rounded corners would cut the tip of
+# the candidate, and a mark shrunk to fit reads as a small block in a dark frame.
+# 824 is not a multiple of 16, so the pixels are sampled, not smoothed: they stay sharp and
+# differ in width by one point.
+magick -background none design/shared/logo.svg "PNG32:$tmp/logo-16.png"
+magick "$tmp/logo-16.png" -sample "${body}x${body}" "$tmp/body.png"
+magick -size "${body}x${body}" xc:none -fill white \
+  -draw "roundrectangle 0,0 $((body - 1)),$((body - 1)) $radius,$radius" "PNG32:$tmp/mask.png"
+magick "$tmp/body.png" -alpha set "$tmp/mask.png" -compose DstIn -composite \
+  -compose Over -background none -gravity center -extent "${canvas}x${canvas}" "PNG32:$tmp/placed.png"
+magick "$tmp/placed.png" -alpha extract -roll +0+12 -blur 0x14 -evaluate multiply 0.5 \
+  "$tmp/shade.png"
+magick -size "${canvas}x${canvas}" xc:black "$tmp/shade.png" -alpha off -compose CopyOpacity -composite \
+  "PNG32:$tmp/shadow.png"
+magick "$tmp/shadow.png" "$tmp/placed.png" -compose Over -composite "PNG32:$out/icon-mac.png"
+
+# macOS menu bar: a template image, the system paints it for the light and the dark bar. Menu
+# bar glyphs are line drawings, and a filled silhouette of the block reads as a black blot
+# there, so this one is drawn by hand: an outlined block with a grass cap and the pulse inside.
+cp design/icons/tray.png "$out/tray-mac.png"
+cp "design/icons/tray@2x.png" "$out/tray-mac@2x.png"
+
+magick identify "$out/icon.png" "$out/icon-mac.png" "$out/icon.ico" "$out/tray-mac.png" \
+  "$out/tray-mac@2x.png"

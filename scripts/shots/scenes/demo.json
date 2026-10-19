@@ -1,0 +1,67 @@
+{
+  "about": "Demo build with made-up data, run with SHOT_MAIN=dist/demo-out/main/index.js.",
+  "steps": [
+    {
+      "name": "14-demo-home",
+      "route": "/",
+      "wait": ".hero"
+    },
+    {
+      "name": "14-demo-home-scrolled",
+      "scroll": "bottom"
+    },
+    {
+      "name": "14-demo-library",
+      "route": "/library",
+      "wait": ".inst h3"
+    },
+    {
+      "name": "14-demo-library-scrolled",
+      "scroll": "bottom"
+    },
+    {
+      "name": "14-demo-crash-oom",
+      "route": "/crash/server-103",
+      "wait": ".lx-content"
+    },
+    {
+      "name": "14-demo-crash-oom-scrolled",
+      "scroll": 600
+    },
+    {
+      "name": "14-demo-crash-oom-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "14-demo-crash-mods",
+      "route": "/crash/server-102",
+      "wait": ".lx-content"
+    },
+    {
+      "name": "14-demo-crash-mods-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "14-demo-accounts",
+      "route": "/accounts",
+      "wait": "[data-who]"
+    },
+    {
+      "name": "14-demo-accounts-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "size": "1440x900"
+    },
+    {
+      "name": "14-demo-home-1440x900",
+      "route": "/",
+      "wait": ".hero"
+    },
+    {
+      "name": "14-demo-crash-oom-1440x900",
+      "route": "/crash/server-103",
+      "wait": ".lx-content"
+    }
+  ]
+}

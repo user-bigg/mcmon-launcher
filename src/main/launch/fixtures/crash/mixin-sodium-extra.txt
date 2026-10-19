@@ -1,0 +1,4 @@
+[16:40:12] [Render thread/ERROR]: Unreported exception thrown!
+org.spongepowered.asm.mixin.transformer.throwables.MixinTransformerError: An unexpected critical error was encountered
+Caused by: org.spongepowered.asm.mixin.throwables.MixinApplyError: Mixin [sodium-extra.mixins.json:sodium.SodiumGameOptionsMixin] from phase [DEFAULT] in config [sodium-extra.mixins.json] FAILED during APPLY
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.handleMixinError(MixinProcessor.java:638)

@@ -1,0 +1,5 @@
+Exception in thread "main" java.util.zip.ZipException: invalid LOC header (bad signature)
+	at java.base/java.util.zip.ZipFile$ZipFileInputStream.initDataOffset(ZipFile.java:1044)
+	at java.base/jdk.internal.loader.URLClassPath$JarLoader.getResource(URLClassPath.java:950)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:747)
+Caused by: opening /Users/vasya/Library/Application Support/MC Monitor/game/libraries/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3.jar

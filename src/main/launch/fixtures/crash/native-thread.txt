@@ -1,0 +1,7 @@
+[19:20:44] [Worker-Main-7/INFO]: Preparing spawn area: 84%
+[19:20:45] [Server thread/ERROR]: Encountered an unexpected exception
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at java.base/java.lang.Thread.start0(Native Method)
+	at java.base/java.lang.Thread.start(Thread.java:1553)
+	at net.minecraft.util.Util.makeExecutor(Util.java:192)
+[19:20:45] [Server thread/INFO]: Stopping server

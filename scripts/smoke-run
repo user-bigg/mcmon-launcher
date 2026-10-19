@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$0")/smoke-lib.sh"
+
+exe=${1:?path to the executable}
+limit=${2:-60}
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+report="$work/smoke.json"
+log="$work/smoke.log"
+
+code=$(smoke_launch "$exe" "$report" "$limit" "$log")
+cat "$log"
+
+if [[ $code != 0 || ! -s $report ]]; then
+  echo "smoke-run: no renderer handshake (exit code $code)" >&2
+  exit 1
+fi
+
+report_value() {
+  node -e "
+const value = require(process.argv[1])[process.argv[2]];
+if (typeof value !== 'number' || !Number.isFinite(value)) {
+  console.error('smoke-run: report has no numeric ' + process.argv[2]);
+  process.exit(1);
+}
+process.stdout.write(String(Math.round(value)));
+" "$report" "$1"
+}
+
+ready=$(report_value readyToShowMs)
+engine=$(report_value engineMs)
+budget=$(budget_value readyToShowMs)
+echo "smoke-run: engine loaded in ${engine} ms"
+echo "smoke-run: ready-to-show ${ready} ms (budget ${budget} ms)"
+if ((ready > budget)); then
+  echo "smoke-run: ready-to-show is over budget" >&2
+  exit 1
+fi

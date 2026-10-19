@@ -1,0 +1,31 @@
+{
+  "about": "No site connection and no cache: errors with a retry button.",
+  "unreachable": true,
+  "steps": [
+    {
+      "name": "12-offline-home",
+      "route": "/",
+      "wait": ".site-error"
+    },
+    {
+      "name": "12-offline-catalog",
+      "route": "/servers",
+      "wait": ".catalog .site-error"
+    },
+    {
+      "name": "12-offline-server",
+      "route": "/server/1",
+      "wait": ".server .site-error"
+    },
+    {
+      "name": "12-offline-launch",
+      "route": "/launch/1",
+      "wait": ".launch .site-error"
+    },
+    {
+      "name": "12-offline-welcome",
+      "route": "/welcome",
+      "wait": ".login .panel"
+    }
+  ]
+}

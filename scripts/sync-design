@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+cp design/shared/tokens.css src/renderer/src/styles/tokens.css
+cp design/shared/logo.svg src/renderer/src/assets/logo.svg
+echo "sync-design: copied tokens.css and logo.svg into src/renderer"

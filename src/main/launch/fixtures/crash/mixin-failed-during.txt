@@ -1,0 +1,4 @@
+[14:21:09] [main/WARN]: Error loading class: net/minecraft/class_1234 (java.lang.ClassNotFoundException)
+[14:21:09] [main/FATAL]: Mixin apply failed
+org.spongepowered.asm.mixin.transformer.throwables.MixinTransformerError: An unexpected critical error was encountered
+[14:21:09] [main/ERROR]: [lithium.mixins.json:ai.pathing.PathNodeNavigatorMixin] FAILED during PREPARE

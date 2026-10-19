@@ -1,0 +1,1670 @@
+{
+  "about": "Sign-in and account screens in every state. IPC answers are made up in the steps, so no browser opens; the landscape comes from the staging site.",
+  "steps": [
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-first"
+    },
+    {
+      "name": "login-nick-error",
+      "input": [".nick input", "bad nick!"],
+      "click": ".nick-submit",
+      "waitAfter": "#nick-error"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": false,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-no-license"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "account:connect": {
+          "ok": true,
+          "value": {
+            "seq": 101,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": {
+              "phase": "waiting",
+              "expiresAt": {
+                "$in": 299000
+              }
+            },
+            "error": null
+          }
+        },
+        "account:reopen": {
+          "ok": true,
+          "value": {
+            "seq": 101,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": {
+              "phase": "waiting",
+              "expiresAt": {
+                "$in": 299000
+              }
+            },
+            "error": null
+          }
+        },
+        "account:submit-code": {
+          "ok": false,
+          "error": {
+            "code": "invalid_code"
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"]
+    },
+    {
+      "name": "login-wait-mc",
+      "click": "[data-mc=\"signed-out\"] .lx-auth-btn",
+      "waitAfter": "[data-login=\"wait\"]"
+    },
+    {
+      "name": "login-wait-mc-code",
+      "click": "[data-manual]",
+      "waitAfter": "[data-login=\"wait\"] form"
+    },
+    {
+      "name": "login-wait-mc-code-error",
+      "input": ["[data-login=\"wait\"] input", "abcd-ef23"],
+      "click": "[data-login=\"wait\"] button[type=\"submit\"]",
+      "waitAfter": "[data-login=\"wait\"] [role=\"alert\"]"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "microsoft:login": {
+          "ok": true,
+          "value": {
+            "seq": 101,
+            "available": true,
+            "encryptionAvailable": true,
+            "accounts": [],
+            "login": {
+              "phase": "waiting",
+              "expiresAt": {
+                "$in": 299000
+              }
+            },
+            "error": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"]
+    },
+    {
+      "name": "login-wait-ms",
+      "click": "[data-license] .lx-auth-btn",
+      "waitAfter": "[data-login=\"wait\"]"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "account:connect": {
+          "ok": false,
+          "error": {
+            "code": "connect_timeout"
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"]
+    },
+    {
+      "name": "login-err-mc",
+      "click": "[data-mc=\"signed-out\"] .lx-auth-btn",
+      "waitAfter": "[data-mc=\"signed-out\"] [role=\"alert\"]"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": {
+            "code": "port_busy"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-err-port-busy"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": {
+            "code": "not_owned"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-err-not-owned"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": {
+            "code": "timeout"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-err-timeout"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": {
+            "code": "offline"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-err-offline"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": {
+            "code": "xbox_child"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-err-xbox-child"
+    },
+    {
+      "size": "1440x900"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-first-1440x900"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": false,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-no-license-1440x900"
+    },
+    {
+      "size": "1100x700"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "clock": "2026-10-13T20:30:00Z",
+      "name": "login-first-night"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": {
+            "code": "not_owned"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-err-not-owned-night"
+    },
+    {
+      "size": "1440x900"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"],
+      "name": "login-first-night-1440x900"
+    },
+    {
+      "size": "1100x700"
+    },
+    {
+      "clock": null
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [
+            {
+              "id": "ms-8667ba71b85a4004af54457a9734eed7",
+              "nick": "Frostbyte",
+              "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+              "status": "ready"
+            }
+          ],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 7,
+            "name": "kotofey_mc",
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 7,
+              "name": "kotofey_mc",
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-both"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 7,
+            "name": "kotofey_mc",
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 7,
+              "name": "kotofey_mc",
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-mc-nick"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [
+            {
+              "id": "ms-8667ba71b85a4004af54457a9734eed7",
+              "nick": "Frostbyte",
+              "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+              "status": "needs-login"
+            }
+          ],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 7,
+            "name": "kotofey_mc",
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 7,
+              "name": "kotofey_mc",
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-license-expired"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [
+            {
+              "id": "ms-8667ba71b85a4004af54457a9734eed7",
+              "nick": "Frostbyte",
+              "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+              "status": "needs-login"
+            }
+          ],
+          "login": null,
+          "error": {
+            "code": "timeout"
+          }
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 7,
+            "name": "kotofey_mc",
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 7,
+              "name": "kotofey_mc",
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-license-error"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-nick-only"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [
+            {
+              "id": "ms-8667ba71b85a4004af54457a9734eed7",
+              "nick": "Frostbyte",
+              "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+              "status": "ready"
+            }
+          ],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-license-only"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 7,
+            "name": "kotofey_mc",
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 7,
+              "name": "kotofey_mc",
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-mc-only"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-empty"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "account:connect": {
+          "ok": true,
+          "value": {
+            "seq": 101,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": {
+              "phase": "waiting",
+              "expiresAt": {
+                "$in": 299000
+              }
+            },
+            "error": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]"
+    },
+    {
+      "name": "account-wait-mc",
+      "click": "[data-mc=\"signed-out\"] .btn",
+      "waitAfter": "[data-login=\"wait\"]"
+    },
+    {
+      "name": "settings",
+      "route": "/settings",
+      "wait": ".lx-content .group"
+    },
+    {
+      "size": "1440x900"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [
+            {
+              "id": "ms-8667ba71b85a4004af54457a9734eed7",
+              "nick": "Frostbyte",
+              "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+              "status": "ready"
+            }
+          ],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 7,
+            "name": "kotofey_mc",
+            "avatarUrl": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 7,
+              "name": "kotofey_mc",
+              "avatarUrl": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-both-1440x900"
+    },
+    {
+      "ipc": {
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": null,
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": null,
+            "connect": null,
+            "error": null
+          }
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [],
+            "active": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/accounts",
+      "wait": "[data-who]",
+      "name": "account-empty-1440x900"
+    },
+    {
+      "name": "settings-1440x900",
+      "route": "/settings",
+      "wait": ".lx-content .group"
+    },
+    {
+      "size": "1100x700"
+    }
+  ]
+}

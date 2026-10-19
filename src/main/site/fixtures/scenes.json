@@ -1,0 +1,678 @@
+[
+  {
+    "key": "pulse21",
+    "name": "Деревня",
+    "pack": "pulse",
+    "focus": 0.7,
+    "purpose": "pulse",
+    "in_library": false,
+    "skies": {
+      "day": "#0a1232",
+      "sunset": "#0a1232",
+      "night": "#0a1232"
+    },
+    "thumbs": {
+      "day": "https://mc-mon.ru/images/landscape-thumbs/pulse21-h21.e9a61fd8.png",
+      "sunset": "https://mc-mon.ru/images/landscape-thumbs/pulse21-h21.e9a61fd8.png",
+      "night": "https://mc-mon.ru/images/landscape-thumbs/pulse21-h21.e9a61fd8.png"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/sky.4d4a90b2.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.18,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/far.7619a9f3.png"
+        },
+        {
+          "name": "village",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/village.bad78c5f.png"
+        },
+        {
+          "name": "lamp",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/lamp.021b4934.png",
+          "anim": {
+            "type": "pulse",
+            "dur": 3,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "rooflineglow",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/rooflineglow.adcacb4d.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/ground.af45e89b.png"
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/sky.4d4a90b2.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.18,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/far.7619a9f3.png"
+        },
+        {
+          "name": "village",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/village.bad78c5f.png"
+        },
+        {
+          "name": "lamp",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/lamp.021b4934.png",
+          "anim": {
+            "type": "pulse",
+            "dur": 3,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "rooflineglow",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/rooflineglow.adcacb4d.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/ground.af45e89b.png"
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/sky.4d4a90b2.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.18,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/far.7619a9f3.png"
+        },
+        {
+          "name": "village",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/village.bad78c5f.png"
+        },
+        {
+          "name": "lamp",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/lamp.021b4934.png",
+          "anim": {
+            "type": "pulse",
+            "dur": 3,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "rooflineglow",
+          "depth": 0.45,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/rooflineglow.adcacb4d.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/pulse21-h21/ground.af45e89b.png"
+        }
+      ]
+    },
+    "hour": 21
+  },
+  {
+    "key": "taiga",
+    "name": "Заснеженная тайга у гор",
+    "pack": "nature",
+    "focus": 0.5,
+    "purpose": "library",
+    "in_library": true,
+    "skies": {
+      "day": "#4f86cc",
+      "sunset": "#22265e",
+      "night": "#01030c"
+    },
+    "thumbs": {
+      "day": "https://mc-mon.ru/images/landscape-thumbs/taiga-day.68874d9c.png",
+      "sunset": "https://mc-mon.ru/images/landscape-thumbs/taiga-sunset.2c11828a.png",
+      "night": "https://mc-mon.ru/images/landscape-thumbs/taiga-night.47924025.png"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/sky.7254a413.png"
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/clouds.ec53d4d6.png"
+        },
+        {
+          "name": "range",
+          "depth": 0.22,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/range.bfa536f4.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.3,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/far.5346c3ff.png"
+        },
+        {
+          "name": "mid",
+          "depth": 0.55,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/mid.93ca4b2f.png"
+        },
+        {
+          "name": "lake",
+          "depth": 0.75,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/lake.966ba44b.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-day/ground.f985db71.png"
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/sky.6936f718.png"
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/clouds.6829ec75.png"
+        },
+        {
+          "name": "range",
+          "depth": 0.22,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/range.dfc99520.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.3,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/far.81964a6d.png"
+        },
+        {
+          "name": "mid",
+          "depth": 0.55,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/mid.f156eddd.png"
+        },
+        {
+          "name": "lake",
+          "depth": 0.75,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/lake.472ca3dd.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-sunset/ground.540ce1c4.png"
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/sky.e8b49708.png"
+        },
+        {
+          "name": "clouds",
+          "depth": 0.15,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/clouds.708329ff.png"
+        },
+        {
+          "name": "range",
+          "depth": 0.22,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/range.7f764fde.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.3,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/far.54b4b0c6.png"
+        },
+        {
+          "name": "mid",
+          "depth": 0.55,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/mid.9015e02e.png"
+        },
+        {
+          "name": "lake",
+          "depth": 0.75,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/lake.66aa9de2.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/taiga-night/ground.755d00fa.png"
+        }
+      ]
+    }
+  },
+  {
+    "key": "castlefireworks",
+    "name": "Фейерверк над замком",
+    "pack": "atmosphere",
+    "focus": 0.5,
+    "purpose": "holiday",
+    "in_library": false,
+    "skies": {
+      "day": "#1c2050",
+      "sunset": "#1c2050",
+      "night": "#03040d"
+    },
+    "thumbs": {
+      "day": "https://mc-mon.ru/images/landscape-thumbs/castlefireworks-sunset.eac39337.png",
+      "sunset": "https://mc-mon.ru/images/landscape-thumbs/castlefireworks-sunset.eac39337.png",
+      "night": "https://mc-mon.ru/images/landscape-thumbs/castlefireworks-night.12e346c1.png"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/sky.7519b0a8.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.28,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/far.0f56cdef.png"
+        },
+        {
+          "name": "castle",
+          "depth": 0.42,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/castle.efcb5fd5.png"
+        },
+        {
+          "name": "lake",
+          "depth": 0.5,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/lake.1bee0c9b.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/ground.0855a2b4.png"
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/sky.7519b0a8.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.28,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/far.0f56cdef.png"
+        },
+        {
+          "name": "castle",
+          "depth": 0.42,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/castle.efcb5fd5.png"
+        },
+        {
+          "name": "lake",
+          "depth": 0.5,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/lake.1bee0c9b.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-sunset/ground.0855a2b4.png"
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-night/sky.013a8718.png"
+        },
+        {
+          "name": "far",
+          "depth": 0.28,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-night/far.c458b949.png"
+        },
+        {
+          "name": "castle",
+          "depth": 0.42,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-night/castle.20589436.png"
+        },
+        {
+          "name": "lake",
+          "depth": 0.5,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-night/lake.2e580026.png"
+        },
+        {
+          "name": "ground",
+          "depth": 1,
+          "url": "https://mc-mon.ru/images/landscapes/castlefireworks-night/ground.1c902ef4.png"
+        }
+      ]
+    },
+    "dates": {
+      "from": "12-31",
+      "to": "01-01"
+    },
+    "priority": 5,
+    "fireworks": {
+      "sprites": [
+        {
+          "url": "https://mc-mon.ru/images/fireworks/castlefireworks/burst-0-sphere.29177545.png",
+          "frames": 22,
+          "frame_w": 36,
+          "frame_h": 37,
+          "frame_ms": 83.333
+        }
+      ],
+      "timeline": {
+        "cycle_ms": 24000,
+        "bursts": [
+          {
+            "sprite": 7,
+            "x": 324,
+            "y": 121,
+            "anchor_x": 13,
+            "anchor_y": 9,
+            "mirror": true,
+            "start_ms": 4000,
+            "rise_px": 35,
+            "rise_ms": 1200,
+            "finale": false
+          },
+          {
+            "sprite": 7,
+            "x": 348,
+            "y": 120,
+            "anchor_x": 13,
+            "anchor_y": 9,
+            "mirror": false,
+            "start_ms": 4400,
+            "rise_px": 36,
+            "rise_ms": 1200,
+            "finale": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "key": "lighthouse",
+    "name": "Маяк у ночного моря",
+    "pack": "atmosphere",
+    "focus": 0.5,
+    "purpose": "mood",
+    "in_library": true,
+    "skies": {
+      "day": "#26306a",
+      "sunset": "#26306a",
+      "night": "#020711"
+    },
+    "thumbs": {
+      "day": "https://mc-mon.ru/images/landscape-thumbs/lighthouse-sunset.78efb125.png",
+      "sunset": "https://mc-mon.ru/images/landscape-thumbs/lighthouse-sunset.78efb125.png",
+      "night": "https://mc-mon.ru/images/landscape-thumbs/lighthouse-night.2ad4c609.png"
+    },
+    "layers": {
+      "day": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/sky.74a63ea4.png"
+        },
+        {
+          "name": "clouds",
+          "depth": 0.12,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/clouds.c97ce52b.png",
+          "anim": {
+            "type": "drift",
+            "dur": 240,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "beama",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/beama.7c13f0a0.png",
+          "anim": {
+            "type": "alt",
+            "dur": 6,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "beamb",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/beamb.8592af41.png",
+          "anim": {
+            "type": "alt",
+            "dur": 6,
+            "delay": -3,
+            "amp": 2,
+            "dir": 1,
+            "still": 0
+          }
+        },
+        {
+          "name": "far",
+          "depth": 0.25,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/far.3609c48a.png"
+        },
+        {
+          "name": "sea",
+          "depth": 0.35,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/sea.c89eb577.png"
+        },
+        {
+          "name": "glints",
+          "depth": 0.38,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/glints.74f189fd.png",
+          "anim": {
+            "type": "twinkle",
+            "dur": 1.6,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "cliff",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/cliff.e48dd7fd.png"
+        },
+        {
+          "name": "rocks",
+          "depth": 1.15,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/rocks.57c545f9.png"
+        }
+      ],
+      "sunset": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/sky.74a63ea4.png"
+        },
+        {
+          "name": "clouds",
+          "depth": 0.12,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/clouds.c97ce52b.png",
+          "anim": {
+            "type": "drift",
+            "dur": 240,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "beama",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/beama.7c13f0a0.png",
+          "anim": {
+            "type": "alt",
+            "dur": 6,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "beamb",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/beamb.8592af41.png",
+          "anim": {
+            "type": "alt",
+            "dur": 6,
+            "delay": -3,
+            "amp": 2,
+            "dir": 1,
+            "still": 0
+          }
+        },
+        {
+          "name": "far",
+          "depth": 0.25,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/far.3609c48a.png"
+        },
+        {
+          "name": "sea",
+          "depth": 0.35,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/sea.c89eb577.png"
+        },
+        {
+          "name": "glints",
+          "depth": 0.38,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/glints.74f189fd.png",
+          "anim": {
+            "type": "twinkle",
+            "dur": 1.6,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "cliff",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/cliff.e48dd7fd.png"
+        },
+        {
+          "name": "rocks",
+          "depth": 1.15,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-sunset/rocks.57c545f9.png"
+        }
+      ],
+      "night": [
+        {
+          "name": "sky",
+          "depth": 0,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/sky.7d3efaf0.png"
+        },
+        {
+          "name": "clouds",
+          "depth": 0.12,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/clouds.9bd35c53.png",
+          "anim": {
+            "type": "drift",
+            "dur": 240,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "beama",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/beama.06d38f2a.png",
+          "anim": {
+            "type": "alt",
+            "dur": 6,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "beamb",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/beamb.22afb984.png",
+          "anim": {
+            "type": "alt",
+            "dur": 6,
+            "delay": -3,
+            "amp": 2,
+            "dir": 1,
+            "still": 0
+          }
+        },
+        {
+          "name": "far",
+          "depth": 0.25,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/far.3d731332.png"
+        },
+        {
+          "name": "sea",
+          "depth": 0.35,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/sea.deedde53.png"
+        },
+        {
+          "name": "glints",
+          "depth": 0.38,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/glints.2d1b1c9d.png",
+          "anim": {
+            "type": "twinkle",
+            "dur": 1.6,
+            "delay": 0,
+            "amp": 2,
+            "dir": 1,
+            "still": 1
+          }
+        },
+        {
+          "name": "cliff",
+          "depth": 0.7,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/cliff.73975edf.png"
+        },
+        {
+          "name": "rocks",
+          "depth": 1.15,
+          "url": "https://mc-mon.ru/images/landscapes/lighthouse-night/rocks.307496f6.png"
+        }
+      ]
+    },
+    "moods": ["welcome", "night"]
+  }
+]

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+out/
+release/
+coverage/
+design/
+package-lock.json
+build/
+*.md
+src/renderer/src/styles/tokens.css
+src/renderer/src/assets/logo.svg
+patches/

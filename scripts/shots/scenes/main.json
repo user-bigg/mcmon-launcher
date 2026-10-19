@@ -1,0 +1,250 @@
+{
+  "about": "Every screen on the staging site: welcome, home, catalog, server, library, launch, settings, accounts. Leaves the \"main\" profile for stale and prepare-offline.",
+  "profile": "main",
+  "reset": true,
+  "steps": [
+    {
+      "name": "01-welcome",
+      "route": "/welcome",
+      "wait": [".login .panel", ".login .scene"]
+    },
+    {
+      "name": "01-welcome-nick-error",
+      "input": [".nick input", "bad nick!"],
+      "click": ".nick-submit",
+      "waitAfter": "#nick-error"
+    },
+    {
+      "name": "01-welcome-1440x900",
+      "size": "1440x900",
+      "input": [".nick input", ""],
+      "after": "document.activeElement.blur()"
+    },
+    {
+      "size": "1100x700",
+      "route": "/"
+    },
+    {
+      "name": "02-home-empty",
+      "route": "/",
+      "wait": [".hero", ".lx-grid-3"]
+    },
+    {
+      "name": "02-home-empty-scrolled",
+      "scroll": "bottom"
+    },
+    {
+      "name": "03-catalog",
+      "route": "/servers",
+      "wait": ".rows .srow"
+    },
+    {
+      "name": "03-catalog-scrolled",
+      "scroll": 640
+    },
+    {
+      "name": "03-catalog-scrolled-2",
+      "scroll": 1500
+    },
+    {
+      "name": "03-catalog-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "03-catalog-cards",
+      "click": ".catalog .seg button:nth-of-type(2)",
+      "waitAfter": ".cards .lx-grid-3, .lx-grid-3.cards",
+      "scroll": 0
+    },
+    {
+      "name": "03-catalog-cards-scrolled",
+      "scroll": 700
+    },
+    {
+      "click": ".catalog .seg button:nth-of-type(1)",
+      "waitAfter": ".rows .srow",
+      "scroll": 0
+    },
+    {
+      "name": "03-catalog-account-fits-off",
+      "click": ".catalog .chip[aria-pressed]"
+    },
+    {
+      "click": ".catalog .chip[aria-pressed]"
+    },
+    {
+      "name": "03-catalog-search",
+      "input": [".catalog .toolbar .search input", "sky"]
+    },
+    {
+      "name": "03-catalog-search-empty",
+      "input": [".catalog .toolbar .search input", "zzqqxx"],
+      "waitAfter": ".catalog .state-notice"
+    },
+    {
+      "input": [".catalog .toolbar .search input", ""],
+      "waitAfter": ".rows .srow",
+      "after": "document.activeElement.blur()"
+    },
+    {
+      "name": "04-server",
+      "routeJs": "document.querySelector('.rows a.name').getAttribute('href').slice(1)",
+      "wait": [".prose", ".stat dd"]
+    },
+    {
+      "name": "04-server-about",
+      "scroll": {
+        "to": ".prose",
+        "offset": 70
+      }
+    },
+    {
+      "name": "04-server-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "route": "/servers",
+      "wait": ".rows .srow"
+    },
+    {
+      "name": "04-server-second",
+      "routeJs": "document.querySelectorAll('.rows a.name')[1].getAttribute('href').slice(1)",
+      "wait": [".prose", ".stat dd"]
+    },
+    {
+      "name": "04-server-second-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "06-launch-server",
+      "routeJs": "'/launch/' + location.hash.split('/').pop()",
+      "wait": ".launch h1"
+    },
+    {
+      "name": "06-launch-server-scrolled",
+      "scroll": "bottom"
+    },
+    {
+      "name": "05-library-empty",
+      "route": "/library",
+      "wait": ".lx-content .state-notice"
+    },
+    {
+      "name": "07-crash-missing",
+      "route": "/crash/no-such-instance",
+      "wait": ".lx-content"
+    },
+    {
+      "name": "08-settings",
+      "route": "/settings",
+      "wait": ".lx-content"
+    },
+    {
+      "name": "08-settings-scrolled",
+      "scroll": 650
+    },
+    {
+      "name": "08-settings-scrolled-2",
+      "scroll": 1400
+    },
+    {
+      "name": "08-settings-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "08-licenses",
+      "route": "/licenses",
+      "wait": ".lx-content"
+    },
+    {
+      "name": "09-accounts-empty",
+      "route": "/accounts",
+      "wait": "[data-who]"
+    },
+    {
+      "name": "09-accounts-empty-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "route": "/welcome",
+      "wait": ".nick input"
+    },
+    {
+      "input": [".nick input", "ArtDirector"],
+      "click": ".nick-submit",
+      "waitAfter": ".hero"
+    },
+    {
+      "name": "09-accounts-nick",
+      "route": "/accounts",
+      "wait": "[data-who]"
+    },
+    {
+      "name": "09-accounts-nick-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "10-idle",
+      "route": "/idle"
+    },
+    {
+      "name": "02-home-with-nick",
+      "route": "/",
+      "wait": [".hero", ".lx-grid-3"]
+    },
+    {
+      "route": "/servers",
+      "wait": ".rows .srow",
+      "after": "localStorage.setItem('mcmonitor.favorites', JSON.stringify([...document.querySelectorAll('.rows a.name')].slice(1, 4).map((a) => Number(a.getAttribute('href').split('/').pop()))))"
+    },
+    {
+      "route": "/",
+      "reload": true
+    },
+    {
+      "name": "02-home-favorites",
+      "route": "/",
+      "wait": [".hero", ".lx-grid-3"]
+    },
+    {
+      "name": "02-home-favorites-scrolled",
+      "scroll": "bottom"
+    },
+    {
+      "size": "1440x900"
+    },
+    {
+      "name": "02-home-favorites-1440x900",
+      "route": "/",
+      "wait": ".hero"
+    },
+    {
+      "name": "03-catalog-1440x900",
+      "route": "/servers",
+      "wait": ".rows .srow"
+    },
+    {
+      "name": "03-catalog-1440x900-scrolled",
+      "scroll": 900
+    },
+    {
+      "name": "04-server-1440x900",
+      "routeJs": "document.querySelector('.rows a.name').getAttribute('href').slice(1)",
+      "wait": [".prose", ".stat dd"]
+    },
+    {
+      "name": "04-server-1440x900-bottom",
+      "scroll": "bottom"
+    },
+    {
+      "name": "05-library-one-1440x900",
+      "route": "/library",
+      "wait": ".inst h3"
+    },
+    {
+      "name": "08-settings-1440x900",
+      "route": "/settings",
+      "wait": ".lx-content"
+    }
+  ]
+}

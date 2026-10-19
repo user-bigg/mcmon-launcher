@@ -1,0 +1,1 @@
+[12:00:01] [Render thread/ERROR]: Mixin prepare failed preparing mixins.iris.json:MixinGameRenderer in mixins.iris.json: org.spongepowered.asm.mixin.transformer.throwables.InvalidMixinException

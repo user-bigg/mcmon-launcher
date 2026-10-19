@@ -1,0 +1,3 @@
+[MC Monitor] minecraft=1.21.11 java=C:\Users\Vasya\AppData\Roaming\MC Monitor\game\runtime\java-runtime-delta\bin\javaw.exe memory=12288MB join=quick-play
+Error occurred during initialization of VM
+Could not reserve enough space for 12582912KB object heap

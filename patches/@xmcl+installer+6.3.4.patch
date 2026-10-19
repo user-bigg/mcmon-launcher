@@ -1,0 +1,42 @@
+diff --git a/node_modules/@xmcl/installer/dist/index.js b/node_modules/@xmcl/installer/dist/index.js
+--- a/node_modules/@xmcl/installer/dist/index.js
++++ b/node_modules/@xmcl/installer/dist/index.js
+@@ -3023,7 +3023,7 @@
+ 
+ // assets.ts
+ var import_core2 = require("@xmcl/core");
+-var import_utils2 = require("@xmcl/core/utils");
++var import_utils2 = { isNotNull: (v) => v != null };
+ var import_promises3 = require("fs/promises");
+ 
+ // diagnose.ts
+@@ -3530,7 +3530,7 @@
+ }
+ 
+ // libraries.ts
+-var import_utils7 = require("@xmcl/core/utils");
++var import_utils7 = { isNotNull: (v) => v != null };
+ var import_unzip = require("@xmcl/unzip");
+ var import_promises5 = require("fs/promises");
+ var import_path = require("path");
+diff --git a/node_modules/@xmcl/installer/dist/index.mjs b/node_modules/@xmcl/installer/dist/index.mjs
+--- a/node_modules/@xmcl/installer/dist/index.mjs
++++ b/node_modules/@xmcl/installer/dist/index.mjs
+@@ -2912,7 +2912,7 @@
+ 
+ // assets.ts
+ import { MinecraftFolder } from "@xmcl/core";
+-import { isNotNull } from "@xmcl/core/utils";
++const isNotNull = (v) => v != null;
+ import { readFile, stat as stat3 } from "fs/promises";
+ 
+ // diagnose.ts
+@@ -3419,7 +3419,7 @@
+ }
+ 
+ // libraries.ts
+-import { isNotNull as isNotNull2 } from "@xmcl/core/utils";
++const isNotNull2 = (v) => v != null;
+ import { open, walkEntriesGenerator } from "@xmcl/unzip";
+ import { stat as stat4 } from "fs/promises";
+ import { join } from "path";

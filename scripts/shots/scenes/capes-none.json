@@ -1,0 +1,205 @@
+{
+  "about": "The capes tab with the \"no cape\" tile: plain while a cape is worn, tried on, and marked as worn for a player without a cape. The account is made up in the steps; the sets come from the staging site.",
+  "steps": [
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 100,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "skin": {
+              "id": "skeleton-tophat",
+              "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+              "model": "classic"
+            },
+            "cape": {
+              "id": "cape-pumpkin-smile",
+              "url": "app://launcher/cache/icons/b1b061ca14bfc5895d3a047cd227a07c.png"
+            },
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 100,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": {
+                "id": "skeleton-tophat",
+                "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+                "model": "classic"
+              },
+              "cape": {
+                "id": "cape-pumpkin-smile",
+                "url": "app://launcher/cache/icons/b1b061ca14bfc5895d3a047cd227a07c.png"
+              },
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        },
+        "microsoft:state": {
+          "seq": 100,
+          "available": true,
+          "encryptionAvailable": true,
+          "accounts": [],
+          "login": null,
+          "error": null
+        },
+        "players:get": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        },
+        "players:save": {
+          "ok": true,
+          "value": {
+            "nicks": [
+              {
+                "id": "nick-kotofey",
+                "nick": "Kotofey"
+              }
+            ],
+            "active": {
+              "kind": "nick",
+              "id": "nick-kotofey"
+            }
+          }
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": ["[data-grid=\"skins\"] [data-card]", "[data-figure=\"solid\"]"],
+      "pause": 1500
+    },
+    {
+      "click": "[data-tab=\"capes\"]",
+      "waitAfter": ["[data-grid=\"capes\"] [data-card]", "[data-side=\"back\"]"],
+      "pause": 2500,
+      "name": "capes-01-none-plain"
+    },
+    {
+      "click": "[data-preset-none]",
+      "waitAfter": "[data-skins-undo]",
+      "pause": 1500,
+      "name": "capes-02-none-tried"
+    },
+    {
+      "ipc": {
+        "account:state": {
+          "seq": 200,
+          "encryptionAvailable": true,
+          "user": {
+            "id": 1,
+            "name": "Test User",
+            "nick": {
+              "name": "Test_User",
+              "changeAt": null
+            },
+            "avatarUrl": null,
+            "skin": {
+              "id": "skeleton-tophat",
+              "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+              "model": "classic"
+            },
+            "cape": null,
+            "createdAt": "2026-03-12T10:00:00Z",
+            "votesMonth": 18,
+            "favoritesCount": 4,
+            "hoursPlayed": 126,
+            "trusted": true,
+            "trustedReason": null,
+            "unreadAlerts": 0,
+            "ownedServers": []
+          },
+          "connect": null,
+          "error": null
+        },
+        "account:refresh": {
+          "ok": true,
+          "value": {
+            "seq": 200,
+            "encryptionAvailable": true,
+            "user": {
+              "id": 1,
+              "name": "Test User",
+              "nick": {
+                "name": "Test_User",
+                "changeAt": null
+              },
+              "avatarUrl": null,
+              "skin": {
+                "id": "skeleton-tophat",
+                "url": "app://launcher/cache/icons/e1769362e7cb7ea1dc57e11d31f95e5d.png",
+                "model": "classic"
+              },
+              "cape": null,
+              "createdAt": "2026-03-12T10:00:00Z",
+              "votesMonth": 18,
+              "favoritesCount": 4,
+              "hoursPlayed": 126,
+              "trusted": true,
+              "trustedReason": null,
+              "unreadAlerts": 0,
+              "ownedServers": []
+            },
+            "connect": null,
+            "error": null
+          }
+        }
+      },
+      "reload": true,
+      "route": "/skins",
+      "wait": ["[data-grid=\"skins\"] [data-card]", "[data-figure=\"solid\"]"],
+      "pause": 1500
+    },
+    {
+      "click": "[data-tab=\"capes\"]",
+      "waitAfter": ["[data-grid=\"capes\"] [data-card]", "[data-side=\"back\"]"],
+      "pause": 2500,
+      "name": "capes-03-none-worn"
+    }
+  ]
+}
