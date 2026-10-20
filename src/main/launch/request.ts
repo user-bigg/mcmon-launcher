@@ -106,7 +106,8 @@ export function parseLaunchRequest(
   const joinServer = parseFlag(value.joinServer, 'joinServer');
   const serverSkins = parseFlag(value.serverSkins, 'serverSkins');
   const serverModpack = parseFlag(value.serverModpack, 'serverModpack');
-  for (const field of [memoryMb, joinServer, serverSkins, serverModpack]) {
+  const launcherOnly = parseFlag(value.launcherOnly, 'launcherOnly');
+  for (const field of [memoryMb, joinServer, serverSkins, serverModpack, launcherOnly]) {
     if (!field.ok) {
       return field;
     }
@@ -123,6 +124,9 @@ export function parseLaunchRequest(
   }
   if (serverModpack.ok && serverModpack.value !== undefined) {
     request.serverModpack = serverModpack.value;
+  }
+  if (launcherOnly.ok && launcherOnly.value === true) {
+    request.launcherOnly = true;
   }
   if (isLaunchId(value.launchId)) {
     request.launchId = value.launchId;

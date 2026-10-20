@@ -36,6 +36,7 @@ export interface DirectLaunch {
   modpack?: boolean;
   mods?: ServerMods;
   modsUnreadable?: true;
+  launcherOnly?: true;
 }
 
 export interface OwnLauncher {
@@ -50,6 +51,10 @@ export interface NoLaunch {
 
 export type ServerLaunch = DirectLaunch | OwnLauncher | NoLaunch;
 export type LaunchKind = ServerLaunch['kind'];
+
+export function isLauncherOnly(launch: ServerLaunch | null): boolean {
+  return launch?.kind === 'direct' && launch.launcherOnly === true;
+}
 
 // Where the site reached the server at its last check: only for the launcher's own ping,
 // never for the game's connection.

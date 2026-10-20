@@ -128,7 +128,7 @@ export function errorView(error: LaunchError): ErrorView {
 
 export interface StepContext {
   minecraft: string;
-  host: string;
+  host: string | null;
   memory: string;
   update: string | null;
   skins: SkinsStatus | null;
@@ -167,7 +167,9 @@ export const statusIcons: Record<LaunchStepStatus, IconName | null> = {
 
 function stepTitle(id: LaunchStepId, context: StepContext): string {
   if (id === 'join') {
-    return fill(ru.install.stepTitles.join, { host: context.host });
+    return context.host === null
+      ? ru.install.stepTitles.joinServer
+      : fill(ru.install.stepTitles.join, { host: context.host });
   }
   if (id === 'files') {
     return fill(ru.install.stepTitles.files, { version: context.minecraft });

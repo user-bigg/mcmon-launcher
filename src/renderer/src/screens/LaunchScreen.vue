@@ -35,7 +35,7 @@ import { banExpired, banView } from '../lib/ban';
 import { BUILTIN_SCENE } from '../lib/builtin-scene';
 import { pixelScale } from '../lib/landscape';
 import { errorView, idleSteps, statusIcons, stepView, type ErrorAction } from '../lib/launch-view';
-import { addressLabel } from '../lib/minecraft';
+import { shownAddress } from '../lib/minecraft';
 import {
   blocksLaunch,
   inOrder,
@@ -171,7 +171,7 @@ const view = computed(() => {
       name: server.name,
       icon: server.icon_url,
       minecraft,
-      host: addressLabel(server.address),
+      host: shownAddress(server),
       back: `/server/${String(server.id)}`,
       backLabel: server.name,
       instanceId: instanceIdOf({
@@ -248,6 +248,7 @@ const concealOnStart = computed({
 const hostParts = computed(() =>
   (view.value?.host ?? '').split(/(?<=[.:])/).filter((part) => part !== ''),
 );
+const launcherOnly = computed(() => view.value !== null && view.value.host === null);
 const serverMemory = useServerMemory();
 const memory = computed(() => {
   const session = mine.value ? launch.session.value : null;
@@ -935,7 +936,10 @@ function onErrorAction(kind: ErrorAction): void {
         </div>
         <div class="source">
           <dt>{{ ru.install.sourceAddress }}</dt>
-          <dd>
+          <dd v-if="launcherOnly" class="source-quiet" data-launcher-only>
+            {{ ru.server.launcherOnly }}
+          </dd>
+          <dd v-else>
             <span class="lx-mono selectable source-host"
               ><template v-for="(part, index) in hostParts" :key="index"
                 >{{ part }}<wbr
@@ -1383,6 +1387,10 @@ function onErrorAction(kind: ErrorAction): void {
 .source dd {
   margin: 2px 0 0;
   font-size: 12px;
+}
+
+.source dd.source-quiet {
+  color: var(--mc-text-muted);
 }
 
 .source-host {

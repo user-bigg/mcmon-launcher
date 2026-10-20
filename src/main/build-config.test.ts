@@ -20,13 +20,8 @@ describe('electron-builder.yml', () => {
     expect(fuse('onlyLoadAppFromAsar')).toBe('true');
   });
 
-  it('publisher for update signature verification matches the author', () => {
-    const author = (
-      JSON.parse(readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8')) as {
-        author: string;
-      }
-    ).author;
-    expect(config).toMatch(new RegExp(`^\\s+publisherName: ${author}$`, 'm'));
+  it('updates are not checked against a Windows publisher: releases are unsigned', () => {
+    expect(config).not.toMatch(/publisherName/);
     expect(config).not.toMatch(/verifyUpdateCodeSignature/);
   });
 

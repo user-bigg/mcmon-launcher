@@ -1,7 +1,7 @@
 {
   "name": "mcmonitor-launcher",
   "productName": "MC Monitor Launcher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Minecraft launcher for servers from the MC Monitor catalog",
   "author": "MC Monitor",
   "homepage": "https://mc-mon.ru",
@@ -25,7 +25,7 @@
     "icons": "bash scripts/icons",
     "shots": "bash scripts/shots/shots.sh",
     "pack": "npm run build && electron-builder --dir",
-    "dist:win": "npm run build && electron-builder --win --x64",
+    "dist:win": "npm run build && node scripts/nsis-plugin.ts && electron-builder --win --x64",
     "dist:mac": "npm run build && electron-builder --mac --arm64",
     "postinstall": "patch-package"
   },

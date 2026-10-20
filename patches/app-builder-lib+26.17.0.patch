@@ -1,0 +1,33 @@
+diff --git a/node_modules/app-builder-lib/templates/nsis/include/extractAppPackage.nsh b/node_modules/app-builder-lib/templates/nsis/include/extractAppPackage.nsh
+index f5470bf..91bce6e 100644
+--- a/node_modules/app-builder-lib/templates/nsis/include/extractAppPackage.nsh
++++ b/node_modules/app-builder-lib/templates/nsis/include/extractAppPackage.nsh
+@@ -94,7 +94,12 @@
+   CreateDirectory "$PLUGINSDIR\7z-out"
+   ClearErrors
+   SetOutPath "$PLUGINSDIR\7z-out"
+-  Nsis7z::Extract "${FILE}"
++  # MC Monitor: a hook for the first extraction, so the installer can show its own progress text.
++  !ifmacrodef customExtract7za
++    !insertmacro customExtract7za "${FILE}"
++  !else
++    Nsis7z::Extract "${FILE}"
++  !endif
+   Pop $R0
+   SetOutPath $R0
+ 
+diff --git a/node_modules/app-builder-lib/templates/nsis/installSection.nsh b/node_modules/app-builder-lib/templates/nsis/installSection.nsh
+index 053772f..286ae0f 100644
+--- a/node_modules/app-builder-lib/templates/nsis/installSection.nsh
++++ b/node_modules/app-builder-lib/templates/nsis/installSection.nsh
+@@ -26,6 +26,10 @@ StrCpy $appExe "$INSTDIR\${APP_EXECUTABLE_FILENAME}"
+     FindWindow $0 "#32770" "" $hwndparent $0
+     GetDlgItem $0 $0 1000
+     SendMessage $0 ${WM_SETTEXT} 0 "STR:$(installing)"
++    # MC Monitor: a hook with the label handle, so the installer can show its own progress text.
++    !ifmacrodef customInstallingLabel
++      !insertmacro customInstallingLabel $0
++    !endif
+ 
+     StrCpy $1 $hwndparent
+ 		System::Call 'user32::ShutdownBlockReasonCreate(${SYSTYPE_PTR}r1, w "$(installing)")'

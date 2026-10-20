@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { ServerRow } from '@shared/catalog';
+import { isLauncherOnly, type ServerRow } from '@shared/catalog';
 import type { ServerAccessFilter, ServerSort } from '@shared/site';
 import type { CatalogTab, PlaySource } from '@shared/telemetry';
 import { countOf, fill, formatNumber } from '@shared/i18n/format';
@@ -157,7 +157,7 @@ function matches(server: ServerRow, text: string): boolean {
   return (
     needle === '' ||
     server.name.toLocaleLowerCase('ru').includes(needle) ||
-    server.address.host.includes(needle)
+    (!isLauncherOnly(server.launch) && server.address.host.includes(needle))
   );
 }
 

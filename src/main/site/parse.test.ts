@@ -172,6 +172,25 @@ describe('catalog', () => {
     });
   });
 
+  it('launch.launcher_only is set only by a boolean true of a direct launch', () => {
+    const direct = { kind: 'direct', minecraft: '26.2' };
+    const launchOf = (value: Record<string, unknown>): unknown =>
+      parseServerRow(row({ launch: value }))?.launch;
+    expect(launchOf({ ...direct, launcher_only: true })).toEqual({ ...direct, launcherOnly: true });
+    for (const flag of [false, 'true', 1, null]) {
+      expect(launchOf({ ...direct, launcher_only: flag })).toEqual(direct);
+    }
+    expect(
+      launchOf({
+        kind: 'own_launcher',
+        url: 'https://example.ru/l',
+        label: 'L',
+        launcher_only: true,
+      }),
+    ).toEqual({ kind: 'own_launcher', url: 'https://example.ru/l', label: 'L' });
+    expect(launchOf({ kind: 'none', launcher_only: true })).toEqual({ kind: 'none' });
+  });
+
   it('launch.mods keeps the lists of a direct launch, a missing list is empty', () => {
     const direct = { kind: 'direct', minecraft: '1.21.11' };
     const launchOf = (value: Record<string, unknown>): unknown =>

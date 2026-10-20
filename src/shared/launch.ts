@@ -24,6 +24,7 @@ export interface LaunchRequest {
   joinServer?: boolean;
   serverSkins?: boolean;
   serverModpack?: boolean;
+  launcherOnly?: boolean;
   launchId?: string;
   name?: string;
 }

@@ -122,6 +122,7 @@ function makeService(
   overrides: Partial<LaunchDependencies> = {},
   instances?: InstanceStore,
   playCheck?: PlayChecker,
+  launcherOnly?: (serverId: number) => boolean,
 ): GameLaunchService {
   const service = createLaunchService({
     root,
@@ -131,6 +132,7 @@ function makeService(
     fetch: () => Promise.resolve({}),
     ...(instances === undefined ? {} : { instances }),
     ...(playCheck === undefined ? {} : { playCheck }),
+    ...(launcherOnly === undefined ? {} : { launcherOnly }),
     telemetry: (event) => {
       telemetry.push(event);
     },
@@ -300,6 +302,32 @@ describe('GameLaunchService', () => {
       expect(
         list.equals(catalogServerList({ name: 'play.example.ru:25565', address: ENTERED })),
       ).toBe(true);
+    });
+
+    it('a launcher-only server is listed in the game like any other', async () => {
+      await makeService().launch({ ...catalog, launcherOnly: true });
+      expect(
+        (await readFile(serversFile('server-9'))).equals(
+          catalogServerList({ name: 'Example', address: ENTERED }),
+        ),
+      ).toBe(true);
+    });
+
+    it('a launcher-only server: the log tail shows no address', async () => {
+      const service = makeService({
+        watchGame: (_child, options, watch): void => {
+          options.log.note('Connecting to play.example.ru, 25565');
+          options.log.note('Connection refused: play.example.ru/203.0.113.7:25565');
+          handlers = watch;
+        },
+      });
+      await service.launch({ target: catalog.target, account, launcherOnly: true });
+      handlers?.onExit({ code: 0, signal: null, crashReportPath: null });
+      await service.whenIdle();
+      const log = await service.logTail(50);
+      expect(JSON.stringify(log)).toContain('Connecting to <server>, 25565');
+      expect(JSON.stringify(log)).not.toMatch(/example|203\.0\.113/);
+      expect(service.lastLaunchRequest()).toMatchObject({ launcherOnly: true });
     });
 
     it('a game still running from the folder keeps its list', async () => {

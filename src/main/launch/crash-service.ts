@@ -12,9 +12,10 @@ import {
 } from '@shared/crash';
 import { isJavaMajor, type JavaMajor } from '@shared/instance';
 import type { GameSession, LaunchEvent, LaunchRequest, LaunchService } from '@shared/launch';
+import { parseServerAddress } from '@shared/server-address';
 import { analyzeCrash, type CrashVerdict } from './crash-analyzer';
 import { applyCrashFix } from './crash-fixes';
-import { redactText, type RedactOptions } from './crash-redact';
+import { redactText, serverWords, type RedactOptions } from './crash-redact';
 import { buildCrashReport, writeCrashReport } from './crash-report';
 import { NO_LOG_ORDER } from './crash-rules';
 import { collectCrashFiles, waitForStableFile, type CrashFiles } from './crash-sources';
@@ -277,12 +278,15 @@ export class GameCrashService implements CrashService {
     });
   }
 
-  private redactOptions(nick: string | null): RedactOptions {
+  private redactOptions(nick: string | null, request: LaunchRequest | null): RedactOptions {
+    const address =
+      request?.launcherOnly === true ? parseServerAddress(request.target.address) : null;
     return {
       nick,
       userName: this.options.userName,
       homeDir: this.options.homeDir,
       gameRoot: this.layout.root,
+      ...(address === null ? {} : { server: serverWords(address) }),
     };
   }
 
@@ -379,7 +383,9 @@ export class GameCrashService implements CrashService {
       cause: verdict.cause,
       rule: verdict.rule,
       evidence:
-        verdict.evidence === null ? null : redactText(verdict.evidence, this.redactOptions(nick)),
+        verdict.evidence === null
+          ? null
+          : redactText(verdict.evidence, this.redactOptions(nick, tracked.request)),
       fixes: verdict.fixes,
       autoFixable: verdict.autoFixable,
       files: {
@@ -452,7 +458,7 @@ export class GameCrashService implements CrashService {
         arch: this.options.arch,
         release: this.options.osRelease,
       },
-      redact: this.redactOptions(stored.nick),
+      redact: this.redactOptions(stored.nick, stored.request),
       now: this.now(),
     });
     return writeCrashReport(join(this.layout.root, 'reports'), stored.analysis.id, report);

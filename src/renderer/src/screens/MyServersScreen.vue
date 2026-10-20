@@ -24,7 +24,7 @@ import { useOwner } from '../composables/useOwner';
 import { useSite } from '../composables/useSite';
 import { useSiteChange } from '../composables/useSiteChange';
 import { useTrack } from '../composables/useTrack';
-import { addressLabel } from '../lib/minecraft';
+import { shownAddress } from '../lib/minecraft';
 import {
   aboveRank,
   changeText,
@@ -215,7 +215,7 @@ const isDown = computed(() => details.value?.status === 'down');
 const icon = computed(() =>
   activeId.value === null ? null : (card.value?.icon_url ?? owner.icon(activeId.value)),
 );
-const address = computed(() => (card.value === null ? null : addressLabel(card.value.address)));
+const address = computed(() => (card.value === null ? null : shownAddress(card.value)));
 
 const headMeta = computed(() => {
   const current = details.value;
@@ -501,6 +501,9 @@ const rating = computed<Fact[]>(() => {
           </div>
           <div class="head-meta">
             <span v-if="address !== null" class="address selectable">{{ address }}</span>
+            <span v-else-if="card !== null" class="launcher-only" data-launcher-only>
+              <BiIcon name="box-arrow-in-right" />{{ ru.server.launcherOnly }}
+            </span>
             <span class="lx-num">{{ headMeta }}</span>
           </div>
         </div>
@@ -763,6 +766,12 @@ const rating = computed<Fact[]>(() => {
 .address {
   font-family: var(--mc-font-mono);
   font-size: 13px;
+}
+
+.launcher-only {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .down {

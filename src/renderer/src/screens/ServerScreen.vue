@@ -11,7 +11,7 @@ import {
 } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import type { AccountError, VoteResult } from '@shared/account';
-import type { ServerCard } from '@shared/catalog';
+import { isLauncherOnly, type ServerCard } from '@shared/catalog';
 import type { SiteError } from '@shared/site';
 import type { LinkKind } from '@shared/telemetry';
 import { fill, formatDecimal, formatNumber, scoreCount } from '@shared/i18n/format';
@@ -49,7 +49,7 @@ import { useTrack } from '../composables/useTrack';
 import { useVotes } from '../composables/useVotes';
 import { accountErrorText, remainingSeconds } from '../lib/account';
 import { blocks, headingTag, withoutTitle } from '../lib/markdown';
-import { addressCopyText, addressLabel, versionLabel } from '../lib/minecraft';
+import { addressCopyText, shownAddress, versionLabel } from '../lib/minecraft';
 import { pingLevel } from '../lib/ping';
 import { accessChips, languageChip, serverTags, tagView } from '../lib/tags';
 import { durationCoarse, moscowTime } from '../lib/time';
@@ -204,9 +204,11 @@ const tags = computed(() => {
 const about = computed(() =>
   withoutTitle(blocks(card.value?.description_md ?? ''), card.value?.name ?? ''),
 );
-const address = computed(() => (card.value === null ? '' : addressLabel(card.value.address)));
+const address = computed(() => (card.value === null ? null : shownAddress(card.value)));
 const addressCopy = computed(() =>
-  card.value === null ? '' : addressCopyText(card.value.address),
+  card.value === null || isLauncherOnly(card.value.launch)
+    ? null
+    : addressCopyText(card.value.address),
 );
 
 const chart = computed(() => {
@@ -567,13 +569,16 @@ watch(
             <TagChip v-else>{{ ru.server.offline }}</TagChip>
           </div>
           <div class="head-meta">
-            <span class="address selectable">
+            <span v-if="address !== null && addressCopy !== null" class="address selectable">
               {{ address }}
               <CopyButton
                 :text="addressCopy"
                 :label="ru.serverPage.copyAddress"
                 @copied="trackCopy"
               />
+            </span>
+            <span v-else class="launcher-only" data-launcher-only>
+              <BiIcon name="box-arrow-in-right" />{{ ru.server.launcherOnly }}
             </span>
             <span class="lx-muted lx-num">{{ headMeta }}</span>
           </div>
@@ -785,7 +790,10 @@ watch(
                   <li>
                     <FillText :text="ru.serverPage.joinStepAddress">
                       <template #address>
-                        <span class="address selectable">
+                        <span
+                          v-if="address !== null && addressCopy !== null"
+                          class="address selectable"
+                        >
                           {{ address }}
                           <CopyButton
                             :text="addressCopy"
@@ -1062,8 +1070,17 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 22px;
   font-family: var(--mc-font-mono);
   font-size: 13px;
+  color: var(--mc-text-muted);
+}
+
+.launcher-only {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
   color: var(--mc-text-muted);
 }
 

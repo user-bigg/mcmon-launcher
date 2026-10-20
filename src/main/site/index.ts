@@ -4,6 +4,7 @@ import { hostname } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import type { PlayCheckQuery } from '@shared/account';
+import { isLauncherOnly } from '@shared/catalog';
 import { serverModsOf, type ModCatalog, type ServerModsSource } from '@shared/mods';
 import type { SkinModTable } from '@shared/skin-mod';
 import { bareHost, type ServerAddress } from '@shared/server-address';
@@ -92,6 +93,7 @@ export interface SiteRuntime {
   modCatalog: () => Promise<SiteResult<ModCatalog>>;
   mods: () => Promise<ModCatalog | null>;
   serverMods: (serverId: number) => Promise<ServerModsSource>;
+  launcherOnly: (serverId: number) => boolean;
   registryArch: () => Promise<string | null>;
   virtualMachine: () => Promise<boolean | null>;
   cacheRoot: string;
@@ -343,8 +345,12 @@ export function startSite(
     },
     serverMods: async (serverId): Promise<ServerModsSource> => {
       const card = await client.server(serverId);
+      if (card.ok) {
+        launches.remember([card.value]);
+      }
       return serverModsOf(card.ok ? card.value.launch : launches.of(serverId));
     },
+    launcherOnly: (serverId): boolean => isLauncherOnly(launches.of(serverId)),
     registryArch,
     virtualMachine: async (): Promise<boolean | null> => isVirtualMachine((await device()).vm),
     cacheRoot,

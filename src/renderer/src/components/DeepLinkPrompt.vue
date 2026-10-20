@@ -7,7 +7,7 @@ import { useCatalog } from '../composables/useCatalog';
 import { useDeepLink } from '../composables/useDeepLink';
 import { useLaunch } from '../composables/useLaunch';
 import { usePlay } from '../composables/usePlay';
-import { addressLabel } from '../lib/minecraft';
+import { shownAddress } from '../lib/minecraft';
 import UiButton from './UiButton.vue';
 
 const deepLink = useDeepLink();
@@ -36,9 +36,7 @@ const title = computed(() => {
   return fill(loading.value ? ru.deepLink.loading : ru.deepLink.unknown, { id: link.serverId });
 });
 
-const address = computed(() =>
-  server.value === undefined ? null : addressLabel(server.value.address),
-);
+const address = computed(() => (server.value === undefined ? null : shownAddress(server.value)));
 
 const playable = computed(() => server.value?.launch.kind === 'direct');
 const busyText = computed(() =>
@@ -102,6 +100,9 @@ async function confirm(): Promise<void> {
     >
       <h2 id="deep-link-title" :aria-busy="loading">{{ title }}</h2>
       <p v-if="address !== null" class="deep-link-address lx-mono selectable">{{ address }}</p>
+      <p v-else-if="server !== undefined" class="deep-link-address" data-launcher-only>
+        {{ ru.server.launcherOnly }}
+      </p>
       <p id="deep-link-text">{{ ru.deepLink.text }}</p>
       <p v-if="playable && busyText !== null" class="deep-link-busy" role="status">
         {{ busyText }}

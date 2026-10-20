@@ -1,5 +1,5 @@
 import { useRouter } from 'vue-router';
-import type { ServerRow } from '@shared/catalog';
+import { isLauncherOnly, type ServerRow } from '@shared/catalog';
 import { isValidNick, type LaunchTarget } from '@shared/launch';
 import type { PlaySource } from '@shared/telemetry';
 import { pickPlayAccount, type PlayAccess } from '../lib/play-account';
@@ -18,6 +18,7 @@ export interface PlayOptions {
   launchId?: string;
   serverSkins?: boolean | undefined;
   serverModpack?: boolean | undefined;
+  launcherOnly?: boolean | undefined;
 }
 
 export interface Play {
@@ -88,6 +89,7 @@ export function usePlay(): Play {
       joinServer: options.joinServer ?? settings.state.joinServer,
       serverSkins: options.serverSkins,
       serverModpack: options.serverModpack,
+      launcherOnly: options.launcherOnly,
     });
     const launchId = clicked(target, options);
     const named = { ...request, name };
@@ -121,6 +123,7 @@ export function usePlay(): Play {
             ...options,
             serverSkins: serverSkinsFlag(server),
             serverModpack: serverModpack(server) || undefined,
+            launcherOnly: isLauncherOnly(server.launch) || undefined,
           });
     },
   };

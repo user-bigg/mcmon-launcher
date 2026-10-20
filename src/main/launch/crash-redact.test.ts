@@ -1,11 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { parseServerAddress } from '@shared/server-address';
 import {
   isPrivateIpv4,
   isPrivateIpv6,
   redactLines,
   redactText,
+  serverWords,
   type RedactOptions,
 } from './crash-redact';
 
@@ -19,6 +21,29 @@ const options: RedactOptions = {
 function fixture(name: string): string {
   return readFileSync(join(import.meta.dirname, 'fixtures', 'crash', `${name}.txt`), 'utf8');
 }
+
+describe('a launcher-only server', () => {
+  const address = parseServerAddress('Play.Example.ru:25570');
+  const server = address === null ? [] : serverWords(address);
+
+  it('its address in any case and every IP become <server>, clock times stay', () => {
+    const text = [
+      '[12:34:56] Connecting to play.example.ru, 25570',
+      '--quickPlayMultiplayer PLAY.EXAMPLE.RU:25570',
+      'Connection refused: play.example.ru/203.0.113.7:25570',
+      'resolved [2001:db8::7]:25570',
+    ].join('\n');
+    const clean = redactText(text, { ...options, server });
+    expect(clean.toLowerCase()).not.toContain('example');
+    expect(clean).not.toMatch(/203\.0\.113|2001:db8/);
+    expect(clean).toContain('[12:34:56] Connecting to <server>, 25570');
+  });
+
+  it('other servers keep their public addresses', () => {
+    const text = 'Connecting to play.example.ru, 25570 (203.0.113.7)';
+    expect(redactText(text, options)).toBe(text);
+  });
+});
 
 describe('redacts personal data from reports', () => {
   it('matches player nickname case-insensitively, but not as part of other words', () => {

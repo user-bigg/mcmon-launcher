@@ -41,8 +41,6 @@ electronFuses:
 
 win:
   icon: build/icon.ico
-  signtoolOptions:
-    publisherName: MC Monitor
   target:
     - target: nsis
       arch:

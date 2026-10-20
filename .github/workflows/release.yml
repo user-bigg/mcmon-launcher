@@ -46,6 +46,15 @@ jobs:
         env:
           MCMONITOR_TELEMETRY_BEHAVIOR: 'on'
           MCMONITOR_MS_CLIENT_ID: ${{ secrets.MCMONITOR_MS_CLIENT_ID }}
+      - name: 32-bit MinGW for the installer plugin
+        id: msys2
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e # v2.33.0
+        with:
+          msystem: MINGW32
+          install: mingw-w64-i686-gcc
+      - run: node scripts/nsis-plugin.ts
+        env:
+          NSIS_PLUGIN_MINGW_BIN: ${{ steps.msys2.outputs.msys2-location }}\mingw32\bin
       - run: npx electron-builder --win --x64 --publish never
       - run: bash scripts/verify-fuses release/win-unpacked/MCMonitorLauncher.exe
       - run: bash scripts/report-size release

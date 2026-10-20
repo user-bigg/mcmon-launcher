@@ -174,6 +174,7 @@ export const ru = typesetTree({
     installed: 'Установлен',
     voteAvailable: 'Можно голосовать',
     ownLauncherTag: 'Свой лаунчер',
+    launcherOnly: 'Только через лаунчер',
     descriptionWipe: '{description} · {wipe}',
   },
   launch: {
@@ -428,6 +429,7 @@ export const ru = typesetTree({
       verify: 'Проверка файлов',
       launch: 'Запуск Minecraft',
       join: 'Подключение к {host}',
+      joinServer: 'Подключение к серверу',
     },
     stepNotes: {
       java: 'Та, что нужна этой версии игры, от Mojang',

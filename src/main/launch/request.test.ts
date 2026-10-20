@@ -74,6 +74,18 @@ describe('parseLaunchRequest', () => {
       ok: false,
       error: { code: 'invalid-request', field: 'serverModpack' },
     });
+    expect(parseLaunchRequest({ target: server, account, launcherOnly: true }, 16 * GIB)).toEqual({
+      ok: true,
+      value: { target: server, account, launcherOnly: true },
+    });
+    expect(parseLaunchRequest({ target: server, account, launcherOnly: false }, 16 * GIB)).toEqual({
+      ok: true,
+      value: { target: server, account },
+    });
+    expect(parseLaunchRequest({ target: server, account, launcherOnly: 'yes' }, 16 * GIB)).toEqual({
+      ok: false,
+      error: { code: 'invalid-request', field: 'launcherOnly' },
+    });
   });
 
   it('account carries only an id, no tokens; main fetches those', () => {

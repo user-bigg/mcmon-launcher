@@ -115,7 +115,7 @@ export const servers: ServerRow[] = [
     icon_url: iconEmerald,
     cover: { scene: 'village', time: 'sunset' },
     wipe_label: 'вайп через 2 дня',
-    launch: { kind: 'direct', minecraft: '26.1.2' },
+    launch: { kind: 'direct', minecraft: '26.1.2', launcherOnly: true },
   }),
   row({
     id: SERVER_IDS.technograd,

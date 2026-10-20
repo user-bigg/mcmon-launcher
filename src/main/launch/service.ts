@@ -37,6 +37,7 @@ import type { Installed } from './install';
 import { InstanceStore } from './instances';
 import type { FetchJson } from './json-cache';
 import { gameLayout, type GameLayout } from './layout';
+import { concealServer, serverWords } from './crash-redact';
 import type { ModsRequest } from './mods/run';
 import type { FetchText } from './loaders/sources';
 import { Operation, PROGRESS_INTERVAL_MS } from './operation';
@@ -74,6 +75,7 @@ export interface LaunchServiceOptions {
   playCheck?: PlayChecker;
   skinMod?: SkinModSource;
   mods?: CatalogModsSource;
+  launcherOnly?: (serverId: number) => boolean;
   withoutMods?: (folderId: string) => Promise<boolean>;
   gameWindow?: () => GameWindow;
   systemLanguages?: () => readonly string[];
@@ -104,6 +106,7 @@ interface Claim {
 interface LastLog {
   file: string;
   since: number;
+  concealed: readonly string[] | null;
 }
 
 function ok<T>(value: T): LaunchResult<T> {
@@ -285,6 +288,7 @@ export class GameLaunchService implements LaunchService {
         throw failure(admission.error);
       }
       const player = { ...resolved, nick: admission.nick };
+      const launched = this.withLauncherOnly(request);
       operation.progress.start('launch');
       this.emitProgress(true);
       const running = await engine.sessions.spawn({
@@ -299,12 +303,19 @@ export class GameLaunchService implements LaunchService {
         operation,
         release,
       });
-      await this.adopt(engine, running, installed, request, player);
+      await this.adopt(engine, running, installed, launched, player);
       return ok(running.session);
     } catch (error) {
       release();
       return this.failOperation(error, operation, gate?.refusal() ?? null);
     }
+  }
+
+  // The window's word is enough to hide the address; the site's word, read after the card the
+  // mods step asked for, hides it as well.
+  private withLauncherOnly(request: LaunchRequest): LaunchRequest {
+    const known = this.options.launcherOnly?.(request.target.serverId) === true;
+    return known ? { ...request, launcherOnly: true } : request;
   }
 
   // The catalog and the server's line are asked for at once; a slow site costs the launch no
@@ -491,8 +502,10 @@ export class GameLaunchService implements LaunchService {
     if (log === null || this.engine === null) {
       return ok([]);
     }
+    const concealed = this.lastLog?.concealed ?? null;
     try {
-      return ok(await this.engine.deps.readLog(log.file, lines, log.since));
+      const tail = await this.engine.deps.readLog(log.file, lines, log.since);
+      return ok(concealed === null ? tail : tail.map((line) => concealServer(line, concealed)));
     } catch (error) {
       return rejected(toLaunchError(error));
     }
@@ -619,7 +632,12 @@ export class GameLaunchService implements LaunchService {
     if (installed.clientModRun !== null) {
       this.clientModByPid.set(running.session.pid, installed.clientModRun);
     }
-    this.lastLog = { file: running.log.file, since: running.log.startOffset };
+    const address = parseServerAddress(request.target.address);
+    this.lastLog = {
+      file: running.log.file,
+      since: running.log.startOffset,
+      concealed: request.launcherOnly === true && address !== null ? serverWords(address) : null,
+    };
     this.lastExit = null;
     this.lastCrash = null;
     this.emit({ kind: 'phase', phase: 'running', operationId: this.operationId });

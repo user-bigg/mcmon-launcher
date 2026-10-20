@@ -369,6 +369,15 @@ describe('my servers screen', () => {
     });
   });
 
+  it('a launcher-only server: the caption instead of the address', async () => {
+    const stub = ownerStub([owned()]);
+    const card = testCard();
+    withCard(stub, { ...card, launch: { kind: 'direct', minecraft: '26.2', launcherOnly: true } });
+    const { app } = await open('/my-servers', stub);
+    expect(app.find('[data-launcher-only]').text()).toBe(ru.server.launcherOnly);
+    expect(app.html()).not.toContain(card.address.host);
+  });
+
   it('one server: header, five figures, panels and no switcher', async () => {
     const stub = ownerStub([owned()]);
     withCard(

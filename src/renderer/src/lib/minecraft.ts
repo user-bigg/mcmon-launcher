@@ -1,5 +1,10 @@
 import { ru } from '@shared/i18n/ru';
-import type { ServerAddress, VersionRange } from '@shared/catalog';
+import {
+  isLauncherOnly,
+  type ServerAddress,
+  type ServerRow,
+  type VersionRange,
+} from '@shared/catalog';
 import { DEFAULT_SERVER_PORT, displayHost, formatServerAddress } from '@shared/server-address';
 
 export type VersionParts = readonly number[];
@@ -52,4 +57,8 @@ export function addressCopyText(address: ServerAddress): string {
 
 export function addressLabel(address: ServerAddress): string {
   return addressCopyText({ ...address, host: displayHost(address.host) });
+}
+
+export function shownAddress(server: Pick<ServerRow, 'address' | 'launch'>): string | null {
+  return isLauncherOnly(server.launch) ? null : addressLabel(server.address);
 }

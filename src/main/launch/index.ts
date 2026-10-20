@@ -87,6 +87,7 @@ export function startLaunchService(
   virtualMachine?: () => Promise<boolean | null>,
   gameWindow?: () => GameWindow,
   mods?: CatalogModsSource,
+  launcherOnly?: (serverId: number) => boolean,
 ): LaunchServices {
   const totalMemoryBytes = totalmem();
   const layout = gameLayout(gameRoot());
@@ -108,6 +109,7 @@ export function startLaunchService(
     ...(playCheck === undefined ? {} : { playCheck }),
     ...(skinMod === undefined ? {} : { skinMod }),
     ...(mods === undefined ? {} : { mods }),
+    ...(launcherOnly === undefined ? {} : { launcherOnly }),
     withoutMods: async (folderId) => (await launchOptions.get(folderId)).withoutMods,
     ...(gameWindow === undefined ? {} : { gameWindow }),
     systemLanguages,

@@ -1,7 +1,47 @@
+!include LogicLib.nsh
+!include WinMessages.nsh
+!include getProcessInfo.nsh
+
 !define MCMONITOR_PROTOCOL_KEY "Software\Classes\mcmonitor"
 !define MCMONITOR_RUN_KEY "Software\Microsoft\Windows\CurrentVersion\Run"
 !define MCMONITOR_RUN_APPROVED_KEY "Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run"
 !define MCMONITOR_RUN_VALUE "MCMonitorLauncher"
+
+Var pid
+Var IsPowerShellAvailable
+
+; electron-builder looks for a running launcher with PowerShell and WMI, starting PowerShell three
+; times: on a slow computer that is the longest step of the install. Its own fallback without
+; PowerShell (tasklist and taskkill for the current user) checks the same much faster.
+!macro customCheckAppRunning
+  StrCpy $IsPowerShellAvailable 1
+  !insertmacro _CHECK_APP_RUNNING
+!macroend
+
+!ifndef BUILD_UNINSTALLER
+!include installer-ru.nsh
+!define MCMONITOR_PHRASE_MS 3500
+!define MCMONITOR_LAST_PHRASE_AFTER_MS 1500
+
+Var mcmonitorPhraseLabel
+
+; NSIS has no timer and the install thread is busy in long steps (the app check, removing the old
+; version), so the phrases change in a thread of our own plugin (build/nsis-plugin/phrases.c).
+!macro customInstallingLabel LABEL
+  StrCpy $mcmonitorPhraseLabel ${LABEL}
+  SendMessage $mcmonitorPhraseLabel ${WM_SETTEXT} 0 "STR:${MCMONITOR_PHRASE_FIRST}"
+  McmPhrases::Start $mcmonitorPhraseLabel ${MCMONITOR_PHRASE_MS} 8 \
+    "${MCMONITOR_PHRASE_1}" "${MCMONITOR_PHRASE_2}" "${MCMONITOR_PHRASE_3}" "${MCMONITOR_PHRASE_4}" \
+    "${MCMONITOR_PHRASE_5}" "${MCMONITOR_PHRASE_6}" "${MCMONITOR_PHRASE_7}" "${MCMONITOR_PHRASE_8}"
+!macroend
+
+!macro customExtract7za FILE
+  Nsis7z::Extract "${FILE}"
+  ${IfNot} ${Silent}
+    McmPhrases::Finish ${MCMONITOR_LAST_PHRASE_AFTER_MS} "${MCMONITOR_PHRASE_LAST}"
+  ${EndIf}
+!macroend
+!endif
 
 ; electron-builder registers protocols only on macOS and in appx, so the installer writes the key
 ; itself and the link works before the first launch. The command matches what

@@ -33,6 +33,7 @@ export interface LaunchOptions {
   joinServer: boolean;
   serverSkins?: boolean | undefined;
   serverModpack?: boolean | undefined;
+  launcherOnly?: boolean | undefined;
 }
 
 export interface LaunchStore {
@@ -86,6 +87,9 @@ export function launchRequest(target: LaunchTarget, options: LaunchOptions): Lau
   }
   if (options.serverModpack === true) {
     request.serverModpack = true;
+  }
+  if (options.launcherOnly === true) {
+    request.launcherOnly = true;
   }
   return options.memoryMb === undefined ? request : { ...request, memoryMb: options.memoryMb };
 }

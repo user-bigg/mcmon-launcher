@@ -1,9 +1,14 @@
+import { displayHost, formatServerAddress, type ServerAddress } from '@shared/server-address';
+
 export interface RedactOptions {
   nick: string | null;
   userName: string | null;
   homeDir: string | null;
   gameRoot: string | null;
+  server?: readonly string[];
 }
+
+export const SERVER_MARKER = '<server>';
 
 const MIN_NAME_LENGTH = 3;
 const LONG_SECRET_LENGTH = 40;
@@ -151,8 +156,34 @@ function hideAddresses(text: string): string {
     .replace(IPV6, (value) => (isPrivateIpv6(value) ? '<ip>' : value));
 }
 
+export function serverWords(address: ServerAddress): string[] {
+  const words = [formatServerAddress(address), address.host, displayHost(address.host)];
+  return [...new Set(words)].sort((a, b) => b.length - a.length);
+}
+
+// A launcher-only server keeps its address out of the launcher's own screens: the game prints
+// it as typed and as resolved, so every address in the text goes, public ones included.
+export function concealServer(text: string, words: readonly string[]): string {
+  let result = text;
+  for (const word of words) {
+    if (word !== '') {
+      result = result.replace(new RegExp(escapeRegExp(word), 'gi'), SERVER_MARKER);
+    }
+  }
+  return result
+    .replace(IPV4, SERVER_MARKER)
+    .replace(IPV6, (value) => (looksLikeIpv6(value) ? SERVER_MARKER : value));
+}
+
+// Clock times ('12:34:56') match the IPv6 pattern too: an address is either compressed or full.
+function looksLikeIpv6(value: string): boolean {
+  const colons = value.replace(/[^:]/g, '').length;
+  return /[0-9a-f]/i.test(value) && (value.includes('::') || colons === 7);
+}
+
 export function redactText(text: string, options: RedactOptions): string {
-  let result = replacePath(text, options.gameRoot, '<game>');
+  const concealed = options.server === undefined ? text : concealServer(text, options.server);
+  let result = replacePath(concealed, options.gameRoot, '<game>');
   result = replacePath(result, options.homeDir, '~');
   result = replaceProfileFolder(result, options.userName);
   result = result

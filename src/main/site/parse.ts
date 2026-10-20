@@ -224,6 +224,7 @@ function launch(value: unknown): ServerLaunch {
       ...(skins === null ? {} : { skins }),
       ...(modpack === null ? {} : { modpack }),
       ...(mods === null ? {} : 'mods' in mods ? { mods: mods.mods } : { modsUnreadable: true }),
+      ...(value.launcher_only === true ? { launcherOnly: true } : {}),
     };
   }
   if (value.kind === 'own_launcher') {

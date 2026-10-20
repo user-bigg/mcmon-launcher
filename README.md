@@ -41,7 +41,7 @@ You need Node.js 24, npm and bash (Git Bash on Windows).
 npm ci
 npm run dev        # the launcher with demo data and hot reload
 scripts/check      # typecheck, ESLint, Prettier and Vitest
-npm run dist:win   # Windows installer
+npm run dist:win   # Windows installer; needs 32-bit MinGW for the installer plugin (brew install mingw-w64, or mingw-w64-i686-gcc in MSYS2)
 npm run dist:mac   # macOS disk image and zip
 ```
 
