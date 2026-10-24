@@ -97,6 +97,35 @@ magick -size "${canvas}x${canvas}" xc:black "$tmp/shade.png" -alpha off -compose
   "PNG32:$tmp/shadow.png"
 magick "$tmp/shadow.png" "$tmp/placed.png" -compose Over -composite "PNG32:$out/icon-mac.png"
 
+# macOS disk image: the mounted volume shows a drive with a grey mark, as other installers do, so it
+# does not pass for the app itself.
+magick -size 720x860 gradient:'#fbfbfb-#e4e4e6' -background none -gravity northwest \
+  -extent 1024x1024-152-72 "PNG32:$tmp/drive-fill.png"
+magick -size 1024x1024 xc:none -fill white -draw "roundrectangle 152,72 871,931 70,70" \
+  "PNG32:$tmp/drive-mask.png"
+magick "$tmp/drive-fill.png" "$tmp/drive-mask.png" -compose DstIn -composite "PNG32:$tmp/drive-body.png"
+magick "$tmp/drive-body.png" \
+  -fill '#c9c9cc' -draw "roundrectangle 152,836 871,951 60,60" \
+  -fill '#d9d9dc' -draw "roundrectangle 152,836 871,940 60,60" \
+  -fill '#b5b5b8' -draw "line 152,846 871,846" \
+  -fill '#f4f4f6' -draw "circle 792,893 792,909" "PNG32:$tmp/drive.png"
+magick "$tmp/logo-16.png" -colorspace Gray -threshold 80% -fill '#dcdce0' -opaque white \
+  -transparent black "PNG32:$tmp/pulse.png"
+magick -size 16x16 xc:'#b4b4b9' "$tmp/pulse.png" -compose Over -composite \
+  \( "$tmp/logo-16.png" -alpha extract \) -alpha off -compose CopyOpacity -composite \
+  -sample 288x288 "PNG32:$tmp/drive-mark.png"
+magick "$tmp/drive.png" -alpha extract -roll +0+10 -blur 0x12 -evaluate multiply 0.45 \
+  "$tmp/drive-shade.png"
+magick -size 1024x1024 xc:black "$tmp/drive-shade.png" -alpha off -compose CopyOpacity -composite \
+  "$tmp/drive.png" -compose Over -composite "$tmp/drive-mark.png" -geometry +368+300 -composite \
+  "PNG32:$tmp/volume.png"
+mkdir "$tmp/volume.iconset"
+for s in 16 32 128 256 512; do
+  magick "$tmp/volume.png" -resize "${s}x${s}" "PNG32:$tmp/volume.iconset/icon_${s}x${s}.png"
+  magick "$tmp/volume.png" -resize "$((s * 2))x$((s * 2))" "PNG32:$tmp/volume.iconset/icon_${s}x${s}@2x.png"
+done
+iconutil -c icns -o "$out/volume-mac.icns" "$tmp/volume.iconset"
+
 # macOS menu bar: a template image, the system paints it for the light and the dark bar. Menu
 # bar glyphs are line drawings, and a filled silhouette of the block reads as a black blot
 # there, so this one is drawn by hand: an outlined block with a grass cap and the pulse inside.

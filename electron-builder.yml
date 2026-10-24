@@ -80,6 +80,7 @@ mac:
 dmg:
   title: MC Monitor Launcher
   writeUpdateInfo: false
+  icon: build/volume-mac.icns
   background: build/dmg-background.png
   iconSize: 112
   iconTextSize: 13

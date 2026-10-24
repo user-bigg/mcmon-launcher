@@ -224,6 +224,7 @@ export const ru = typesetTree({
     peaceful: 'Мирный',
     pvp: 'PvP',
     clans: 'Кланы',
+    smp: 'СМП',
     other: 'Другое',
   },
   tagsInline: {
@@ -242,6 +243,7 @@ export const ru = typesetTree({
     peaceful: 'мирный',
     pvp: 'PvP',
     clans: 'кланы',
+    smp: 'СМП',
     other: 'другое',
   },
   loaders: {

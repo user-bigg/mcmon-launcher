@@ -140,7 +140,11 @@ describe('formatting', () => {
   });
 
   it("'Other' and unfamiliar modes are not shown as a chip", () => {
-    expect(shownTags(['other', 'survival', 'unknown-mode', 'pvp'])).toEqual(['survival', 'pvp']);
+    expect(shownTags(['other', 'survival', 'unknown-mode', 'pvp', 'smp'])).toEqual([
+      'survival',
+      'pvp',
+      'smp',
+    ]);
     expect(tagList(['other'])).toBe('');
   });
 
