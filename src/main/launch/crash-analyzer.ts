@@ -402,7 +402,12 @@ function graphicsFixes(
   cause: Extract<CrashCause, { code: 'graphics' }>,
   input: CrashInput,
 ): CrashFix[] {
-  const fixes: CrashFix[] = [{ type: 'advice', advice: 'update-driver' }];
+  const fixes: CrashFix[] = [];
+  if (input.platform !== 'darwin') {
+    fixes.push({ type: 'advice', advice: 'update-driver' });
+  } else if (cause.problem !== 'display') {
+    fixes.push({ type: 'advice', advice: 'update-macos' });
+  }
   if (input.platform === 'win32') {
     fixes.push({ type: 'advice', advice: 'discrete-gpu' });
   }

@@ -76,6 +76,7 @@ export type CrashAdvice =
   | 'close-programs'
   | 'paging-file'
   | 'update-driver'
+  | 'update-macos'
   | 'discrete-gpu'
   | 'vm-graphics'
   | 'free-disk'

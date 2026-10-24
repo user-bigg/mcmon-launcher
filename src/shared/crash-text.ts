@@ -1,6 +1,7 @@
 import {
   GAME_DIALOG_RULE,
   signedExitCode,
+  type CrashAdvice,
   type CrashAnalysis,
   type CrashCause,
   type CrashExit,
@@ -155,8 +156,15 @@ function graphicsText(
     case 'no-opengl':
     case 'pixel-format':
     case 'context':
-      return { text: strings.text, summary: strings.summary };
+      return {
+        text: advises(fixes, 'update-macos') ? strings.textMac : strings.text,
+        summary: strings.summary,
+      };
   }
+}
+
+function advises(fixes: readonly CrashFix[], advice: CrashAdvice): boolean {
+  return fixes.some((fix) => fix.type === 'advice' && fix.advice === advice);
 }
 
 function modConflictText(

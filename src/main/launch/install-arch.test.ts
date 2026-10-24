@@ -34,11 +34,22 @@ interface JavaCall {
 let root: string;
 let javaCalls: JavaCall[];
 
-function versionFor(id: string): ResolvedVersion {
+interface Machine {
+  platform: NodeJS.Platform;
+  arch: string;
+  rosetta?: () => boolean;
+}
+
+const WINDOWS: Machine = { platform: 'win32', arch: 'x64' };
+
+function versionFor(id: string, machine: Machine): ResolvedVersion {
+  const mac = machine.platform === 'darwin';
   const fixture = JSON.parse(
-    readFileSync(join(FIXTURES, `libraries-${id}.json`), 'utf8'),
+    readFileSync(join(FIXTURES, `libraries-${mac ? 'mac-' : ''}${id}.json`), 'utf8'),
   ) as VersionFixture;
-  const platform: Platform = { name: 'windows', version: '10.0.26100', arch: 'x64' };
+  const platform: Platform = mac
+    ? { name: 'osx', version: '15.5', arch: 'arm64' }
+    : { name: 'windows', version: '10.0.26100', arch: 'x64' };
   return {
     id,
     minecraftVersion: id,
@@ -76,7 +87,11 @@ async function prepare(id: string, registryArch: RegistryArchReader | undefined)
   service.dispose();
 }
 
-function makeService(id: string, registryArch: RegistryArchReader | undefined): Prepared {
+function makeService(
+  id: string,
+  registryArch: RegistryArchReader | undefined,
+  machine: Machine = WINDOWS,
+): Prepared {
   const entry: VersionEntry = {
     id,
     type: 'release',
@@ -86,7 +101,7 @@ function makeService(id: string, registryArch: RegistryArchReader | undefined): 
   };
   const dependencies: Partial<LaunchDependencies> = {
     findVersion: () => Promise.resolve(entry),
-    installVersionJson: (_folder, item) => Promise.resolve(versionFor(item.id)),
+    installVersionJson: (_folder, item) => Promise.resolve(versionFor(item.id, machine)),
     installJava,
     readVersionLock: () => Promise.resolve(undefined),
     writeVersionLock: () => Promise.resolve(true),
@@ -96,13 +111,15 @@ function makeService(id: string, registryArch: RegistryArchReader | undefined): 
     verifyInstallation: () => Promise.resolve(),
     countVerifiedFiles: () => Promise.resolve(1),
     createTransfer: () => fakeTransfer(),
+    prepareMacGlfw: () => Promise.resolve(join(root, 'glfw', 'libglfw.3.dylib')),
   };
   const instances = new InstanceStore({ layout: gameLayout(root), now: Date.now });
   const service = createLaunchService({
     root,
-    platform: 'win32',
-    arch: 'x64',
+    platform: machine.platform,
+    arch: machine.arch,
     ...(registryArch === undefined ? {} : { registryArch }),
+    ...(machine.rosetta === undefined ? {} : { rosetta: machine.rosetta }),
     totalMemoryBytes: 16 * 1024 ** 3,
     fetch: () => Promise.resolve({}),
     instances,
@@ -222,5 +239,62 @@ describe('Java for the game on Windows ARM', () => {
     expect(await prepared).toEqual({ ok: false, error: { code: 'cancelled' } });
     expect(javaCalls).toEqual([]);
     service.dispose();
+  });
+});
+
+describe('Java for the game on Apple Silicon', () => {
+  const mac = (rosetta: boolean): Machine => ({
+    platform: 'darwin',
+    arch: 'arm64',
+    rosetta: () => rosetta,
+  });
+
+  it('1.19 gets the arm64 runtime in the old folder', async () => {
+    const { service, target } = makeService('1.19', undefined, mac(true));
+    expect(await service.prepare(target)).toMatchObject({ ok: true });
+    service.dispose();
+    expect(javaCalls).toEqual([
+      {
+        component: 'java-runtime-gamma',
+        place: {
+          mojangPlatform: 'mac-os-arm64',
+          home: join(root, 'runtime', 'java-runtime-gamma'),
+        },
+        manifestUrl: manifestUrl('mac-os-arm64', 'java-runtime-gamma'),
+      },
+    ]);
+  });
+
+  it('1.16.5 and 1.8.9 get the x64 runtime in its own folder', async () => {
+    for (const id of ['1.16.5', '1.8.9']) {
+      javaCalls = [];
+      const { service, target } = makeService(id, undefined, mac(true));
+      expect(await service.prepare(target)).toMatchObject({ ok: true });
+      service.dispose();
+      expect(javaCalls).toEqual([
+        {
+          component: 'jre-legacy',
+          place: { mojangPlatform: 'mac-os', home: join(root, 'runtime', 'mac-os', 'jre-legacy') },
+          manifestUrl: manifestUrl('mac-os', 'jre-legacy'),
+        },
+      ]);
+    }
+  });
+
+  it('1.19 needs no Rosetta', async () => {
+    const { service, target } = makeService('1.19', undefined, mac(false));
+    expect(await service.prepare(target)).toMatchObject({ ok: true });
+    service.dispose();
+    expect(javaCalls.map((call) => call.place?.mojangPlatform)).toEqual(['mac-os-arm64']);
+  });
+
+  it('without Rosetta an old version stops before Java is downloaded', async () => {
+    const { service, target } = makeService('1.16.5', undefined, mac(false));
+    expect(await service.prepare(target)).toEqual({
+      ok: false,
+      error: { code: 'rosetta-missing', minecraft: '1.16.5' },
+    });
+    service.dispose();
+    expect(javaCalls).toEqual([]);
   });
 });

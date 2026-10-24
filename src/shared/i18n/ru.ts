@@ -646,6 +646,11 @@ export const ru = typesetTree({
       text: 'Без неё эта версия игры не запустится. Проверьте интернет.',
       action: 'Повторить',
     },
+    'rosetta-missing': {
+      title: 'Для Minecraft {minecraft} нужна Rosetta',
+      text: 'Rosetta — программа Apple, через которую старые версии игры идут на Mac с Apple Silicon. Откройте Терминал, выполните softwareupdate --install-rosetta, согласитесь с лицензией и нажмите «Повторить».',
+      action: 'Повторить',
+    },
     network: {
       title: 'Файлы игры не скачались',
       text: 'Проверьте интернет и повторите — скачанное не пропадёт.',

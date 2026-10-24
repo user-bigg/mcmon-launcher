@@ -74,6 +74,7 @@ export type GameEvent =
 
 export type LaunchError =
   | { code: 'java-missing'; component: string; major: number }
+  | { code: 'rosetta-missing'; minecraft: string }
   | { code: 'network'; url: string | null; reason?: NetworkErrorReason }
   | { code: 'disk-full'; path: string | null; bytesNeeded: number | null }
   | { code: 'checksum-mismatch'; file: string }

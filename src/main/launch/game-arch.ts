@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { withDeadline } from '../deadline';
 import { nativeArch } from '../device/profile';
 import { pickJavaTarget } from './java';
@@ -6,8 +7,12 @@ import { mojangPlatform } from './layout';
 export const MACHINE_ARCH_DEADLINE_MS = 4000;
 
 const LWJGL_GROUP = 'org.lwjgl';
-const WINDOWS_NATIVES = 'natives-windows';
-const WINDOWS_ARM64_NATIVES = 'natives-windows-arm64';
+const ARM64_NATIVES: Partial<Record<NodeJS.Platform, { x64: string; arm64: string }>> = {
+  win32: { x64: 'natives-windows', arm64: 'natives-windows-arm64' },
+  darwin: { x64: 'natives-macos', arm64: 'natives-macos-arm64' },
+};
+// Apple Silicon runs x64 programs only through Rosetta, and macOS installs it only on request.
+const ROSETTA = '/Library/Apple/usr/share/rosetta/rosetta';
 
 export type RegistryArchReader = () => Promise<string | null>;
 
@@ -57,20 +62,29 @@ function lwjglModules(version: LibraryNames, classifier: string): Set<string> {
   return modules;
 }
 
-// Since 1.19 version.json lists the x64, x86 and arm64 natives of LWJGL side by side under one
-// `os.name` rule, and LWJGL picks its own by the architecture of the JVM it runs in.
-export function hasWindowsArm64Natives(version: LibraryNames): boolean {
-  const x64 = lwjglModules(version, WINDOWS_NATIVES);
-  const arm64 = lwjglModules(version, WINDOWS_ARM64_NATIVES);
+// Since 1.19 version.json lists the x64 and arm64 natives of LWJGL side by side under one
+// `os.name` rule, and LWJGL picks its own by the architecture of the JVM it runs in. Older
+// versions have x64 natives only, so on an ARM machine they run in an emulated x64 Java.
+export function hasArm64Natives(version: LibraryNames, platform: NodeJS.Platform): boolean {
+  const classifiers = ARM64_NATIVES[platform];
+  if (classifiers === undefined) {
+    return false;
+  }
+  const x64 = lwjglModules(version, classifiers.x64);
+  const arm64 = lwjglModules(version, classifiers.arm64);
   return x64.size > 0 && [...x64].every((module) => arm64.has(module));
 }
 
 export function gameArch(input: GameArchInput): string {
-  if (input.platform !== 'win32' || input.machineArch !== 'arm64') {
+  if (ARM64_NATIVES[input.platform] === undefined || input.machineArch !== 'arm64') {
     return input.processArch;
   }
-  const platform = mojangPlatform('win32', 'arm64');
+  const platform = mojangPlatform(input.platform, 'arm64');
   const java =
     platform === null ? null : pickJavaTarget(input.javaIndex, platform, input.component);
-  return java !== null && hasWindowsArm64Natives(input.version) ? 'arm64' : 'x64';
+  return java !== null && hasArm64Natives(input.version, input.platform) ? 'arm64' : 'x64';
+}
+
+export function rosettaInstalled(exists: (path: string) => boolean = existsSync): boolean {
+  return exists(ROSETTA);
 }

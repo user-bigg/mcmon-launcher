@@ -9,7 +9,8 @@ import type { LaunchTelemetryEvent } from '@shared/telemetry';
 import type { LaunchDependencies } from './dependencies';
 import type { TrackedRuntime } from './download';
 import { failure, toLaunchError } from './errors';
-import { gameArch, readMachineArch, type RegistryArchReader } from './game-arch';
+import { needsMacGlfw } from './mac-glfw';
+import { gameArch, readMachineArch, rosettaInstalled, type RegistryArchReader } from './game-arch';
 import { withFolderOverrides } from './instance-overrides';
 import type { InstanceStore } from './instances';
 import { javaRequirement, type installJava, type JavaRequirement } from './java';
@@ -55,6 +56,7 @@ export interface InstallerOptions {
   platform: NodeJS.Platform;
   arch: string;
   registryArch?: RegistryArchReader | undefined;
+  rosetta?: (() => boolean) | undefined;
   fetch: FetchJson;
   fetchText?: FetchText | undefined;
   instances: InstanceStore;
@@ -74,6 +76,7 @@ export interface Installed {
   clientModRun: ClientModRun | null;
   mods: ModsPlan | null;
   modsDir: string | null;
+  glfwLibrary: string | null;
   java: JavaRequirement;
   javaPath: string;
   lockFile: string;
@@ -94,6 +97,7 @@ interface CatalogHolder {
 interface GameMachine {
   machineArch: string;
   version: ResolvedVersion;
+  minecraft: string;
 }
 
 interface LoaderOutcome {
@@ -220,6 +224,10 @@ export class GameInstaller {
     return readMachineArch(platform, arch, registryArch);
   }
 
+  private rosettaReady(): boolean {
+    return (this.options.rosetta ?? rosettaInstalled)();
+  }
+
   private javaOptions(
     requirement: JavaRequirement,
     game: GameMachine,
@@ -241,6 +249,9 @@ export class GameInstaller {
         });
         if (arch !== processArch) {
           this.log(`launch: Java ${requirement.component} for ${arch}`);
+        }
+        if (platform === 'darwin' && arch !== processArch && !this.rosettaReady()) {
+          throw failure({ code: 'rosetta-missing', minecraft: game.minecraft });
         }
         return javaPlace(layout, { platform, processArch, arch }, requirement.component);
       },
@@ -281,7 +292,7 @@ export class GameInstaller {
     const modsPlanned = await planCatalogMods(mods, profile, operation);
     const javaTransfer = this.startStep(operation, 'java');
     const java = javaOverrideRequirement(profile.javaOverride) ?? javaRequirement(base);
-    const game: GameMachine = { machineArch: await machine, version: base };
+    const game: GameMachine = { machineArch: await machine, version: base, minecraft: entry.id };
     signal.throwIfAborted();
     const javaPath = await deps.installJava(this.javaOptions(java, game, signal, javaTransfer));
     operation.end('java');
@@ -291,6 +302,9 @@ export class GameInstaller {
     await deps.installAssetIndex(base, folder, this.tracked(operation, 'files'), validatedAt);
     const filesTransfer = this.startStep(operation, 'files');
     await deps.installGameFiles(base, folder, filesTransfer, validatedAt);
+    const glfwLibrary = needsMacGlfw(base, this.options.platform)
+      ? await deps.prepareMacGlfw(layout, filesTransfer)
+      : null;
     operation.end('files');
 
     const catalog: CatalogHolder = {
@@ -375,6 +389,7 @@ export class GameInstaller {
       clientModRun: ranClientMod,
       mods: catalog.run?.plan ?? null,
       modsDir: outcome.modsDir,
+      glfwLibrary,
       java,
       javaPath,
       lockFile,

@@ -151,6 +151,7 @@ export class GameSessions {
         mode,
         address: target,
         modsDir: installed.modsDir,
+        glfwLibrary: installed.glfwLibrary,
         minecraft: entry.id,
       });
       options.spawn = argFileSpawn({

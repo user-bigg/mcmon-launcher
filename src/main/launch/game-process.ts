@@ -14,6 +14,7 @@ import { gameListAddress, type ServerAddress } from '@shared/server-address';
 import { locateCrashReport } from './crash-files';
 import type { GameAuth } from './accounts';
 import { connectingTarget, type GameLogWriter } from './game-log';
+import { macGlfwJvmArgs } from './mac-glfw';
 import { isWindowFailure, isWindowReady, WINDOW_SIGN_TAIL } from './window-signs';
 
 export {
@@ -128,12 +129,17 @@ export function argFileSpawn(options: ArgFileOptions): SpawnGame {
 
 // When extraJVMArgs is passed, @xmcl/core drops its default G1 flags:
 // we add them ourselves and append the encoding so the game output reads as UTF-8.
-export function gameJvmArgs(modsDir: string | null = null, blockServices = false): string[] {
+export function gameJvmArgs(
+  modsDir: string | null = null,
+  blockServices = false,
+  glfwLibrary: string | null = null,
+): string[] {
   return [
     ...DEFAULT_EXTRA_JVM_ARGS.filter((arg) => !arg.startsWith('-Xmx')),
     ...ENCODING_JVM_ARGS,
     ...modsFolderArgs(modsDir),
     ...(blockServices ? SERVICES_BLOCK_JVM_ARGS : []),
+    ...macGlfwJvmArgs(glfwLibrary),
   ];
 }
 
@@ -187,6 +193,7 @@ export interface GameLaunchInput {
   mode: JoinMode | null;
   address: ServerAddress | null;
   modsDir?: string | null;
+  glfwLibrary?: string | null;
   minecraft?: string;
 }
 
@@ -246,7 +253,11 @@ export function gameLaunchOptions(input: GameLaunchInput): LaunchOption {
     launcherName: LAUNCHER_NAME,
     launcherBrand: LAUNCHER_NAME,
     maxMemory: input.memoryMb,
-    extraJVMArgs: gameJvmArgs(input.modsDir ?? null, blocksServices(input)),
+    extraJVMArgs: gameJvmArgs(
+      input.modsDir ?? null,
+      blocksServices(input),
+      input.glfwLibrary ?? null,
+    ),
     resolution: {
       width: input.resolution?.width ?? GAME_RESOLUTION.width,
       height: input.resolution?.height ?? GAME_RESOLUTION.height,

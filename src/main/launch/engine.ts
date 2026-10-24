@@ -14,6 +14,7 @@ export interface EngineOptions {
   platform: NodeJS.Platform;
   arch: string;
   registryArch?: RegistryArchReader | undefined;
+  rosetta?: (() => boolean) | undefined;
   totalMemoryBytes: number;
   fetch: FetchJson;
   fetchText?: FetchText | undefined;
@@ -38,6 +39,7 @@ export function createEngine(options: EngineOptions): Engine {
     platform: options.platform,
     arch: options.arch,
     registryArch: options.registryArch,
+    rosetta: options.rosetta,
     fetch: options.fetch,
     fetchText: options.fetchText,
     instances: options.instances,

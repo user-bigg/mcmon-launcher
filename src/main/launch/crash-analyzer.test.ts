@@ -219,6 +219,24 @@ describe('graphics driver and Windows exit codes', () => {
     ]);
   });
 
+  it('on a Mac the driver comes with macOS, and there is no Windows advice', () => {
+    const verdict = analyzeCrash(fromLog('graphics-wgl', { platform: 'darwin' }));
+    expect(adviceOf(verdict)).toEqual(['update-macos']);
+  });
+
+  it('a Mac display GLFW cannot find gets no driver advice', () => {
+    const verdict = analyzeCrash(
+      input({
+        platform: 'darwin',
+        logLines: [
+          '[main/ERROR]: GLFW error before init: [0x10008]Cocoa: Failed to find service port for display',
+        ],
+      }),
+    );
+    expect(verdict.cause).toEqual({ code: 'graphics', problem: 'display' });
+    expect(adviceOf(verdict)).toEqual([]);
+  });
+
   it('GLFW error 65544 from WGL is a graphics issue with the virtual machine advice', () => {
     const verdict = analyzeCrash(fromLog('graphics-pixel-attributes'));
     expect(verdict.rule).toBe('pixel-format');

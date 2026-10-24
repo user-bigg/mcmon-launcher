@@ -30,6 +30,7 @@ export interface ErrorView {
 
 const errorActions: Record<ErrorKey, ErrorAction> = {
   'java-missing': 'retry',
+  'rosetta-missing': 'retry',
   'file-locked': 'retry',
   'file-missing': 'retry',
   'too-many-files': 'retry',
@@ -90,6 +91,7 @@ function errorParams(error: LaunchError): Record<string, string | number> {
     case 'invalid-request':
       return { field: error.field };
     case 'join-unsupported':
+    case 'rosetta-missing':
       return { minecraft: error.minecraft };
     case 'mods-required-missing':
     case 'mods-required-failed':

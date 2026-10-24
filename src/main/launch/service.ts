@@ -66,6 +66,7 @@ export interface LaunchServiceOptions {
   platform: NodeJS.Platform;
   arch: string;
   registryArch?: RegistryArchReader;
+  rosetta?: () => boolean;
   totalMemoryBytes: number;
   fetch: FetchJson;
   fetchText?: FetchText;
@@ -532,6 +533,7 @@ export class GameLaunchService implements LaunchService {
         platform: this.options.platform,
         arch: this.options.arch,
         registryArch: this.options.registryArch,
+        rosetta: this.options.rosetta,
         totalMemoryBytes: this.options.totalMemoryBytes,
         fetch: this.options.fetch,
         fetchText: this.options.fetchText,

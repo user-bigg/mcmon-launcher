@@ -4,9 +4,10 @@ import { Version, type Platform } from '@xmcl/core';
 import { describe, expect, it, vi } from 'vitest';
 import {
   gameArch,
-  hasWindowsArm64Natives,
+  hasArm64Natives,
   machineArch,
   readMachineArch,
+  rosettaInstalled,
   type LibraryNames,
 } from './game-arch';
 import { gameLayout, javaHome, javaPlace } from './layout';
@@ -17,6 +18,7 @@ const JAVA_INDEX: unknown = JSON.parse(
 );
 const WINDOWS_X64: Platform = { name: 'windows', version: '10.0.26100', arch: 'x64' };
 const WINDOWS_ARM64: Platform = { ...WINDOWS_X64, arch: 'arm64' };
+const MAC_ARM64: Platform = { name: 'osx', version: '15.5', arch: 'arm64' };
 
 interface VersionFixture {
   javaVersion: { component: string; majorVersion: number };
@@ -79,12 +81,12 @@ describe('readMachineArch', () => {
   });
 });
 
-describe('hasWindowsArm64Natives', () => {
+describe('hasArm64Natives', () => {
   it('the border is 1.19: LWJGL 3.3.1 is the first with windows-arm64 natives', () => {
-    expect(hasWindowsArm64Natives(resolved('1.18.2'))).toBe(false);
-    expect(hasWindowsArm64Natives(resolved('1.19'))).toBe(true);
-    expect(hasWindowsArm64Natives(resolved('1.21.11'))).toBe(true);
-    expect(hasWindowsArm64Natives(resolved('26.2'))).toBe(true);
+    expect(hasArm64Natives(resolved('1.18.2'), 'win32')).toBe(false);
+    expect(hasArm64Natives(resolved('1.19'), 'win32')).toBe(true);
+    expect(hasArm64Natives(resolved('1.21.11'), 'win32')).toBe(true);
+    expect(hasArm64Natives(resolved('26.2'), 'win32')).toBe(true);
   });
 
   it('one LWJGL module without the arm64 natives keeps the whole version on x64', () => {
@@ -95,13 +97,13 @@ describe('hasWindowsArm64Natives', () => {
       ),
     };
     expect(partial.libraries).toHaveLength(version.libraries.length - 1);
-    expect(hasWindowsArm64Natives(partial)).toBe(false);
+    expect(hasArm64Natives(partial, 'win32')).toBe(false);
   });
 
   it('a version without LWJGL 3 natives is not an arm64 one', () => {
     const legacy = 'org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209:natives-windows';
-    expect(hasWindowsArm64Natives({ libraries: [] })).toBe(false);
-    expect(hasWindowsArm64Natives({ libraries: [{ name: legacy }] })).toBe(false);
+    expect(hasArm64Natives({ libraries: [] }, 'win32')).toBe(false);
+    expect(hasArm64Natives({ libraries: [{ name: legacy }] }, 'win32')).toBe(false);
   });
 });
 
@@ -140,19 +142,90 @@ describe('gameArch on Windows ARM', () => {
   });
 });
 
+function macArch(id: string): string {
+  const version = fixture(`mac-${id}`);
+  return gameArch({
+    platform: 'darwin',
+    processArch: 'arm64',
+    machineArch: 'arm64',
+    version: { libraries: Version.resolveLibraries(version.libraries, MAC_ARM64) },
+    javaIndex: JAVA_INDEX,
+    component: version.javaVersion.component,
+  });
+}
+
+describe('gameArch on Apple Silicon', () => {
+  it('1.19 and newer run on arm64: Mojang has the Java and LWJGL has the natives', () => {
+    expect(macArch('1.19')).toBe('arm64');
+  });
+
+  it('older versions run on x64 under Rosetta: Mojang has no arm64 Java for them', () => {
+    expect(macArch('1.16.5')).toBe('x64');
+    expect(macArch('1.8.9')).toBe('x64');
+  });
+
+  it('1.18.2 runs on x64: its LWJGL 3.2.1 for macOS has no arm64 natives', () => {
+    const version = { libraries: Version.resolveLibraries(fixture('1.18.2').libraries, MAC_ARM64) };
+    expect(hasArm64Natives(version, 'darwin')).toBe(false);
+    const arch = gameArch({
+      platform: 'darwin',
+      processArch: 'arm64',
+      machineArch: 'arm64',
+      version,
+      javaIndex: JAVA_INDEX,
+      component: 'java-runtime-gamma',
+    });
+    expect(arch).toBe('x64');
+  });
+
+  it('an Intel Mac keeps x64 for every version', () => {
+    const version = fixture('mac-1.19');
+    const arch = gameArch({
+      platform: 'darwin',
+      processArch: 'x64',
+      machineArch: 'x64',
+      version: { libraries: Version.resolveLibraries(version.libraries, MAC_ARM64) },
+      javaIndex: JAVA_INDEX,
+      component: version.javaVersion.component,
+    });
+    expect(arch).toBe('x64');
+  });
+});
+
 describe('gameArch elsewhere', () => {
-  it('an x64 machine and other systems keep the process architecture for every version', () => {
+  it('an x64 machine keeps the process architecture for every version', () => {
     for (const id of ['1.18.2', '1.19', '1.21.11', '26.2']) {
-      const input = {
+      const arch = gameArch({
         version: resolved(id),
         javaIndex: JAVA_INDEX,
         component: fixture(id).javaVersion.component,
-      };
-      const windows = { ...input, platform: 'win32', processArch: 'x64', machineArch: 'x64' };
-      const mac = { ...input, platform: 'darwin', processArch: 'arm64', machineArch: 'arm64' };
-      expect(gameArch({ ...windows, platform: 'win32' })).toBe('x64');
-      expect(gameArch({ ...mac, platform: 'darwin' })).toBe('arm64');
+        platform: 'win32',
+        processArch: 'x64',
+        machineArch: 'x64',
+      });
+      expect(arch).toBe('x64');
     }
+  });
+
+  it('Linux keeps the process architecture', () => {
+    const arch = gameArch({
+      version: resolved('1.21.11'),
+      javaIndex: JAVA_INDEX,
+      component: 'java-runtime-delta',
+      platform: 'linux',
+      processArch: 'arm64',
+      machineArch: 'arm64',
+    });
+    expect(arch).toBe('arm64');
+  });
+});
+
+describe('rosettaInstalled', () => {
+  it('looks for the Rosetta runtime macOS installs on request', () => {
+    expect(rosettaInstalled((file) => file === '/Library/Apple/usr/share/rosetta/rosetta')).toBe(
+      true,
+    );
+    expect(rosettaInstalled(() => false)).toBe(false);
   });
 });
 

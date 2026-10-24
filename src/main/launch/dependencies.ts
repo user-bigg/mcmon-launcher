@@ -24,6 +24,7 @@ import {
   type StopMode,
 } from './game-process';
 import { installJava } from './java';
+import { prepareMacGlfw } from './mac-glfw';
 import { prepareLoader, verifyWithLoaderRepair } from './loader-step';
 import { DIRECT_NETWORK, type NetworkSetup } from './network';
 import { createModFetch, type ModFetch } from './skins/mod-file';
@@ -38,6 +39,7 @@ export interface LaunchDependencies {
   removeVersionLock: typeof removeVersionLock;
   installAssetIndex: typeof installAssetIndex;
   installGameFiles: typeof installGameFiles;
+  prepareMacGlfw: typeof prepareMacGlfw;
   verifyInstallation: typeof verifyInstallation;
   countVerifiedFiles: typeof countVerifiedFiles;
   prepareLoader: typeof prepareLoader;
@@ -67,6 +69,7 @@ export const defaultLaunchDependencies: LaunchDependencies = {
   removeVersionLock,
   installAssetIndex,
   installGameFiles,
+  prepareMacGlfw,
   verifyInstallation,
   countVerifiedFiles,
   prepareLoader,
