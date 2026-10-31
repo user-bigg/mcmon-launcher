@@ -5,8 +5,11 @@ import type {
   AccountResult,
   AccountState,
   AccountUser,
+  NickError,
+  NickResult,
   PinnedNick,
   PlayCheck,
+  SiteNick,
 } from '@shared/account';
 import { sameNickLetters } from '@shared/account';
 import { isValidNick } from '@shared/launch';
@@ -37,6 +40,7 @@ import { useStores } from './context';
 
 const NICK_HEAD = 'fox';
 const LICENSE_HEAD = 'frost';
+const NICK_FAILED: NickError = { code: 'failed' };
 const UNCHECKED: PlayCheck = { kind: 'unchecked' };
 const LOOK_FAILED: LookResult = { ok: false, error: { code: 'failed' } };
 
@@ -61,12 +65,17 @@ export interface AccountsStore {
   mcError: Ref<AccountError | null>;
   mcBusy: Ref<boolean>;
   addNick: (nick: string) => GameAccount | null;
+  claimNick: (nick: string) => Promise<NickError | null>;
+  setAvatar: (nick: string) => Promise<NickError | null>;
+  siteNickOf: (nick: string) => SiteNick | null;
+  skinOfNick: (nick: string) => string | null;
+  avatarName: ComputedRef<string | null>;
   select: (account: GameAccount) => void;
-  removeNick: (id: string) => void;
+  removeNick: (id: string) => Promise<NickError | null>;
   saveNick: (nick: string) => boolean;
   checkNick: (nick: string) => Promise<PlayCheck>;
   wear: (change: LookChange) => Promise<LookError | null>;
-  resetLook: () => Promise<LookError | null>;
+  resetLook: (nick?: string) => Promise<LookError | null>;
   loginMicrosoft: () => Promise<void>;
   reopenMicrosoft: () => Promise<void>;
   cancelMicrosoft: () => Promise<void>;
@@ -148,6 +157,20 @@ export function createAccounts(context: LauncherContext): AccountsStore {
   const accounts = computed(() => [...licenses.value.map(licenseAccount), ...nicks.value]);
   const pinned = computed(() => mc.value?.nick ?? null);
   const pinnedName = computed(() => pinned.value?.name ?? null);
+  const siteNicks = computed(() => mc.value?.nicks ?? []);
+  const avatarName = computed(
+    () => siteNicks.value.find((item) => item.avatar)?.name ?? pinnedName.value,
+  );
+  function siteNickOf(name: string): SiteNick | null {
+    return siteNicks.value.find((item) => sameNickLetters(item.name, name)) ?? null;
+  }
+  // A nickname of the account without its own skin wears the avatar's.
+  function skinOfNick(name: string): string | null {
+    const site = siteNickOf(name);
+    const own = site?.skin?.url ?? null;
+    const isAvatar = avatarName.value !== null && sameNickLetters(avatarName.value, name);
+    return own ?? (site !== null || isAvatar ? (mc.value?.skin?.url ?? null) : null);
+  }
   const pinnedNick = computed(() => {
     const name = pinnedName.value;
     return name === null
@@ -380,22 +403,29 @@ export function createAccounts(context: LauncherContext): AccountsStore {
   // for the account becomes that nickname's row.
   function adoptPinnedNick(): void {
     const name = pinnedName.value;
-    if (!settled.value || name === null || !isValidNick(name)) {
+    if (!settled.value) {
       return;
     }
-    const known = pinnedNick.value;
-    const row = known ?? insertNick(name);
-    const legacyRow = activeRef.value?.kind === 'mc-monitor';
-    if (legacyRow) {
-      activeRef.value = { kind: 'nick', id: row.id };
+    const before = nicks.value.length;
+    for (const item of siteNicks.value) {
+      insertNick(item.name);
     }
-    if (known === null || legacyRow) {
+    let legacyRow = false;
+    if (name !== null && isValidNick(name)) {
+      const row = pinnedNick.value ?? insertNick(name);
+      legacyRow = activeRef.value?.kind === 'mc-monitor';
+      if (legacyRow) {
+        activeRef.value = { kind: 'nick', id: row.id };
+      }
+    }
+    if (nicks.value.length !== before || legacyRow) {
       persist();
     }
   }
 
   const settled = ref(context.demo);
-  watch(pinnedName, adoptPinnedNick);
+  const siteNickNames = computed(() => siteNicks.value.map((item) => item.name).join(','));
+  watch([pinnedName, siteNickNames], adoptPinnedNick);
   void ready.then(() => {
     settled.value = true;
     adoptPinnedNick();
@@ -440,12 +470,53 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     return account;
   }
 
-  function removeNick(id: string): void {
+  // A nickname pinned to the account is let go on the site too, or the next sign-in brings it back.
+  async function removeNick(id: string): Promise<NickError | null> {
+    const row = nicks.value.find((item) => item.id === id);
+    const site = row === undefined ? null : siteNickOf(row.name);
+    if (site !== null && !context.demo) {
+      const result = await context.api.account.removeSiteNick(site.name).catch(() => null);
+      if (result === null) {
+        return NICK_FAILED;
+      }
+      if (result.ok) {
+        accept(result.value);
+      } else if (result.error.code !== 'unsupported') {
+        return result.error;
+      }
+    }
     nicks.value = nicks.value.filter((item) => item.id !== id);
     if (activeRef.value?.kind === 'nick' && activeRef.value.id === id) {
       activeRef.value = null;
     }
     persist();
+    return null;
+  }
+
+  async function siteNickCall(call: () => Promise<NickResult>): Promise<NickError | null> {
+    if (context.demo) {
+      return null;
+    }
+    const result = await call().catch(() => null);
+    if (result?.ok !== true) {
+      return result?.error ?? NICK_FAILED;
+    }
+    accept(result.value);
+    return null;
+  }
+
+  // While signed in, a new nickname joins the account so that it gets a skin and a code; a site
+  // without nickname lists leaves it in the launcher only.
+  async function claimNick(name: string): Promise<NickError | null> {
+    if (mc.value === null || siteNickOf(name) !== null) {
+      return null;
+    }
+    const failure = await siteNickCall(() => context.api.account.addSiteNick(name));
+    return failure?.code === 'unsupported' ? null : failure;
+  }
+
+  function setAvatar(name: string): Promise<NickError | null> {
+    return siteNickCall(() => context.api.account.setAvatarNick(name));
   }
 
   function saveNick(name: string): boolean {
@@ -572,12 +643,17 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     mcError,
     mcBusy,
     addNick,
+    claimNick,
+    setAvatar,
+    siteNickOf,
+    skinOfNick,
+    avatarName,
     select,
     removeNick,
     saveNick,
     checkNick,
     wear: (change) => dress(() => context.api.account.wear(change)),
-    resetLook: () => dress(() => context.api.account.resetLook()),
+    resetLook: (nick) => dress(() => context.api.account.resetLook(nick)),
     loginMicrosoft,
     reopenMicrosoft,
     cancelMicrosoft,

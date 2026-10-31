@@ -2,6 +2,7 @@ import {
   MAX_LOGIN_CODE_INPUT,
   parsePlayCheckQuery,
   type AccountService,
+  type NickResult,
   type PlayCheck,
 } from '@shared/account';
 import { isValidNick } from '@shared/launch';
@@ -25,6 +26,9 @@ export type AccountControl = Pick<
   | 'refresh'
   | 'setNick'
   | 'playCheck'
+  | 'addSiteNick'
+  | 'removeSiteNick'
+  | 'setAvatarNick'
   | 'wear'
   | 'resetLook'
   | 'onEvent'
@@ -32,6 +36,15 @@ export type AccountControl = Pick<
 
 const UNCHECKED: PlayCheck = { kind: 'unchecked' };
 const NOT_WORN: LookResult = { ok: false, error: { code: 'failed' } };
+
+function nickCall(
+  nick: unknown,
+  call: (nick: string) => Promise<NickResult>,
+): NickResult | Promise<NickResult> {
+  return typeof nick === 'string' && isValidNick(nick)
+    ? call(nick)
+    : { ok: false, error: { code: 'invalid_nick' } };
+}
 
 export function accountHandlers(manager: AccountControl): InvokeHandlers<AccountService> {
   return {
@@ -55,11 +68,19 @@ export function accountHandlers(manager: AccountControl): InvokeHandlers<Account
       // code and cancel the one the running game holds.
       return parsed === null ? UNCHECKED : manager.playCheck({ ...parsed, serverId: null });
     },
+    addSiteNick: (nick) => nickCall(nick, (valid) => manager.addSiteNick(valid)),
+    removeSiteNick: (nick) => nickCall(nick, (valid) => manager.removeSiteNick(valid)),
+    setAvatarNick: (nick) => nickCall(nick, (valid) => manager.setAvatarNick(valid)),
     wear: (change): LookResult | Promise<LookResult> => {
       const parsed = parseLookChange(change);
       return parsed === null ? NOT_WORN : manager.wear(parsed);
     },
-    resetLook: () => manager.resetLook(),
+    resetLook: (nick) =>
+      nick === undefined
+        ? manager.resetLook()
+        : typeof nick === 'string' && isValidNick(nick)
+          ? manager.resetLook(nick)
+          : NOT_WORN,
   };
 }
 

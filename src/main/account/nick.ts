@@ -14,7 +14,12 @@ function unreachable(error: SiteError): boolean {
 }
 
 export function nickError(error: SiteError): NickError {
-  if (error.siteCode === 'nick_taken' || error.siteCode === 'invalid_nick') {
+  if (
+    error.siteCode === 'nick_taken' ||
+    error.siteCode === 'invalid_nick' ||
+    error.siteCode === 'nick_limit' ||
+    error.siteCode === 'avatar_nick'
+  ) {
     return { code: error.siteCode };
   }
   if (error.siteCode === 'nick_change_too_soon') {

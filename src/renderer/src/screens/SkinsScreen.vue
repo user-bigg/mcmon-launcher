@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import { sameNickLetters } from '@shared/account';
+import { fill } from '@shared/i18n/format';
 import { ru } from '@shared/i18n/ru';
 import type { LookError } from '@shared/look';
 import BiIcon from '../components/BiIcon.vue';
@@ -16,7 +18,7 @@ import { useWardrobe } from '../composables/useWardrobe';
 import { lookChange, lookErrorText, skinTags, wornPresetId } from '../lib/wardrobe';
 
 type Tab = 'skins' | 'capes';
-type View = 'loading' | 'guest' | 'no-nick' | 'error' | 'ready';
+type View = 'loading' | 'guest' | 'no-nick' | 'unclaimed' | 'error' | 'ready';
 
 interface Status {
   kind: 'failure' | 'wait' | 'saved' | 'tried' | 'hint';
@@ -40,8 +42,22 @@ const saved = ref(false);
 const failure = ref<LookError | null>(null);
 
 const mc = computed(() => accounts.mc.value);
-const nick = computed(() => accounts.pinned.value?.name ?? null);
-const allowed = computed(() => settled.value && mc.value !== null && nick.value !== null);
+// The skin goes to the nickname chosen in the account list; a licence leaves the star one.
+const nick = computed(() => {
+  const active = accounts.player.value;
+  return active?.provider === 'nick' ? active.name : accounts.avatarName.value;
+});
+const isAvatar = computed(
+  () =>
+    nick.value !== null &&
+    accounts.avatarName.value !== null &&
+    sameNickLetters(nick.value, accounts.avatarName.value),
+);
+const siteNick = computed(() => (nick.value === null ? null : accounts.siteNickOf(nick.value)));
+const claimed = computed(() => isAvatar.value || siteNick.value !== null);
+const allowed = computed(
+  () => settled.value && mc.value !== null && nick.value !== null && claimed.value,
+);
 
 const view = computed<View>(() => {
   if (!settled.value) {
@@ -53,13 +69,26 @@ const view = computed<View>(() => {
   if (nick.value === null) {
     return 'no-nick';
   }
+  if (!claimed.value) {
+    return 'unclaimed';
+  }
   return wardrobe.status.value;
 });
 
 const skins = computed(() => wardrobe.presets.value?.skins ?? []);
 const capes = computed(() => wardrobe.presets.value?.capes ?? []);
-const wornSkin = computed(() => mc.value?.skin ?? null);
-const wornCape = computed(() => mc.value?.cape ?? null);
+// A nickname other than the star keeps its own look; without its own skin it wears the star's.
+const wornSkin = computed(() =>
+  isAvatar.value ? (mc.value?.skin ?? null) : (siteNick.value?.skin ?? mc.value?.skin ?? null),
+);
+const wornCape = computed(() => {
+  if (isAvatar.value) {
+    return mc.value?.cape ?? null;
+  }
+  const id = siteNick.value?.capeId ?? null;
+  const preset = id === null ? null : capes.value.find((item) => item.id === id);
+  return preset === null || preset === undefined ? null : { id: preset.id, url: preset.url };
+});
 const savedSkinId = computed(() => wornPresetId(skins.value, wornSkin.value));
 const savedCapeId = computed(() => wornPresetId(capes.value, wornCape.value));
 
@@ -186,13 +215,42 @@ async function send(action: () => Promise<LookError | null>): Promise<void> {
 function save(): void {
   const wanted = change.value;
   if (wanted !== null) {
-    void send(() => accounts.wear(wanted));
+    void send(() => accounts.wear(nick.value === null ? wanted : { ...wanted, nick: nick.value }));
   }
+}
+
+const claimError = ref<string | null>(null);
+
+async function claim(): Promise<void> {
+  if (nick.value === null || busy.value) {
+    return;
+  }
+  busy.value = true;
+  const failure = await accounts.claimNick(nick.value);
+  busy.value = false;
+  claimError.value =
+    failure === null
+      ? null
+      : failure.code === 'nick_limit'
+        ? ru.switcher.nickLimit
+        : failure.code === 'nick_taken'
+          ? ru.welcome.nickTaken
+          : ru.switcher.nickFailed;
+}
+
+async function takeStar(): Promise<void> {
+  if (nick.value === null || busy.value) {
+    return;
+  }
+  busy.value = true;
+  const refused = await accounts.setAvatar(nick.value);
+  busy.value = false;
+  failure.value = refused === null ? null : { code: 'failed' };
 }
 
 function reset(): void {
   if (dressed.value) {
-    void send(() => accounts.resetLook());
+    void send(() => accounts.resetLook(nick.value ?? undefined));
   } else {
     undo();
   }
@@ -241,6 +299,19 @@ onMounted(async () => {
       :text="ru.skins.guestText"
     >
       <UiButton variant="primary" size="sm" to="/accounts">{{ ru.skins.guestAction }}</UiButton>
+    </StateNotice>
+
+    <StateNotice
+      v-else-if="view === 'unclaimed'"
+      class="state"
+      icon="person-badge"
+      :title="fill(ru.skins.unclaimedTitle, { nick: nick ?? '' })"
+      :text="ru.skins.unclaimedText"
+    >
+      <UiButton variant="primary" size="sm" :disabled="busy" @click="claim">{{
+        ru.skins.unclaimedAction
+      }}</UiButton>
+      <p v-if="claimError !== null" class="note" role="alert">{{ claimError }}</p>
     </StateNotice>
 
     <StateNotice
@@ -303,9 +374,27 @@ onMounted(async () => {
           {{ ru.skins.reset }}
         </button>
         <p class="nick">
-          <b class="selectable">{{ nick }}</b>
+          <b class="selectable"
+            >{{ nick
+            }}<BiIcon
+              v-if="isAvatar"
+              name="star-fill"
+              class="star"
+              :aria-label="ru.switcher.avatarStar"
+          /></b>
           <small>{{ ru.skins.nick }}</small>
         </p>
+        <button
+          v-if="!isAvatar && nick !== null"
+          type="button"
+          class="take-star"
+          data-skins-star
+          :disabled="busy"
+          @click="takeStar"
+        >
+          <BiIcon name="star" />
+          {{ ru.skins.takeStar }}
+        </button>
         <p class="note">{{ ru.skins.note }}</p>
         <p v-if="license" class="note" data-skins-license>{{ ru.skins.licenseNote }}</p>
       </section>
@@ -537,6 +626,29 @@ onMounted(async () => {
   font-family: var(--mc-font-mono);
   font-size: 13px;
   font-weight: 600;
+}
+
+.nick .star {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--mc-gold);
+}
+
+.take-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--mc-text-muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.take-star:hover:not(:disabled) {
+  color: var(--mc-gold);
 }
 
 .nick small {

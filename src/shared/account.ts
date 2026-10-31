@@ -61,10 +61,22 @@ export interface PinnedNick {
   changeAt: string | null;
 }
 
+// A nickname pinned to the account. `skin` is its own; one without wears the avatar
+// nickname's skin (`AccountUser.skin`).
+export interface SiteNick {
+  name: string;
+  avatar: boolean;
+  skin: WornSkin | null;
+  capeId: string | null;
+}
+
+export const MAX_SITE_NICKS = 10;
+
 export interface AccountUser {
   id: number;
   name: string;
   nick: PinnedNick | null;
+  nicks: SiteNick[];
   avatarUrl: string | null;
   skin: WornSkin | null;
   cape: WornCape | null;
@@ -104,6 +116,8 @@ export const NICK_ERROR_CODES = [
   'nick_taken',
   'invalid_nick',
   'nick_change_too_soon',
+  'nick_limit',
+  'avatar_nick',
   'unsupported',
   'not_signed_in',
   'offline',
@@ -190,8 +204,11 @@ export interface AccountService {
   refresh: () => Promise<AccountResult<AccountState>>;
   setNick: (nick: string) => Promise<NickResult>;
   playCheck: (query: PlayCheckQuery) => Promise<PlayCheck>;
+  addSiteNick: (nick: string) => Promise<NickResult>;
+  removeSiteNick: (nick: string) => Promise<NickResult>;
+  setAvatarNick: (nick: string) => Promise<NickResult>;
   wear: (change: LookChange) => Promise<LookResult>;
-  resetLook: () => Promise<LookResult>;
+  resetLook: (nick?: string) => Promise<LookResult>;
   onEvent: (listener: (event: AccountEvent) => void) => () => void;
 }
 

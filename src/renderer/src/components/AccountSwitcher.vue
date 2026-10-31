@@ -6,7 +6,7 @@ import { ru } from '@shared/i18n/ru';
 import type { GameAccount } from '@shared/player';
 import { useAccounts } from '../composables/useAccounts';
 import { useLaunch } from '../composables/useLaunch';
-import { sameNickLetters } from '@shared/account';
+import { sameNickLetters, type NickError } from '@shared/account';
 import { microsoftErrorView } from '@shared/microsoft';
 import logo from '../assets/logo.svg';
 import AddAccountDialog from './AddAccountDialog.vue';
@@ -31,7 +31,12 @@ const account = computed(() => accounts.player.value);
 const locked = computed(() => launch.busy.value);
 const onAccounts = computed(() => route.meta.section === 'accounts');
 const emptyLabel = computed(() => ru.nav.noAccount);
+const nickFailure = ref<NickError | null>(null);
 const removeError = computed(() => {
+  const nick = nickFailure.value;
+  if (nick !== null) {
+    return nick.code === 'avatar_nick' ? ru.switcher.avatarKept : ru.switcher.nickFailed;
+  }
   const error = accounts.removeError.value;
   return error === null ? null : microsoftErrorView(error.code).title;
 });
@@ -45,15 +50,23 @@ function isChosen(row: GameAccount): boolean {
   return current !== null && keyOf(current) === keyOf(row);
 }
 
-// The nickname pinned on the site comes back with every sign-in: it is changed on the site.
-function isSiteNick(row: GameAccount): boolean {
-  const pinned = accounts.pinned.value?.name ?? null;
-  return row.provider === 'nick' && pinned !== null && sameNickLetters(row.name, pinned);
+// The star nickname gives the account its default skin and its avatar on the site; it stays
+// until another one takes the star.
+function isAvatarNick(row: GameAccount): boolean {
+  const avatar = accounts.avatarName.value;
+  return row.provider === 'nick' && avatar !== null && sameNickLetters(row.name, avatar);
 }
 
-// Until the site keeps a skin per nickname, the account's skin belongs to its pinned nickname.
+function canTakeStar(row: GameAccount): boolean {
+  return row.provider === 'nick' && !isAvatarNick(row) && accounts.siteNickOf(row.name) !== null;
+}
+
 function skinOf(row: GameAccount): string | null {
-  return isSiteNick(row) ? (accounts.mc.value?.skin?.url ?? null) : null;
+  return row.provider === 'nick' ? accounts.skinOfNick(row.name) : null;
+}
+
+async function giveStar(row: GameAccount): Promise<void> {
+  nickFailure.value = await accounts.setAvatar(row.name);
 }
 
 function rowLabel(row: GameAccount): string {
@@ -118,10 +131,11 @@ function pick(row: GameAccount): void {
 async function remove(row: GameAccount): Promise<void> {
   closeMenu();
   void focusIn('.switcher-panel .btn.is-primary');
+  nickFailure.value = null;
   if (row.provider === 'microsoft') {
     await accounts.removeMicrosoft(row.id);
   } else {
-    accounts.removeNick(row.id);
+    nickFailure.value = await accounts.removeNick(row.id);
   }
 }
 
@@ -255,13 +269,31 @@ onBeforeUnmount(() => {
               <SkinFace v-if="skinOf(row) !== null" :skin="skinOf(row) ?? ''" />
               <PlayerHead v-else :head="row.head" />
               <span class="account-text">
-                <span class="account-name">{{ row.name }}</span>
+                <span class="account-line"
+                  ><span class="account-name">{{ row.name }}</span
+                  ><BiIcon
+                    v-if="isAvatarNick(row)"
+                    name="star-fill"
+                    class="switcher-star"
+                    :aria-label="ru.switcher.avatarStar"
+                /></span>
                 <ProviderMark :provider="row.provider" size="sm" />
               </span>
               <BiIcon v-if="isChosen(row)" name="check-lg" class="switcher-check" />
             </button>
             <button
-              v-if="!isSiteNick(row)"
+              v-if="canTakeStar(row)"
+              type="button"
+              class="switcher-more is-star"
+              :aria-label="fill(ru.switcher.takeStar, { name: row.name })"
+              :title="ru.switcher.takeStarHint"
+              :disabled="locked"
+              @click="giveStar(row)"
+            >
+              <BiIcon name="star" />
+            </button>
+            <button
+              v-if="!isAvatarNick(row)"
               type="button"
               class="switcher-more"
               :aria-label="fill(ru.switcher.removeOf, { name: row.name })"
@@ -417,7 +449,7 @@ onBeforeUnmount(() => {
   gap: 10px;
   align-self: stretch;
   min-width: 0;
-  padding: 6px 46px 6px 8px;
+  padding: 6px 12px 6px 8px;
   border: 0;
   background: none;
   color: var(--mc-text);
@@ -439,6 +471,7 @@ onBeforeUnmount(() => {
 
 .switcher-more {
   position: absolute;
+  background: var(--mc-surface-2);
   top: 50%;
   right: 8px;
   display: grid;
@@ -457,6 +490,27 @@ onBeforeUnmount(() => {
 .switcher-row:hover .switcher-more,
 .switcher-more:focus-visible {
   opacity: 1;
+}
+
+.switcher-more.is-star {
+  right: 44px;
+}
+
+.switcher-more.is-star:hover:not(:disabled) {
+  color: var(--mc-gold);
+}
+
+.account-line {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.switcher-star {
+  flex-shrink: 0;
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--mc-gold);
 }
 
 .switcher-more:hover:not(:disabled) {

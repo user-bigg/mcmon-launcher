@@ -2,6 +2,7 @@ import {
   CONNECT_TIMEOUT_MS,
   PLAY_CHECK_TIMEOUT_MS,
   normalizeLoginCode,
+  sameNickLetters,
   type AccountChange,
   type AccountError,
   type AccountEvent,
@@ -111,6 +112,7 @@ function userOf(
     id: session.id,
     name: fresh?.name ?? session.name,
     nick,
+    nicks: fresh?.nicks ?? [],
     avatarUrl: fresh?.avatarUrl ?? session.avatarUrl,
     skin: look.skin,
     cape: look.cape,
@@ -124,6 +126,8 @@ function userOf(
     ownedServers: fresh?.ownedServers ?? [],
   };
 }
+
+type NickWrite = Promise<Sent<true>>;
 
 export class AccountManager {
   private session: StoredSession | null = null;
@@ -334,19 +338,93 @@ export class AccountManager {
     return { ok: true, value: this.snapshot() };
   }
 
+  addSiteNick(nick: string): Promise<NickResult> {
+    return this.changeNicks((token) => this.deps.api.addNick(token, nick));
+  }
+
+  removeSiteNick(nick: string): Promise<NickResult> {
+    return this.changeNicks((token) => this.deps.api.removeNick(token, nick));
+  }
+
+  setAvatarNick(nick: string): Promise<NickResult> {
+    return this.changeNicks((token) => this.deps.api.setAvatarNick(token, nick));
+  }
+
+  // The site answers each change with its own shape; the list is read again from /me, so the
+  // window always sees what the site holds.
+  private async changeNicks(send: (token: string) => Promise<Sent<unknown>>): Promise<NickResult> {
+    await this.ready;
+    const session = this.session;
+    if (session === null) {
+      return { ok: false, error: { code: 'not_signed_in' } };
+    }
+    const sent = await send(session.token);
+    if (!sent.ok) {
+      return { ok: false, error: nickError(sent.error) };
+    }
+    await this.pull(session).catch(() => undefined);
+    return { ok: true, value: this.snapshot() };
+  }
+
+  private isAvatarNick(nick: string): boolean {
+    const avatar =
+      this.profile?.nicks.find((item) => item.avatar)?.name ?? this.session?.nick?.name;
+    return avatar !== undefined && avatar !== null && sameNickLetters(avatar, nick);
+  }
+
   wear(change: LookChange): Promise<LookResult> {
-    const { skin, cape } = change;
+    const { skin, cape, nick } = change;
+    if (nick !== undefined && !this.isAvatarNick(nick)) {
+      return this.dressNick((token) => [
+        ...(skin === undefined
+          ? []
+          : [(): NickWrite => this.deps.api.setNickSkin(token, nick, skin)]),
+        ...(cape === undefined
+          ? []
+          : [(): NickWrite => this.deps.api.setNickCape(token, nick, cape)]),
+      ]);
+    }
     return this.dress((token) => [
       ...(skin === undefined ? [] : [(): LookAnswer => this.deps.api.setSkin(token, skin)]),
       ...(cape === undefined ? [] : [this.capeStep(token, cape)]),
     ]);
   }
 
-  resetLook(): Promise<LookResult> {
+  resetLook(nick?: string): Promise<LookResult> {
+    if (nick !== undefined && !this.isAvatarNick(nick)) {
+      return this.dressNick((token) => [
+        (): NickWrite => this.deps.api.removeNickSkin(token, nick),
+        (): NickWrite => this.deps.api.setNickCape(token, nick, null),
+      ]);
+    }
     return this.dress((token) => [
       (): LookAnswer => this.deps.api.removeSkin(token),
       this.capeStep(token, null),
     ]);
+  }
+
+  // A nickname other than the avatar keeps its look in /me/nicks: every write is followed by
+  // reading the list again.
+  private async dressNick(plan: (token: string) => (() => NickWrite)[]): Promise<LookResult> {
+    await this.ready;
+    const session = this.session;
+    if (session === null) {
+      return { ok: false, error: { code: 'not_signed_in' } };
+    }
+    let failure: SiteError | null = null;
+    for (const step of plan(session.token)) {
+      const sent = await step();
+      if (this.session !== session) {
+        return { ok: false, error: { code: 'not_signed_in' } };
+      }
+      if (!sent.ok) {
+        failure ??= sent.error;
+      }
+    }
+    await this.pull(session).catch(() => undefined);
+    return failure === null
+      ? { ok: true, value: this.snapshot() }
+      : { ok: false, error: lookError(failure) };
   }
 
   private capeStep(token: string, preset: string | null): LookStep {

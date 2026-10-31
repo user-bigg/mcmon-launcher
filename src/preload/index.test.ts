@@ -102,11 +102,14 @@ describe('preload', () => {
     [
       'account',
       [
+        'addSiteNick',
         'cancel',
         'connect',
         'logout',
         'onEvent',
         'playCheck',
+        'removeSiteNick',
+        'setAvatarNick',
         'wear',
         'resetLook',
         'refresh',

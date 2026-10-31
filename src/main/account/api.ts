@@ -1,6 +1,7 @@
 import {
   PLAY_CHECK_TIMEOUT_MS,
   type PinnedNick,
+  type SiteNick,
   type PlayCheckQuery,
   type VotePause,
   type VoteResult,
@@ -21,6 +22,7 @@ import {
   parseAlertFeed,
   parseAlertSettings,
   parseEmpty,
+  parseSiteNick,
   parseFavoriteFlag,
   parseFavoriteIds,
   parseIssuedToken,
@@ -68,6 +70,16 @@ export interface AccountApi {
   removeSkin: (token: string) => Promise<Sent<SkinAnswer>>;
   setCape: (token: string, preset: string) => Promise<Sent<CapeAnswer>>;
   removeCape: (token: string) => Promise<Sent<CapeAnswer>>;
+  addNick: (token: string, nick: string) => Promise<Sent<SiteNick>>;
+  removeNick: (token: string, nick: string) => Promise<Sent<true>>;
+  setAvatarNick: (token: string, nick: string) => Promise<Sent<true>>;
+  setNickSkin: (token: string, nick: string, preset: string) => Promise<Sent<true>>;
+  removeNickSkin: (token: string, nick: string) => Promise<Sent<true>>;
+  setNickCape: (token: string, nick: string, preset: string | null) => Promise<Sent<true>>;
+}
+
+function nickPath(nick: string, rest = ''): string {
+  return `/me/nicks/${encodeURIComponent(nick)}${rest}`;
 }
 
 export function createAccountApi(
@@ -188,5 +200,46 @@ export function createAccountApi(
       }),
     removeCape: (token) =>
       http.send('/me/cape', { method: 'DELETE', token, parse: capeAnswer, bucket: 'cape' }),
+    addNick: (token, nick) =>
+      http.send('/me/nicks', {
+        method: 'POST',
+        token,
+        body: { nick },
+        parse: parseSiteNick,
+        bucket: 'account',
+      }),
+    removeNick: (token, nick) =>
+      http.send(nickPath(nick), { method: 'DELETE', token, parse: parseEmpty, bucket: 'account' }),
+    setAvatarNick: (token, nick) =>
+      http.send('/me/avatar', {
+        method: 'PUT',
+        token,
+        body: { nick },
+        parse: parseEmpty,
+        bucket: 'account',
+      }),
+    setNickSkin: (token, nick, preset) =>
+      http.send(nickPath(nick, '/skin'), {
+        method: 'PUT',
+        token,
+        body: { preset },
+        parse: parseEmpty,
+        bucket: 'skin',
+      }),
+    removeNickSkin: (token, nick) =>
+      http.send(nickPath(nick, '/skin'), {
+        method: 'DELETE',
+        token,
+        parse: parseEmpty,
+        bucket: 'skin',
+      }),
+    setNickCape: (token, nick, preset) =>
+      http.send(nickPath(nick, '/cape'), {
+        method: 'PUT',
+        token,
+        body: { cape: preset },
+        parse: parseEmpty,
+        bucket: 'cape',
+      }),
   };
 }

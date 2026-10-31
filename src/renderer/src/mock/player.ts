@@ -31,6 +31,10 @@ export const mcAccount: AccountUser = {
   id: 1,
   name: 'frostbyte_mc',
   nick: { name: 'Frostbyte', changeAt: null },
+  nicks: [
+    { name: 'Frostbyte', avatar: true, skin: null, capeId: null },
+    { name: 'Frost_PvP', avatar: false, skin: null, capeId: null },
+  ],
   avatarUrl: null,
   skin: null,
   cape: null,

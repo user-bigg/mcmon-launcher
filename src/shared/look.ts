@@ -1,4 +1,5 @@
 import type { AccountState } from './account';
+import { isValidNick } from './launch';
 
 export const SKIN_MODELS = ['classic', 'slim'] as const;
 export type SkinModel = (typeof SKIN_MODELS)[number];
@@ -50,6 +51,7 @@ export interface WornLook {
 export interface LookChange {
   skin?: string;
   cape?: string | null;
+  nick?: string;
 }
 
 export const LOOK_ERROR_CODES = [
@@ -81,15 +83,17 @@ export function parseLookChange(value: unknown): LookChange | null {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return null;
   }
-  const { skin, cape } = value as Record<string, unknown>;
+  const { skin, cape, nick } = value as Record<string, unknown>;
   const skinKnown = skin === undefined || isPresetId(skin);
   const capeKnown = cape === undefined || cape === null || isPresetId(cape);
-  if (!skinKnown || !capeKnown || (skin === undefined && cape === undefined)) {
+  const nickKnown = nick === undefined || (typeof nick === 'string' && isValidNick(nick));
+  if (!skinKnown || !capeKnown || !nickKnown || (skin === undefined && cape === undefined)) {
     return null;
   }
   return {
     ...(skin === undefined ? {} : { skin }),
     ...(cape === undefined ? {} : { cape }),
+    ...(typeof nick === 'string' ? { nick } : {}),
   };
 }
 

@@ -60,6 +60,7 @@ export const TEST_USER: AccountUser = {
   id: 7,
   name: 'Player_7',
   nick: null,
+  nicks: [],
   avatarUrl: null,
   skin: null,
   cape: null,
@@ -374,6 +375,15 @@ export function stubLauncher(): Stub {
       logout: vi.fn(() => Promise.resolve({ ok: true as const, value: signedOutState })),
       refresh: vi.fn(() => Promise.resolve({ ok: true as const, value: signedOutState })),
       setNick: vi.fn(() =>
+        Promise.resolve<NickResult>({ ok: false, error: { code: 'not_signed_in' } }),
+      ),
+      addSiteNick: vi.fn(() =>
+        Promise.resolve<NickResult>({ ok: false, error: { code: 'not_signed_in' } }),
+      ),
+      removeSiteNick: vi.fn(() =>
+        Promise.resolve<NickResult>({ ok: false, error: { code: 'not_signed_in' } }),
+      ),
+      setAvatarNick: vi.fn(() =>
         Promise.resolve<NickResult>({ ok: false, error: { code: 'not_signed_in' } }),
       ),
       playCheck: vi.fn(() => Promise.resolve<PlayCheck>({ kind: 'unchecked' })),

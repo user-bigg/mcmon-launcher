@@ -1,4 +1,10 @@
-import type { PinnedNick, VotePause, VoteResult } from '@shared/account';
+import {
+  MAX_SITE_NICKS,
+  type PinnedNick,
+  type SiteNick,
+  type VotePause,
+  type VoteResult,
+} from '@shared/account';
 import {
   MAX_ALERT_CURSOR_LENGTH,
   MAX_ALERT_ID,
@@ -24,7 +30,7 @@ import {
   type OwnedTopSlot,
 } from '@shared/owner';
 import { isValidNick, isValidServerId } from '@shared/launch';
-import type { WornCape, WornSkin } from '@shared/look';
+import { isPresetId, type WornCape, type WornSkin } from '@shared/look';
 import type { MyReport } from '@shared/report';
 import {
   bool,
@@ -48,6 +54,7 @@ export interface SessionUser {
 
 export interface Profile extends SessionUser {
   nick: PinnedNick | null;
+  nicks: SiteNick[];
   skin: WornSkin | null;
   cape: WornCape | null;
   createdAt: string | null;
@@ -137,6 +144,41 @@ export function parsePlayAllowed(value: unknown): PlayAllowed | null {
 
 const SAME_ADDRESS: LocalTexture = (remote) => remote;
 
+function siteNick(value: unknown, local: LocalTexture): SiteNick | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const name = nickName(value.name);
+  if (name === null) {
+    return null;
+  }
+  const cape = value.cape;
+  return {
+    name,
+    avatar: value.avatar === true,
+    skin: wornSkin(value.skin, local),
+    capeId: typeof cape === 'string' && isPresetId(cape) ? cape : null,
+  };
+}
+
+// The avatar nickname goes first, as the site sends it; an older site sends no list.
+export function siteNicks(value: unknown, local: LocalTexture = SAME_ADDRESS): SiteNick[] {
+  const nicks = each(value, MAX_SITE_NICKS, (item) => siteNick(item, local));
+  const seen = new Set<string>();
+  return nicks.filter((item) => {
+    const key = item.name.toLowerCase();
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+export function parseSiteNick(value: unknown): SiteNick | null {
+  return siteNick(value, SAME_ADDRESS);
+}
+
 export function parseProfile(value: unknown, local: LocalTexture = SAME_ADDRESS): Profile | null {
   const user = parseSessionUser(value);
   if (user === null || !isRecord(value)) {
@@ -149,6 +191,7 @@ export function parseProfile(value: unknown, local: LocalTexture = SAME_ADDRESS)
   return {
     ...user,
     nick: parsePinnedNick(value),
+    nicks: siteNicks(value.nicks, local),
     skin: wornSkin(value.skin, local),
     cape: wornCape(value.cape, local),
     createdAt: isoTime(value.created_at),

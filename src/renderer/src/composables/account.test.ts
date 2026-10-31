@@ -209,7 +209,7 @@ describe('the account list', () => {
     };
     const accounts = createAccounts(contextOf(stub));
     await flushPromises();
-    accounts.removeNick('nick-steve');
+    await accounts.removeNick('nick-steve');
     await flushPromises();
     expect(accounts.active.value?.name).toBe('Alex');
     expect(stub.players.stored).toEqual({
@@ -228,8 +228,58 @@ describe('the account list', () => {
     };
     const accounts = createAccounts(contextOf(stub));
     await flushPromises();
-    accounts.removeNick('nick-other');
+    await accounts.removeNick('nick-other');
     await flushPromises();
     expect(stub.players.stored.active).toBeNull();
+  });
+
+  it('the nicknames of the account join the list; one let go is removed on the site too', async () => {
+    const stub = stubLauncher();
+    const withNicks: AccountUser = {
+      ...pinnedUser,
+      nicks: [
+        { name: 'Pinned_7', avatar: true, skin: null, capeId: null },
+        { name: 'Alt_7', avatar: false, skin: null, capeId: null },
+      ],
+    };
+    stub.api.account.state = vi.fn(() => Promise.resolve(state(1, withNicks)));
+    stub.api.account.removeSiteNick = vi.fn(() =>
+      Promise.resolve({
+        ok: true as const,
+        value: state(2, { ...withNicks, nicks: withNicks.nicks.slice(0, 1) }),
+      }),
+    );
+    stub.players.stored = { nicks: [], active: null };
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    expect(accounts.rows.value.map((row) => row.name)).toEqual(['Pinned_7', 'Alt_7']);
+    expect(accounts.avatarName.value).toBe('Pinned_7');
+    const alt = accounts.rows.value.find((row) => row.name === 'Alt_7');
+    expect(await accounts.removeNick(alt?.id ?? '')).toBeNull();
+    expect(stub.api.account.removeSiteNick).toHaveBeenCalledWith('Alt_7');
+    expect(accounts.rows.value.map((row) => row.name)).toEqual(['Pinned_7']);
+  });
+
+  it('a nickname added while signed in is pinned to the account', async () => {
+    const stub = stubLauncher();
+    signedIn(stub);
+    stub.api.account.addSiteNick = vi.fn(() =>
+      Promise.resolve({ ok: false as const, error: { code: 'nick_limit' as const } }),
+    );
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    expect(await accounts.claimNick('Brand_New')).toEqual({ code: 'nick_limit' });
+    expect(stub.api.account.addSiteNick).toHaveBeenCalledWith('Brand_New');
+  });
+
+  it('a site without nickname lists keeps a new nickname in the launcher', async () => {
+    const stub = stubLauncher();
+    signedIn(stub);
+    stub.api.account.addSiteNick = vi.fn(() =>
+      Promise.resolve({ ok: false as const, error: { code: 'unsupported' as const } }),
+    );
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    expect(await accounts.claimNick('Old_Site')).toBeNull();
   });
 });

@@ -378,7 +378,7 @@ describe('skin and cape screen: trying on and saving', () => {
     expect(saveDisabled(app)).toBe(false);
     await press(app, '[data-skins-save]');
     expect(stub.api.account.wear).toHaveBeenCalledTimes(1);
-    expect(stub.api.account.wear).toHaveBeenCalledWith({ skin: 'tophat' });
+    expect(stub.api.account.wear).toHaveBeenCalledWith({ skin: 'tophat', nick: 'Test_User' });
     expect(app.find('[data-skins-status]').text()).toBe(ru.skins.saved);
     expect(card(app, 'tophat').attributes('aria-pressed')).toBe('true');
     expect(saveDisabled(app)).toBe(true);
@@ -396,7 +396,7 @@ describe('skin and cape screen: trying on and saving', () => {
     await app.find('[data-tab="capes"]').trigger('click');
     await pick(app, 'moon');
     await press(app, '[data-skins-save]');
-    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ cape: 'moon' });
+    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ cape: 'moon', nick: 'Test_User' });
     await pick(app, 'moon');
     expect(figure(app).cape).toBe(MOON.url);
     expect(saveShown(app)).toBe(false);
@@ -404,7 +404,7 @@ describe('skin and cape screen: trying on and saving', () => {
     expect(figure(app).cape).toBe('none');
     await press(app, '[data-skins-save]');
     expect(stub.api.account.wear).toHaveBeenCalledTimes(2);
-    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ cape: null });
+    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ cape: null, nick: 'Test_User' });
     expect(app.find('[data-worn="cape"]').text()).toBe(ru.skins.noCape);
   });
 
@@ -463,7 +463,7 @@ describe('skin and cape screen: trying on and saving', () => {
     await app.find('[data-tab="capes"]').trigger('click');
     await press(app, NO_CAPE);
     await press(app, '[data-skins-save]');
-    expect(stub.api.account.wear).toHaveBeenCalledWith({ cape: null });
+    expect(stub.api.account.wear).toHaveBeenCalledWith({ cape: null, nick: 'Test_User' });
     expect(app.find('[data-skins-error]').exists()).toBe(true);
     expect(card(app, 'web').attributes('data-card-mark')).toBe('worn');
     expect(app.find(NO_CAPE).attributes('data-card-mark')).toBe('tried');
@@ -546,10 +546,14 @@ describe('skin and cape screen: a refused save', () => {
     await app.find('[data-tab="capes"]').trigger('click');
     await pick(app, 'moon');
     await press(app, '[data-skins-save]');
-    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ skin: 'tophat', cape: 'moon' });
+    expect(stub.api.account.wear).toHaveBeenLastCalledWith({
+      skin: 'tophat',
+      cape: 'moon',
+      nick: 'Test_User',
+    });
     expect(app.find('[data-skins-error]').text()).toBe(fill(ru.skins.waitSeconds, { seconds: 20 }));
     await press(app, '[data-skins-save]');
-    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ cape: 'moon' });
+    expect(stub.api.account.wear).toHaveBeenLastCalledWith({ cape: 'moon', nick: 'Test_User' });
   });
 
   it('a 429 is said calmly, other failures as an error', async () => {

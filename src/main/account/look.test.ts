@@ -362,3 +362,61 @@ describe('resetLook', () => {
     expect((await manager.state()).user).toMatchObject({ skin: null, cape: { id: 'cape-web' } });
   });
 });
+
+describe('nicknames of the account', () => {
+  const NICKS = [
+    { name: 'Test_User', avatar: true, skin: null, cape: null },
+    { name: 'Alt_Nick', avatar: false, skin: { id: 'tophat', ...SKIN }, cape: 'cape-web' },
+  ];
+
+  it('/me brings the list with the star first and each nickname own look', async () => {
+    const { manager } = await setup({ 'GET /me': () => json({ ...ME, nicks: NICKS }) });
+    expect((await manager.state()).user?.nicks).toEqual([
+      { name: 'Test_User', avatar: true, skin: null, capeId: null },
+      {
+        name: 'Alt_Nick',
+        avatar: false,
+        skin: { id: 'tophat', url: 'app://cache/storage/skins/aa.png', model: 'slim' },
+        capeId: 'cape-web',
+      },
+    ]);
+  });
+
+  it('a nickname other than the star is dressed at its own address, then /me is read again', async () => {
+    const { manager, writes } = await setup({
+      'GET /me': () => json({ ...ME, nicks: NICKS }),
+      'PUT /me/nicks/Alt_Nick/skin': () => json({ name: 'Alt_Nick' }),
+      'PUT /me/nicks/Alt_Nick/cape': () => json({ name: 'Alt_Nick' }),
+    });
+    expect(await manager.wear({ skin: 'tophat', cape: null, nick: 'Alt_Nick' })).toMatchObject({
+      ok: true,
+    });
+    expect(writes()).toEqual(['PUT /me/nicks/Alt_Nick/skin', 'PUT /me/nicks/Alt_Nick/cape']);
+  });
+
+  it('the star nickname keeps the old addresses', async () => {
+    const { manager, writes } = await setup({
+      'GET /me': () => json({ ...ME, nicks: NICKS }),
+      'PUT /me/skin': () => json({ skin: { id: 'plaid-shirt', ...SKIN } }),
+    });
+    await manager.wear({ skin: 'plaid-shirt', nick: 'test_user' });
+    expect(writes()).toEqual(['PUT /me/skin']);
+  });
+
+  it('adding, letting go and taking the star; refusals come back as nickname errors', async () => {
+    const { manager, writes } = await setup({
+      'GET /me': () => json({ ...ME, nicks: NICKS }),
+      'POST /me/nicks': () =>
+        json({ name: 'New_Nick', avatar: false, skin: null, cape: null }, 201),
+      'DELETE /me/nicks/Test_User': () => refusal('avatar_nick', 409),
+      'PUT /me/avatar': () => json({ ...ME, nicks: NICKS }),
+    });
+    expect(await manager.addSiteNick('New_Nick')).toMatchObject({ ok: true });
+    expect(await manager.removeSiteNick('Test_User')).toEqual({
+      ok: false,
+      error: { code: 'avatar_nick' },
+    });
+    expect(await manager.setAvatarNick('Alt_Nick')).toMatchObject({ ok: true });
+    expect(writes()).toEqual(['POST /me/nicks', 'DELETE /me/nicks/Test_User', 'PUT /me/avatar']);
+  });
+});

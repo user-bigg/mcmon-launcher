@@ -1,5 +1,5 @@
 {
-  "about": "Account list, removing a row in place and the add-account dialog in the demo build, run with SHOT_MAIN=dist/demo-out/main/index.js.",
+  "about": "Account list with the star nickname, removing a row in place, the add-account dialog and the skins screen in the demo build, run with SHOT_MAIN=dist/demo-out/main/index.js.",
   "steps": [
     {
       "name": "39-accounts-list",
@@ -9,7 +9,7 @@
     },
     {
       "name": "39-accounts-remove",
-      "click": ".switcher-row:nth-child(2) .switcher-more"
+      "click": ".switcher-row:nth-child(2) .switcher-more:not(.is-star)"
     },
     {
       "click": ".switcher-confirm .is-cancel"
@@ -17,6 +17,11 @@
     {
       "name": "39-accounts-add",
       "click": ".switcher-panel .btn.is-primary"
+    },
+    {
+      "name": "39-skins",
+      "route": "/skins",
+      "wait": ".nick"
     }
   ]
 }

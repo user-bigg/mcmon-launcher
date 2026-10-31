@@ -95,6 +95,8 @@ import slashCircleIcon from 'bootstrap-icons/icons/slash-circle.svg?raw';
 import slidersIcon from 'bootstrap-icons/icons/sliders.svg?raw';
 import squareFillIcon from 'bootstrap-icons/icons/square-fill.svg?raw';
 import squareIcon from 'bootstrap-icons/icons/square.svg?raw';
+import starIcon from 'bootstrap-icons/icons/star.svg?raw';
+import starFillIcon from 'bootstrap-icons/icons/star-fill.svg?raw';
 import starsIcon from 'bootstrap-icons/icons/stars.svg?raw';
 import stopCircleIcon from 'bootstrap-icons/icons/stop-circle.svg?raw';
 import telegramIcon from 'bootstrap-icons/icons/telegram.svg?raw';
@@ -209,6 +211,8 @@ export const icons = {
   sliders: slidersIcon,
   square: squareIcon,
   'square-fill': squareFillIcon,
+  star: starIcon,
+  'star-fill': starFillIcon,
   stars: starsIcon,
   'stop-circle': stopCircleIcon,
   telegram: telegramIcon,

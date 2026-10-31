@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { ru } from '@shared/i18n/ru';
+import type { NickError } from '@shared/account';
 import { isValidNick } from '@shared/launch';
 import { useAccounts } from '../composables/useAccounts';
 import BiIcon from './BiIcon.vue';
@@ -15,13 +16,21 @@ const card = useTemplateRef<HTMLElement>('card');
 const nick = ref('');
 const touched = ref(false);
 const taken = ref(false);
+const claimFailure = ref<NickError | null>(null);
 const checking = ref(false);
 const nickInvalid = computed(() => touched.value && !isValidNick(nick.value.trim()));
 const nickError = computed(() => {
   if (nickInvalid.value) {
     return ru.switcher.nickInvalid;
   }
-  return taken.value ? ru.welcome.nickTaken : null;
+  if (taken.value) {
+    return ru.welcome.nickTaken;
+  }
+  const failure = claimFailure.value;
+  if (failure === null) {
+    return null;
+  }
+  return failure.code === 'nick_limit' ? ru.switcher.nickLimit : ru.switcher.nickFailed;
 });
 // A nickname pinned to someone else's account would be refused at every launch.
 async function addNick(): Promise<void> {
@@ -35,6 +44,14 @@ async function addNick(): Promise<void> {
   checking.value = false;
   if (check.kind === 'nick_taken') {
     taken.value = true;
+    return;
+  }
+  checking.value = true;
+  const failure = await accounts.claimNick(typed);
+  checking.value = false;
+  if (failure !== null) {
+    taken.value = failure.code === 'nick_taken';
+    claimFailure.value = failure.code === 'nick_taken' ? null : failure;
     return;
   }
   if (accounts.addNick(typed) !== null) {
@@ -119,6 +136,7 @@ onBeforeUnmount(() => {
               @input="
                 touched = false;
                 taken = false;
+                claimFailure = null;
               "
             />
             <p v-if="nickError !== null" id="add-nick-error" class="error" role="alert">
