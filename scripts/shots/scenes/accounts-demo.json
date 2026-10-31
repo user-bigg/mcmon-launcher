@@ -16,7 +16,7 @@
     },
     {
       "name": "39-accounts-add",
-      "click": ".switcher-panel .btn.is-primary"
+      "click": ".switcher-add"
     },
     {
       "name": "39-skins",

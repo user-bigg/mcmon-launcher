@@ -15,7 +15,6 @@ import PlayerHead from './PlayerHead.vue';
 import ProviderMark from './ProviderMark.vue';
 import SkelBar from './SkelBar.vue';
 import SkinFace from './SkinFace.vue';
-import UiButton from './UiButton.vue';
 
 const accounts = useAccounts();
 const launch = useLaunch();
@@ -96,7 +95,7 @@ function toggle(event: MouseEvent): void {
   open.value = !open.value;
   closeMenu();
   if (open.value && event.detail === 0) {
-    void focusIn('.switcher-row.is-selected .switcher-pick, .switcher-pick, .switcher-panel .btn');
+    void focusIn('.switcher-row.is-selected .switcher-pick, .switcher-pick, .switcher-add');
   }
 }
 
@@ -130,7 +129,7 @@ function pick(row: GameAccount): void {
 // The removed row takes focus with it: the keyboard goes on from 'Add account'.
 async function remove(row: GameAccount): Promise<void> {
   closeMenu();
-  void focusIn('.switcher-panel .btn.is-primary');
+  void focusIn('.switcher-add');
   nickFailure.value = null;
   if (row.provider === 'microsoft') {
     await accounts.removeMicrosoft(row.id);
@@ -239,7 +238,12 @@ onBeforeUnmount(() => {
           v-for="row in accounts.rows.value"
           :key="keyOf(row)"
           class="switcher-row"
-          :class="{ 'is-selected': isChosen(row), 'is-asking': menuFor === keyOf(row) }"
+          :class="{
+            'is-selected': isChosen(row),
+            'is-asking': menuFor === keyOf(row),
+            'is-locked': locked,
+            'has-actions': !isAvatarNick(row),
+          }"
         >
           <div
             v-if="menuFor === keyOf(row)"
@@ -306,9 +310,10 @@ onBeforeUnmount(() => {
         </li>
       </ul>
       <p v-if="removeError !== null" class="switcher-error" role="alert">{{ removeError }}</p>
-      <UiButton variant="primary" icon="plus-lg" block :disabled="locked" @click="startAdding">
+      <button type="button" class="switcher-add" :disabled="locked" @click="startAdding">
+        <BiIcon name="plus-lg" />
         {{ ru.switcher.add }}
-      </UiButton>
+      </button>
       <button type="button" class="switcher-site" data-site @click="openSite">
         <img class="switcher-site-logo" :src="logo" alt="" />
         <span class="switcher-site-text">
@@ -493,7 +498,18 @@ onBeforeUnmount(() => {
 }
 
 .switcher-more.is-star {
-  right: 44px;
+  right: 40px;
+}
+
+/* Every spot of an enabled row, the gaps between its buttons included, reads as one target. */
+.switcher-row:not(.is-locked),
+.switcher-row:not(.is-locked) :is(button, button *) {
+  cursor: pointer;
+}
+
+.switcher-row.has-actions:hover .switcher-check,
+.switcher-row.has-actions:focus-within .switcher-check {
+  visibility: hidden;
 }
 
 .switcher-more.is-star:hover:not(:disabled) {
@@ -549,6 +565,32 @@ onBeforeUnmount(() => {
 .switcher-confirm .switcher-confirm-yes {
   border-color: var(--mc-danger);
   color: var(--mc-danger);
+}
+
+.switcher-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px dashed var(--mc-border-strong);
+  border-radius: var(--mc-radius-sm);
+  background: none;
+  color: var(--mc-text-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.switcher-add:hover:not(:disabled) {
+  border-color: var(--mc-accent);
+  color: var(--mc-text);
+}
+
+.switcher-add:disabled {
+  cursor: default;
+  opacity: 0.6;
 }
 
 .switcher-error {

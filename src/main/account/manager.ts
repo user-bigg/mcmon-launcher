@@ -454,6 +454,10 @@ export class AccountManager {
         failure ??= sent.error;
       }
     }
+    // The star nickname's entry in /me/nicks carries the same look: the list is read again.
+    if ((this.profile?.nicks.length ?? 0) > 0) {
+      await this.pull(session).catch(() => undefined);
+    }
     if (failure === null) {
       return { ok: true, value: this.snapshot() };
     }
