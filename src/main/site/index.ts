@@ -58,6 +58,8 @@ import { readJarEntry } from './jar-entry';
 import { MAX_SKIN_BYTES, StandardSkin } from './standard-skin';
 import { TelemetryQueue, type TelemetryHeader, type TelemetrySession } from './telemetry';
 import { sendCrashReport, type CrashReportHeader } from './crash-reports';
+import { systemGpus } from '../device/gpus';
+import { graphicsOf } from '../system';
 
 // Folder names are case-insensitive on Windows and macOS: 'cache' would collide with
 // Chromium's own 'Cache'.
@@ -204,12 +206,20 @@ export function startSite(
     allowedHosts: siteHosts,
     log,
   });
+  let ceiling: string | null = null;
+  // At most the GPU deadline: the first catalog answers wait for it, or they would show a
+  // version the video card cannot start.
+  const ceilingReady = systemGpus().then((gpus) => {
+    ceiling = graphicsOf(process.platform, gpus).ceiling;
+  });
   const clientOptions: Omit<SiteClientOptions, 'http'> = {
     log,
     localIcon: (remote): string | null => assets.localIcon(remote),
     // Only the API host: the hosts of the links from /meta are picked by the site's answer
     // and are fine for pictures, not for a jar or for the skin service.
     skinHosts: assetHosts(base, []),
+    launchCeiling: (): string | null => ceiling,
+    ceilingReady,
     liveBatch: !app.isPackaged && process.env[LIVE_BATCH_ENV] === '1',
   };
   const client = new SiteClient({ ...clientOptions, http });
@@ -333,8 +343,8 @@ export function startSite(
   };
   return {
     service,
-    telemetry: (event, guest): void => {
-      telemetry.push(event, guest);
+    telemetry: (event): void => {
+      telemetry.push(event);
     },
     playCheck: (query): Promise<CheckedPlay> => manager.admitPlay(query),
     skinMod: async (): Promise<SkinModTable | null> => {

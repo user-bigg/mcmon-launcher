@@ -1,5 +1,8 @@
 import type { DeviceGpu } from '@shared/telemetry';
+import { needsCoreProfile } from '@shared/minecraft-version';
 import { failure } from './errors';
+
+export { needsCoreProfile };
 
 const INTEL = 0x8086;
 const MICROSOFT_BASIC_RENDER = 0x1414;
@@ -15,27 +18,9 @@ const LEGACY_INTEL = new Map<number, string>([
   ),
 ]);
 
-// 21w10a (1.17) moved the renderer to the OpenGL 3.2 core profile.
-const CORE_PROFILE_SNAPSHOT_WEEK = 2110;
-const WEEKLY_SNAPSHOT = /^(\d{2})w(\d{2})[a-z]$/i;
-const RELEASE = /^(\d+)\.(\d+)(?:\.\d+)?(?:[- _].*)?$/;
-
 export interface GpuLimit {
   name: string;
   openGl: string;
-}
-
-export function needsCoreProfile(minecraft: string): boolean {
-  const snapshot = WEEKLY_SNAPSHOT.exec(minecraft);
-  if (snapshot !== null) {
-    return Number(snapshot[1]) * 100 + Number(snapshot[2]) >= CORE_PROFILE_SNAPSHOT_WEEK;
-  }
-  const release = RELEASE.exec(minecraft);
-  if (release === null) {
-    return false;
-  }
-  const major = Number(release[1]);
-  return major > 1 || (major === 1 && Number(release[2]) >= 17);
 }
 
 function legacyOpenGl(gpu: DeviceGpu): string | null {

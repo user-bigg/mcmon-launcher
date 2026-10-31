@@ -903,7 +903,7 @@ describe('GameLaunchService', () => {
     expect(launched).toHaveLength(0);
   });
 
-  it('the game waits for the play check and takes the pinned nickname from it', async () => {
+  it('the game waits for the play check and keeps the chosen nickname on a mismatch', async () => {
     let answer: (checked: CheckedPlay) => void = () => undefined;
     const asked: PlayCheckQuery[] = [];
     const service = makeService({}, undefined, (query) => {
@@ -912,14 +912,11 @@ describe('GameLaunchService', () => {
         answer = resolve;
       });
     });
-    const pending = service.launch({
-      ...request,
-      account: { kind: 'nick', nick: 'Steve', withAccount: true },
-    });
+    const pending = service.launch(request);
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(launched).toHaveLength(0);
     answer({ check: { kind: 'nick_mismatch', nick: 'Test_User' }, code: null });
-    expect(await pending).toMatchObject({ ok: true, value: { nick: 'Test_User' } });
+    expect(await pending).toMatchObject({ ok: true, value: { nick: 'Steve' } });
     expect(asked).toEqual([{ serverId: 1, nick: 'Steve', auth: 'nick' }]);
   });
 

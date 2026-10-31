@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { flushPromises, type DOMWrapper } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { AccountState, AccountUser, NickResult, PinnedNick } from '@shared/account';
+import type { AccountState, AccountUser, PinnedNick } from '@shared/account';
 import { fill } from '@shared/i18n/format';
 import { ru } from '@shared/i18n/ru';
 import { SERVER_IDS } from '../mock/servers';
@@ -151,129 +151,15 @@ function signedIn(nick: PinnedNick | null): Stub {
   return stub;
 }
 
-function pinAnswers(stub: Stub, ...answers: NickResult[]): void {
-  const setNick = vi.fn<(nick: string) => Promise<NickResult>>();
-  for (const answer of answers) {
-    setNick.mockResolvedValueOnce(answer);
-  }
-  stub.api.account.setNick = setNick;
-}
-
 describe('nickname pinned to the account', () => {
-  it('heads the card instead of the site name; the local nickname field is gone', async () => {
+  it('the card is the site account; its nickname plays from the list and is managed on the site', async () => {
     const stub = signedIn({ name: 'Test_User', changeAt: null });
     const { app } = await open('/accounts', stub);
-    expect(app.find('[data-mc="nick"]').text()).toBe('Test_User');
-    expect(app.find('[data-mc="signed-in"]').text()).not.toContain(TEST_USER.name);
-    expect(app.find('form.nick').exists()).toBe(false);
-    expect(app.find('[data-nick-pin]').exists()).toBe(false);
-    expect(app.find('[data-mc="change-from"]').exists()).toBe(false);
-    expect(app.find('[data-who="nick"]').text()).toBe(`${ru.accounts.whereNick}Test_User`);
-    expect(app.find('.account-name').text()).toBe('Test_User');
-  });
-
-  it("'Change nickname' opens a field; refusals of the site are shown under it", async () => {
-    const stub = signedIn({ name: 'Test_User', changeAt: null });
-    pinAnswers(
-      stub,
-      { ok: false, error: { code: 'nick_taken' } },
-      { ok: false, error: { code: 'nick_change_too_soon', changeAt: '2026-11-12T09:00:00Z' } },
-      { ok: false, error: { code: 'failed' } },
-      { ok: false, error: { code: 'offline' } },
-      {
-        ok: true,
-        value: state({ seq: 2, user: pinnedUser({ name: 'Kotofey', changeAt: null }) }),
-      },
-    );
-    const { app } = await open('/accounts', stub);
-    await app.find('[data-mc="change"]').trigger('click');
-    const form = app.find('[data-nick-pin]');
-    const input = form.find('input');
-    expect((input.element as HTMLInputElement).value).toBe('');
-    expect(form.text()).toContain(ru.accounts.nickChangeNote);
-
-    await input.setValue('ab');
-    await form.trigger('submit');
-    expect(form.find('[role="alert"]').text()).toBe(ru.welcome.nickError);
-    expect(stub.api.account.setNick).not.toHaveBeenCalled();
-
-    const expected = [
-      ru.accounts.nickErrors.taken,
-      fill(ru.accounts.nickErrors.tooSoon, { date: '12 ноября' }),
-      ru.accounts.nickErrors.failed,
-      ru.accounts.nickErrors.offline,
-    ];
-    await input.setValue('Kotofey');
-    for (const text of expected) {
-      await form.trigger('submit');
-      await flushPromises();
-      expect(form.find('[role="alert"]').text()).toBe(text);
-    }
-
-    await form.trigger('submit');
-    await flushPromises();
-    expect(stub.api.account.setNick).toHaveBeenLastCalledWith('Kotofey');
-    expect(app.find('[data-nick-pin]').exists()).toBe(false);
-    expect(app.find('[data-mc="nick"]').text()).toBe('Kotofey');
-    expect(app.find('.account-name').text()).toBe('Kotofey');
-  });
-
-  it('no nickname yet: the pick step with the local nickname offered, nothing sent until pressed', async () => {
-    const stub = signedIn({ name: null, changeAt: null });
-    pinAnswers(stub, {
-      ok: true,
-      value: state({ seq: 2, user: pinnedUser({ name: 'Local_Nick', changeAt: null }) }),
-    });
-    const { app } = await open('/accounts', stub);
-    const form = app.find('[data-nick-pin]');
-    expect(form.text()).toContain(ru.accounts.nickPickTitle);
-    expect((form.find('input').element as HTMLInputElement).value).toBe('Local_Nick');
-    expect(app.find('[data-mc="nick"]').text()).toBe(ru.accounts.nickMissing);
+    expect(app.find('[data-mc="nick"]').text()).toBe(TEST_USER.name);
     expect(app.find('[data-mc="change"]').exists()).toBe(false);
     expect(app.find('form.nick').exists()).toBe(false);
-    expect(app.find('.account').text()).toBe(ru.nav.pickNick);
-    expect(app.find('[data-who="nick"]').text()).toBe(
-      `${ru.accounts.whereNick}${ru.accounts.nickNone}`,
-    );
-    expect(stub.api.account.setNick).not.toHaveBeenCalled();
-
-    await form.trigger('submit');
-    await flushPromises();
-    expect(stub.api.account.setNick).toHaveBeenCalledWith('Local_Nick');
-    expect(app.find('[data-nick-pin]').exists()).toBe(false);
-    expect(app.find('[data-mc="nick"]').text()).toBe('Local_Nick');
-  });
-
-  it('too early to change: the Moscow date is shown, a real change is not sent, a case fix is', async () => {
-    const stub = signedIn({ name: 'test_user', changeAt: '2099-11-11T21:30:00Z' });
-    pinAnswers(stub, {
-      ok: true,
-      value: state({
-        seq: 2,
-        user: pinnedUser({ name: 'Test_User', changeAt: '2099-11-11T21:30:00Z' }),
-      }),
-    });
-    const { app } = await open('/accounts', stub);
-    expect(app.find('[data-mc="change-from"]').text()).toBe(
-      fill(ru.accounts.nickChangeFrom, { date: '12 ноября' }),
-    );
-    expect(app.find('[data-mc="change"]').attributes('disabled')).toBeUndefined();
-    await app.find('[data-mc="change"]').trigger('click');
-    const form = app.find('[data-nick-pin]');
-
-    await form.find('input').setValue('Kotofey');
-    await form.trigger('submit');
-    await flushPromises();
-    expect(form.find('[role="alert"]').text()).toBe(
-      fill(ru.accounts.nickErrors.tooSoon, { date: '12 ноября' }),
-    );
-    expect(stub.api.account.setNick).not.toHaveBeenCalled();
-
-    await form.find('input').setValue('Test_User');
-    await form.trigger('submit');
-    await flushPromises();
-    expect(stub.api.account.setNick).toHaveBeenCalledWith('Test_User');
-    expect(app.find('[data-mc="nick"]').text()).toBe('Test_User');
+    expect(app.find('[data-who="nick"]').text()).toBe(`${ru.accounts.whereNick}Test_User`);
+    expect(app.find('.switcher .account-name').text()).toBe('Test_User');
   });
 
   it("the catalog filter 'fits my account' follows who goes into the game, not the local nickname", async () => {
@@ -283,20 +169,13 @@ describe('nickname pinned to the account', () => {
     await first.router.push('/servers');
     await flushPromises();
     expect(button(first.app, ru.catalog.accountFits).attributes('aria-pressed')).toBe('true');
-    first.app.unmount();
-    document.body.replaceChildren();
-
-    const unpicked = await open('/accounts', signedIn({ name: null, changeAt: null }));
-    await unpicked.router.push('/servers');
-    await flushPromises();
-    expect(button(unpicked.app, ru.catalog.accountFits).attributes('aria-pressed')).toBe('false');
   });
 
-  it('a site without pinned nicknames: the site name and the local field stay as before', async () => {
+  it('a site without pinned nicknames: the site name, the local nickname plays', async () => {
     const { app } = await open('/accounts', signedIn(null));
     expect(app.find('[data-mc="nick"]').text()).toBe(TEST_USER.name);
     expect(app.find('[data-mc="change"]').exists()).toBe(false);
-    expect((app.find('form.nick input').element as HTMLInputElement).value).toBe('Local_Nick');
+    expect(app.find('form.nick').exists()).toBe(false);
     expect(app.find('[data-who="nick"]').text()).toBe(`${ru.accounts.whereNick}Local_Nick`);
   });
 
@@ -309,17 +188,18 @@ describe('nickname pinned to the account', () => {
     await button(app, ru.accounts.signOut).trigger('click');
     await flushPromises();
     expect(app.find('[data-who="nick"]').text()).toBe(`${ru.accounts.whereNick}Local_Nick`);
-    expect(stub.players.stored).toEqual(LOCAL_PLAYERS);
+    expect(stub.players.stored.nicks.map((item) => item.nick)).toEqual(['Local_Nick', 'Test_User']);
   });
 
-  it("'Play' on a nickname server without a picked nickname leads to the account screen", async () => {
+  it('signed in without a site nickname: the game goes under the nickname from the list', async () => {
     const stub = signedIn({ name: null, changeAt: null });
     withCard(stub, testCard({ access: { license: true, nick: true } }));
-    const { app, router } = await open(`/server/${String(SERVER_IDS.wasteland)}`, stub);
+    const { app } = await open(`/server/${String(SERVER_IDS.wasteland)}`, stub);
     await app.find('[data-launch="direct"]').trigger('click');
     await flushPromises();
-    expect(router.currentRoute.value.path).toBe('/accounts');
-    expect(stub.api.launch.launch).not.toHaveBeenCalled();
+    expect(stub.api.launch.launch).toHaveBeenCalledWith(
+      expect.objectContaining({ account: { kind: 'nick', nick: 'Local_Nick' } }),
+    );
   });
 });
 
@@ -455,19 +335,19 @@ describe('account screen', () => {
     expect(app.find('.landscape').exists()).toBe(false);
   });
 
-  it('without an account the nickname is edited in place, an invalid one is not saved', async () => {
+  it('with no accounts the field adds the first nickname, an invalid one is not saved', async () => {
     const stub = stubLauncher();
-    stub.players.stored = LOCAL_PLAYERS;
+    stub.players.stored = { nicks: [], active: null };
     const { app } = await open('/accounts', stub);
     const input = app.find('.nick input');
-    expect((input.element as HTMLInputElement).value).toBe('Local_Nick');
     await input.setValue('ab');
     await app.find('.nick').trigger('submit');
     expect(app.find('#nick-error').text()).toBe(ru.welcome.nickError);
-    await input.setValue('Local_Nick_2');
+    await input.setValue('First_Nick');
     await app.find('.nick').trigger('submit');
-    expect(app.find('#nick-error').exists()).toBe(false);
-    expect(app.find('.account-name').text()).toBe('Local_Nick_2');
+    await flushPromises();
+    expect(app.find('form.nick').exists()).toBe(false);
+    expect(app.find('.switcher .account-name').text()).toBe('First_Nick');
   });
 
   it('after signing out — sign in via MC Monitor, without a password field', async () => {
@@ -492,8 +372,8 @@ describe('account screen', () => {
     const { app } = await open('/accounts', stub);
     const section = app.find('section[data-license]');
     expect(section.text()).toContain(ru.microsoft.errors.timeout.title);
-    expect(app.find('[data-who="license"]').text()).toContain(ru.accounts.needsLogin);
-    expect(app.find('[data-who="nick"]').text()).toContain(ru.accounts.nickSet);
+    expect(app.find('[data-who="all"]').text()).toContain('Frostbyte');
+    expect(app.find('[data-who="all"]').text()).toContain(ru.accounts.needsLogin);
     await button(app, ru.accounts.licenseRemove).trigger('click');
     expect(stub.api.microsoft.remove).toHaveBeenCalledWith('ms-1');
   });

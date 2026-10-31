@@ -53,7 +53,7 @@ const CONTENT: Record<string, string[]> = {
   'components/SettingsAbout.vue': ['siteHost'],
   'screens/LoginScreen.vue': ['accountTitle(mc)'],
   'screens/AccountsScreen.vue': [
-    'accountTitle(mc)',
+    'mc.name',
     'accounts.playNick.value',
     'license.nick',
     'item.nick',

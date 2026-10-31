@@ -15,14 +15,7 @@ export interface LaunchTarget {
   address: string;
 }
 
-// `withAccount` marks the nickname pinned to the MC Monitor account: only such a launch shows
-// the account to the site, the others go as a guest.
-export type LaunchAccount =
-  { kind: 'nick'; nick: string; withAccount?: boolean } | { kind: 'account'; id: string };
-
-export function launchesWithAccount(account: LaunchAccount): boolean {
-  return account.kind === 'nick' && account.withAccount === true;
-}
+export type LaunchAccount = { kind: 'nick'; nick: string } | { kind: 'account'; id: string };
 
 export interface LaunchRequest {
   target: LaunchTarget;

@@ -49,14 +49,7 @@ function parseAccount(value: unknown): Parsed<LaunchAccount> {
   }
   if (value.kind === 'nick') {
     return typeof value.nick === 'string' && isValidNick(value.nick)
-      ? {
-          ok: true,
-          value: {
-            kind: 'nick',
-            nick: value.nick,
-            ...(value.withAccount === true ? { withAccount: true } : {}),
-          },
-        }
+      ? { ok: true, value: { kind: 'nick', nick: value.nick } }
       : invalid('nick');
   }
   if (value.kind === 'account') {

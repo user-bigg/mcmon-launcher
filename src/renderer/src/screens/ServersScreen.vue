@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { isLauncherOnly, type ServerRow } from '@shared/catalog';
 import type { ServerAccessFilter, ServerSort } from '@shared/site';
 import type { CatalogTab, PlaySource } from '@shared/telemetry';
@@ -37,6 +37,7 @@ const SKELETON_ROWS = 7;
 
 const { now, demo } = useLauncher();
 const route = useRoute();
+const router = useRouter();
 const catalog = useCatalog();
 const favorites = useFavorites();
 const feed = useFeed();
@@ -51,6 +52,8 @@ const view = ref<View>('list');
 const tab = ref<Tab>('rating');
 const accountFits = ref(ACCOUNT_FITS_DEFAULT);
 const query = ref('');
+const versionFilter = ref<string | undefined>(undefined);
+const VERSION_FILTER = /^\d+\.\d+(?:\.\d+)?$/;
 
 const accessFilter = computed<ServerAccessFilter | undefined>(() => {
   if (!accountFits.value) {
@@ -61,13 +64,39 @@ const accessFilter = computed<ServerAccessFilter | undefined>(() => {
 });
 
 const filtered = computed(
-  () => query.value.trim() !== '' || accountFits.value !== ACCOUNT_FITS_DEFAULT,
+  () =>
+    query.value.trim() !== '' ||
+    accountFits.value !== ACCOUNT_FITS_DEFAULT ||
+    versionFilter.value !== undefined,
 );
+
+function clearVersion(): void {
+  versionFilter.value = undefined;
+  if (route.query.version !== undefined) {
+    const rest = { ...route.query };
+    delete rest.version;
+    void router.replace({ query: rest });
+  }
+}
 
 function resetFilters(): void {
   query.value = '';
   accountFits.value = ACCOUNT_FITS_DEFAULT;
+  clearVersion();
 }
+
+// The old video card screen sends players here with the newest version their computer runs.
+watch(
+  () => route.query.version,
+  (version) => {
+    versionFilter.value =
+      typeof version === 'string' && VERSION_FILTER.test(version) ? version : undefined;
+  },
+  { immediate: true },
+);
+watch(versionFilter, (version) => {
+  void catalog.setQuery({ version });
+});
 
 watch(
   () => route.query.q,
@@ -124,6 +153,7 @@ onMounted(() => {
     q: query.value.trim(),
     sort: tabSorts[tab.value],
     access: accessFilter.value,
+    version: versionFilter.value,
   });
   void catalog.load();
 });
@@ -254,6 +284,17 @@ const summary = computed(() => {
         @click="accountFits = !accountFits"
       >
         <BiIcon v-if="accountFits" name="check2" />{{ ru.catalog.accountFits }}
+      </button>
+      <button
+        v-if="versionFilter !== undefined && tab !== 'favorites'"
+        type="button"
+        class="chip is-on"
+        data-version-filter
+        :aria-label="fill(ru.catalog.versionFilterClear, { version: versionFilter })"
+        @click="clearVersion"
+      >
+        {{ fill(ru.catalog.versionFilter, { version: versionFilter }) }}
+        <BiIcon name="x-lg" />
       </button>
     </div>
 

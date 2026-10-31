@@ -45,7 +45,7 @@ useVisibleInterval(() => {
   void catalog.loadPopular();
 }, REFRESH_INTERVAL_MS);
 onMounted(() => {
-  void catalog.setQuery({ q: '', sort: 'online' });
+  void catalog.setQuery({ q: '', sort: 'online', access: undefined, version: undefined });
   void catalog.loadPopular();
   if (recentPending.value && recentId !== undefined) {
     void catalog.need([recentId]).finally(() => {

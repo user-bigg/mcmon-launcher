@@ -12,29 +12,22 @@ function checked(check: PlayCheck, code: string | null = null): CheckedPlay {
 }
 
 describe('play check before the game starts', () => {
-  it('asks with the server id, the nick and the way of signing in; only the MC Monitor row shows the account', () => {
+  it('asks with the server id, the nick and the way of signing in', () => {
     const target = {
       kind: 'server',
       serverId: 5,
       minecraft: '26.2',
       address: 'mc.example.org',
     } as const;
-    expect(
-      playCheckQuery(
-        { target, account: { kind: 'nick', nick: 'Steve', withAccount: true } },
-        player,
-      ),
-    ).toEqual(query);
-    expect(playCheckQuery({ target, account: { kind: 'nick', nick: 'Steve' } }, player)).toEqual({
-      ...query,
-      guest: true,
-    });
+    expect(playCheckQuery({ target, account: { kind: 'nick', nick: 'Steve' } }, player)).toEqual(
+      query,
+    );
     expect(
       playCheckQuery(
         { target, account: { kind: 'account', id: 'ms-1' } },
         { ...player, nick: 'Licensed' },
       ),
-    ).toEqual({ serverId: 5, nick: 'Licensed', auth: 'microsoft', guest: true });
+    ).toEqual({ serverId: 5, nick: 'Licensed', auth: 'microsoft' });
   });
 
   it('starts the game on ok and whenever the site said nothing useful', () => {
@@ -70,10 +63,12 @@ describe('play check before the game starts', () => {
     });
   });
 
-  it('a mismatch plays under the nickname from the answer', () => {
-    expect(admit(checked({ kind: 'nick_mismatch', nick: 'Test_User' }), 'Steve', 'nick')).toEqual({
+  it('a mismatch keeps the chosen nickname and has no code', () => {
+    expect(
+      admit(checked({ kind: 'nick_mismatch', nick: 'Test_User' }, 'c'.repeat(32)), 'Steve', 'nick'),
+    ).toEqual({
       go: true,
-      nick: 'Test_User',
+      nick: 'Steve',
       code: null,
     });
   });

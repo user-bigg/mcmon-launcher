@@ -1,11 +1,10 @@
-import { computed, ref, shallowRef, type ComputedRef, type Ref, type ShallowRef } from 'vue';
+import { computed, ref, shallowRef, watch, type ComputedRef, type Ref, type ShallowRef } from 'vue';
 import type {
   AccountError,
   AccountEvent,
   AccountResult,
   AccountState,
   AccountUser,
-  NickError,
   PinnedNick,
   PlayCheck,
 } from '@shared/account';
@@ -21,7 +20,7 @@ import type {
 } from '@shared/microsoft';
 import type { GameAccount } from '@shared/player';
 import {
-  MC_MONITOR_PLAYER_ID,
+  MAX_NICK_ACCOUNTS,
   type ActivePlayer,
   type NickRecord,
   type PlayersResult,
@@ -38,7 +37,6 @@ import { useStores } from './context';
 
 const NICK_HEAD = 'fox';
 const LICENSE_HEAD = 'frost';
-const NICK_FAILED: NickError = { code: 'failed' };
 const UNCHECKED: PlayCheck = { kind: 'unchecked' };
 const LOOK_FAILED: LookResult = { ok: false, error: { code: 'failed' } };
 
@@ -49,7 +47,6 @@ export interface AccountsStore {
   nick: ComputedRef<GameAccount | null>;
   pinned: ComputedRef<PinnedNick | null>;
   playNick: ComputedRef<string | null>;
-  playsWithAccount: ComputedRef<boolean>;
   player: ComputedRef<GameAccount | null>;
   licenses: ComputedRef<MicrosoftAccount[]>;
   license: ComputedRef<MicrosoftAccount | null>;
@@ -67,8 +64,7 @@ export interface AccountsStore {
   select: (account: GameAccount) => void;
   removeNick: (id: string) => void;
   saveNick: (nick: string) => boolean;
-  pinNick: (nick: string) => Promise<NickError | null>;
-  checkNick: (nick: string, guest?: boolean) => Promise<PlayCheck>;
+  checkNick: (nick: string) => Promise<PlayCheck>;
   wear: (change: LookChange) => Promise<LookError | null>;
   resetLook: () => Promise<LookError | null>;
   loginMicrosoft: () => Promise<void>;
@@ -90,21 +86,8 @@ function nickAccount(record: NickRecord): GameAccount {
   return { id: record.id, name: record.nick, provider: 'nick', head: NICK_HEAD, skin: null };
 }
 
-function mcMonitorAccount(nick: string): GameAccount {
-  return {
-    id: MC_MONITOR_PLAYER_ID,
-    name: nick,
-    provider: 'mc-monitor',
-    head: NICK_HEAD,
-    skin: null,
-  };
-}
-
 function activeFor(account: GameAccount): ActivePlayer {
-  if (account.provider === 'mc-monitor') {
-    return { kind: 'mc-monitor', id: MC_MONITOR_PLAYER_ID };
-  }
-  return { kind: account.provider, id: account.id };
+  return { kind: account.provider === 'microsoft' ? 'microsoft' : 'nick', id: account.id };
 }
 
 function licenseAccount(account: MicrosoftAccount): GameAccount {
@@ -164,33 +147,25 @@ export function createAccounts(context: LauncherContext): AccountsStore {
   const licenses = computed(() => microsoft.value.accounts);
   const accounts = computed(() => [...licenses.value.map(licenseAccount), ...nicks.value]);
   const pinned = computed(() => mc.value?.nick ?? null);
-  const mcRow = computed(() => {
-    const name = pinned.value?.name ?? null;
-    return name === null ? null : mcMonitorAccount(name);
+  const pinnedName = computed(() => pinned.value?.name ?? null);
+  const pinnedNick = computed(() => {
+    const name = pinnedName.value;
+    return name === null
+      ? null
+      : (nicks.value.find((item) => sameNickLetters(item.name, name)) ?? null);
   });
-  // A saved nickname equal to the pinned one would be refused as a guest: the row stands for it.
-  const rows = computed(() => {
-    const own = mcRow.value;
-    const guests = nicks.value.filter(
-      (item) => own === null || !sameNickLetters(item.name, own.name),
-    );
-    return [...(own === null ? [] : [own]), ...licenses.value.map(licenseAccount), ...guests];
-  });
+  const rows = computed(() => [...nicks.value, ...licenses.value.map(licenseAccount)]);
   const chosen = computed(() => {
     const current = activeRef.value;
     if (current === null) {
       return null;
     }
+    // 0.2.4 kept the pinned nickname as a row of its own.
     if (current.kind === 'mc-monitor') {
-      return mcRow.value;
+      return pinnedNick.value;
     }
     const list = current.kind === 'nick' ? nicks.value : licenses.value.map(licenseAccount);
-    const found = list.find((item) => item.id === current.id) ?? null;
-    const own = mcRow.value;
-    // A guest nickname pinned later to this account is the account's row now.
-    return found?.provider === 'nick' && own !== null && sameNickLetters(found.name, own.name)
-      ? own
-      : found;
+    return list.find((item) => item.id === current.id) ?? null;
   });
   const nick = computed(() => {
     const current = activeRef.value;
@@ -204,34 +179,28 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     }
     return licenses.value.find((item) => item.status === 'ready') ?? licenses.value[0] ?? null;
   });
-  // Until the player picks a row, a signed-in player keeps the pinned nickname: one that has
-  // not chosen it yet is asked to, as before the account list.
-  const legacy = computed(() => !picked.value && pinned.value !== null);
+  // Until the player picks a row, a signed-in player plays under the pinned nickname, as before
+  // the account list.
+  const legacy = computed(() => !picked.value && pinnedNick.value !== null);
   const active = computed(() => {
     if (legacy.value) {
-      return mcRow.value ?? (license.value === null ? null : licenseAccount(license.value));
+      return pinnedNick.value ?? (license.value === null ? null : licenseAccount(license.value));
     }
     return (
       chosen.value ??
-      mcRow.value ??
       nicks.value[0] ??
       (license.value === null ? null : licenseAccount(license.value))
     );
   });
-  // Servers that let players in by nickname get a nickname even when a licence is chosen:
-  // the MC Monitor row first, then the saved nickname.
+  // Servers that let players in by nickname get a nickname when no licence is chosen.
   const playIdentity = computed(() => {
     if (legacy.value) {
-      return mcRow.value;
+      return pinnedNick.value;
     }
     const current = active.value;
-    if (current !== null && current.provider !== 'microsoft') {
-      return current;
-    }
-    return mcRow.value ?? nick.value;
+    return current !== null && current.provider === 'nick' ? current : nick.value;
   });
   const playNick = computed(() => playIdentity.value?.name ?? null);
-  const playsWithAccount = computed(() => playIdentity.value?.provider === 'mc-monitor');
   const player = computed(() => active.value);
 
   function accept(state: AccountState): boolean {
@@ -248,7 +217,7 @@ export function createAccounts(context: LauncherContext): AccountsStore {
       return;
     }
     if (event.change === 'signed-in') {
-      activeRef.value = { kind: 'mc-monitor', id: MC_MONITOR_PLAYER_ID };
+      picked.value = false;
       persist();
     }
     for (const listener of listeners) {
@@ -318,7 +287,11 @@ export function createAccounts(context: LauncherContext): AccountsStore {
       return;
     }
     const known = new Set(nicks.value.map((item) => item.id));
-    const restored = result.value.nicks.filter((item) => !known.has(item.id)).map(nickAccount);
+    const sameName = (name: string): boolean =>
+      nicks.value.some((item) => sameNickLetters(item.name, name));
+    const restored = result.value.nicks
+      .filter((item) => !known.has(item.id) && !sameName(item.nick))
+      .map(nickAccount);
     const addedBefore = nicks.value.length > 0;
     nicks.value = [...restored, ...nicks.value];
     activeRef.value ??= result.value.active;
@@ -402,9 +375,30 @@ export function createAccounts(context: LauncherContext): AccountsStore {
       context.api.microsoft.state().then(acceptMs),
     ]).then(() => undefined);
   }
+  // The nickname pinned on the site is one of the player's nicknames in the list.
+  // Waits for the saved list, so it is not overwritten before it is read; the row 0.2.4 kept
+  // for the account becomes that nickname's row.
+  function adoptPinnedNick(): void {
+    const name = pinnedName.value;
+    if (!settled.value || name === null || !isValidNick(name)) {
+      return;
+    }
+    const known = pinnedNick.value;
+    const row = known ?? insertNick(name);
+    const legacyRow = activeRef.value?.kind === 'mc-monitor';
+    if (legacyRow) {
+      activeRef.value = { kind: 'nick', id: row.id };
+    }
+    if (known === null || legacyRow) {
+      persist();
+    }
+  }
+
   const settled = ref(context.demo);
+  watch(pinnedName, adoptPinnedNick);
   void ready.then(() => {
     settled.value = true;
+    adoptPinnedNick();
   });
 
   function rename(id: string, name: string): boolean {
@@ -418,7 +412,7 @@ export function createAccounts(context: LauncherContext): AccountsStore {
   }
 
   function insertNick(name: string): GameAccount {
-    const existing = nicks.value.find((item) => item.name === name);
+    const existing = nicks.value.find((item) => sameNickLetters(item.name, name));
     if (existing !== undefined) {
       return existing;
     }
@@ -436,13 +430,12 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     persist();
   }
 
-  // The site refuses a guest the nickname pinned to an account, so that name means the row.
   function addNick(name: string): GameAccount | null {
-    if (!isValidNick(name)) {
+    const known = nicks.value.some((item) => sameNickLetters(item.name, name));
+    if (!isValidNick(name) || (!known && nicks.value.length >= MAX_NICK_ACCOUNTS)) {
       return null;
     }
-    const own = mcRow.value;
-    const account = own !== null && sameNickLetters(own.name, name) ? own : insertNick(name);
+    const account = insertNick(name);
     select(account);
     return account;
   }
@@ -533,27 +526,12 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     }
   }
 
-  async function pinNick(name: string): Promise<NickError | null> {
-    if (context.demo) {
-      const user = mc.value;
-      if (user !== null) {
-        demoSet({ ...user, nick: { name, changeAt: null } }, 'changed');
-      }
-      return user === null ? NICK_FAILED : null;
-    }
-    const result = await context.api.account.setNick(name).catch(() => null);
-    if (result?.ok !== true) {
-      return result?.error ?? NICK_FAILED;
-    }
-    accept(result.value);
-    return null;
-  }
-
-  function checkNick(name: string, guest = false): Promise<PlayCheck> {
-    const query = { serverId: null, nick: name, auth: 'nick' as const };
+  function checkNick(name: string): Promise<PlayCheck> {
     return context.demo
       ? Promise.resolve(UNCHECKED)
-      : context.api.account.playCheck(guest ? { ...query, guest } : query).catch(() => UNCHECKED);
+      : context.api.account
+          .playCheck({ serverId: null, nick: name, auth: 'nick' })
+          .catch(() => UNCHECKED);
   }
 
   async function dress(action: () => Promise<LookResult>): Promise<LookError | null> {
@@ -580,7 +558,6 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     nick,
     pinned,
     playNick,
-    playsWithAccount,
     player,
     licenses,
     license,
@@ -598,7 +575,6 @@ export function createAccounts(context: LauncherContext): AccountsStore {
     select,
     removeNick,
     saveNick,
-    pinNick,
     checkNick,
     wear: (change) => dress(() => context.api.account.wear(change)),
     resetLook: () => dress(() => context.api.account.resetLook()),

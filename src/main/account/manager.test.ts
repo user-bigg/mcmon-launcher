@@ -1115,23 +1115,19 @@ describe('pinned nickname', () => {
     }
   });
 
-  it('admitPlay: a mismatch asks once more under the pinned nickname to get the code', async () => {
-    const code = 'k'.repeat(32);
+  it('admitPlay: a nickname other than the pinned one is asked once and gets no code', async () => {
     const { manager, calls } = setup(
       {
         'GET /me': () => json(ME),
-        'POST /play/check': (init) =>
-          (init.body as string).includes('Test_User')
-            ? json({ ok: true, play_code: code })
-            : siteError('nick_mismatch', 409, { nick: 'Test_User' }),
+        'POST /play/check': () => siteError('nick_mismatch', 409, { nick: 'Test_User' }),
       },
       { token: TOKEN, user: { id: 7, name: 'Игрок', avatarUrl: null }, nick: null },
     );
     expect(await manager.admitPlay({ serverId: 68, nick: 'Steve', auth: 'nick' })).toEqual({
       check: { kind: 'nick_mismatch', nick: 'Test_User' },
-      code,
+      code: null,
     });
-    expect(calls.filter((call) => call.key === 'POST /play/check')).toHaveLength(2);
+    expect(calls.filter((call) => call.key === 'POST /play/check')).toHaveLength(1);
   });
 
   it('playCheck: a guest sends no token and no server_id for a typed address', async () => {
@@ -1148,16 +1144,6 @@ describe('pinned nickname', () => {
     });
   });
 
-  it('admitPlay: a nickname played as a guest goes without the token even when signed in', async () => {
-    const { manager, calls } = setup(
-      { 'GET /me': () => json(ME), 'POST /play/check': () => json({ ok: true }) },
-      { token: TOKEN, user: { id: 7, name: 'Игрок', avatarUrl: null }, nick: null },
-    );
-    await manager.admitPlay({ serverId: 68, nick: 'Alex', auth: 'nick', guest: true });
-    const [check] = calls.filter((call) => call.key === 'POST /play/check');
-    expect(authorization(check)).toBeUndefined();
-  });
-
   it('playCheck: the site does not answer — the game may start', async () => {
     const { manager } = setup({
       'POST /play/check': () => {
@@ -1169,7 +1155,7 @@ describe('pinned nickname', () => {
     });
   });
 
-  it('playCheck: nick_mismatch pins the nickname from the answer', async () => {
+  it('playCheck: nick_mismatch leaves the pinned nickname alone, the token goes along', async () => {
     const { manager, store, events, calls } = setup(
       {
         'GET /me': () => json(ME),
@@ -1178,9 +1164,10 @@ describe('pinned nickname', () => {
       session(),
     );
     await settle();
+    const saved = store.saved?.nick ?? null;
     await manager.playCheck({ serverId: 5, nick: 'Steve', auth: 'nick' });
-    expect(store.saved?.nick?.name).toBe('Test_User');
-    expect(events.at(-1)?.state.user?.nick?.name).toBe('Test_User');
+    expect(store.saved?.nick ?? null).toEqual(saved);
+    expect(events.every((event) => event.state.user?.nick?.name !== 'Test_User')).toBe(true);
     expect(authorization(calls.find((call) => call.key === 'POST /play/check'))).toBe(
       `Bearer ${TOKEN}`,
     );

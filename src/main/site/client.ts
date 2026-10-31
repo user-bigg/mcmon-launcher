@@ -4,6 +4,7 @@ import type { Scene } from '@shared/scenes';
 import type { ServerLive, ServerQuery, SiteError, SiteMeta, SiteResult } from '@shared/site';
 import type { ModCatalog } from '@shared/mods';
 import type { SkinModTable } from '@shared/skin-mod';
+import { versionUnderCeiling } from '@shared/minecraft-version';
 import type { CrashReportPacket, TelemetryLane, TelemetryPacket } from '@shared/telemetry';
 import type { Fetched, Posted, SiteReader } from './http';
 import { parseCapePresets, parseSkinPresets } from './look';
@@ -33,6 +34,8 @@ export interface SiteClientOptions {
   http: SiteReader;
   log: (message: string) => void;
   localIcon: (remote: string | null) => string | null;
+  launchCeiling?: () => string | null;
+  ceilingReady?: Promise<unknown>;
   skinHosts?: ReadonlySet<string>;
   liveBatch?: boolean;
 }
@@ -56,6 +59,23 @@ function mapResult<A, B>(fetched: Fetched<A>, map: (value: A) => B): Fetched<B> 
 // time because the site is out of reach shows no marks at all.
 function current<T extends SkinPreset | CapePreset>(list: { value: T[]; stale: boolean }): T[] {
   return list.stale ? list.value.map((item) => ({ ...item, isNew: false })) : list.value;
+}
+
+// On a video card without OpenGL 3.2 the game goes to the newest version the server and the
+// card both take, so every screen shows the version that will really start.
+export function fittedLaunch(row: ServerRow, ceiling: string | null): ServerRow['launch'] {
+  const { launch } = row;
+  // Server mods and modpacks are built for the server's own version; ViaVersion does not carry
+  // their channels to an older client.
+  if (
+    launch.kind !== 'direct' ||
+    launch.modpack === true ||
+    (launch.mods?.required.length ?? 0) > 0
+  ) {
+    return launch;
+  }
+  const minecraft = versionUnderCeiling(launch.minecraft, row.versions, ceiling);
+  return minecraft === launch.minecraft ? launch : { ...launch, minecraft };
 }
 
 export function serverQueryParams(query: ServerQuery): URLSearchParams {
@@ -122,6 +142,7 @@ export class SiteClient {
       parse: (body) => parseServerList(body, this.options.log),
       fallbackTtlMs: LIST_TTL_MS,
     });
+    await this.options.ceilingReady;
     return result(
       mapResult(fetched, (list) => ({
         ...list,
@@ -141,6 +162,7 @@ export class SiteClient {
       auth: 'optional',
       store: withoutPersonal,
     });
+    await this.options.ceilingReady;
     return result(mapResult(fetched, (card) => this.withIcon(card)));
   }
 
@@ -268,6 +290,14 @@ export class SiteClient {
   }
 
   private withIcon<T extends ServerRow>(row: T): T {
-    return { ...row, icon_url: this.options.localIcon(row.icon_url) };
+    return {
+      ...row,
+      icon_url: this.options.localIcon(row.icon_url),
+      launch: this.fitLaunch(row),
+    };
+  }
+
+  private fitLaunch(row: ServerRow): ServerRow['launch'] {
+    return fittedLaunch(row, this.options.launchCeiling?.() ?? null);
   }
 }

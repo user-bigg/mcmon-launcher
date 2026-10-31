@@ -1,11 +1,18 @@
 {
-  "about": "Account list and the add-account dialog in the demo build, run with SHOT_MAIN=dist/demo-out/main/index.js.",
+  "about": "Account list, removing a row in place and the add-account dialog in the demo build, run with SHOT_MAIN=dist/demo-out/main/index.js.",
   "steps": [
     {
       "name": "39-accounts-list",
       "route": "/",
       "wait": ".hero",
       "click": ".switcher .account"
+    },
+    {
+      "name": "39-accounts-remove",
+      "click": ".switcher-row:nth-child(2) .switcher-more"
+    },
+    {
+      "click": ".switcher-confirm .is-cancel"
     },
     {
       "name": "39-accounts-add",

@@ -32,7 +32,7 @@ describe('install and launch', () => {
         minecraft: '1.21.4',
         address: 'play.cubeisland.example:25565',
       },
-      account: { kind: 'nick', nick: 'Frostbyte', withAccount: true },
+      account: { kind: 'nick', nick: 'Frostbyte' },
       joinServer: true,
       name: serverName(SERVER_IDS.cubeIsland),
       launchId: expect.stringMatching(/^[0-9a-f-]{36}$/) as string,
@@ -269,5 +269,36 @@ describe('the account list in the sidebar', () => {
     await app.find('.switcher .account').trigger('click');
     expect(app.find('.switcher-locked').text()).toBe(ru.switcher.locked);
     expect(app.find('.switcher-pick').attributes('disabled')).toBeDefined();
+  });
+});
+
+describe('an old video card', () => {
+  it("'To servers' opens the catalog on the versions this computer runs, the chip clears it", async () => {
+    const { app, api, router } = await open(`/server/${String(SERVER_IDS.cubeIsland)}`);
+    api.launch.launch = vi.fn(() =>
+      Promise.resolve({
+        ok: false as const,
+        error: {
+          code: 'gpu-unsupported' as const,
+          minecraft: '26.3',
+          gpu: 'Intel(R) HD Graphics',
+          openGl: '3.1',
+        },
+      }),
+    );
+    await app.find('[data-launch="direct"]').trigger('click');
+    await flushPromises();
+    const toServers = app
+      .findAll('button')
+      .find((item) => item.text() === ru.launchError['gpu-unsupported'].action);
+    await toServers?.trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.fullPath).toBe('/servers?version=1.16.5');
+    expect(app.find('[data-version-filter]').text()).toBe(
+      fill(ru.catalog.versionFilter, { version: '1.16.5' }),
+    );
+    await app.find('[data-version-filter]').trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.fullPath).toBe('/servers');
   });
 });

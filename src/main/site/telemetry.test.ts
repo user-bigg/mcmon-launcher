@@ -276,18 +276,6 @@ describe('telemetry queue', () => {
     expect(tokens.at(-1)).toBeNull();
   });
 
-  it('a guest launch stays with the install while the player is signed in', async () => {
-    const { queue, tokens, signIn } = setup();
-    signIn({ user: 1, token: 'one' });
-    queue.push(finished(1), true);
-    await settle(queue);
-    await queue.flush();
-    queue.push(finished(2));
-    await settle(queue);
-    await queue.flush();
-    expect(tokens).toEqual([null, 'one']);
-  });
-
   it("sample batch for the 'Privacy' screen — the first 50 events as is", async () => {
     const { queue } = setup();
     queue.push(started());

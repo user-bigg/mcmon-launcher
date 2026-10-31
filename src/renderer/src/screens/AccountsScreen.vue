@@ -8,26 +8,19 @@ import microsoftLogo from '../assets/brand/microsoft.svg';
 import BiIcon from '../components/BiIcon.vue';
 import LoginLicense from '../components/LoginLicense.vue';
 import LoginMc from '../components/LoginMc.vue';
-import NickPin from '../components/NickPin.vue';
 import SkelBar from '../components/SkelBar.vue';
 import UiButton from '../components/UiButton.vue';
 import { useAccounts } from '../composables/useAccounts';
 import { useFavorites } from '../composables/useFavorites';
-import { accountTitle, nickChangeFrom } from '../lib/account';
-import { moscowDate } from '../lib/time';
 
 const accounts = useAccounts();
 const favorites = useFavorites();
 const nickInput = useTemplateRef<HTMLInputElement>('nickInput');
-const nickPin = useTemplateRef<InstanceType<typeof NickPin>>('nickPin');
 
 const mc = computed(() => accounts.mc.value);
 const currentNick = computed(() => accounts.nick.value);
-const pinned = computed(() => accounts.pinned.value);
-const mustPick = computed(() => pinned.value?.name === null);
-const changeFrom = computed(() => nickChangeFrom(pinned.value, new Date()));
-const changing = ref(false);
 const license = computed(() => accounts.license.value);
+const licenseChosen = computed(() => accounts.active.value?.provider === 'microsoft');
 const licenses = computed(() => accounts.licenses.value);
 const microsoft = computed(() => accounts.microsoft.value);
 const mcWaiting = computed(() => accounts.mcState.value.connect !== null);
@@ -63,20 +56,14 @@ function count(value: number | null): string {
   return value === null ? '—' : formatNumber(value);
 }
 
+// The field is for the first nickname only: more are added from the account list.
 function saveNick(): void {
-  touched.value = !accounts.saveNick(nick.value);
+  touched.value = accounts.addNick(nick.value) === null;
 }
 
 function focusNick(): void {
-  (nickPin.value ?? nickInput.value)?.focus();
+  nickInput.value?.focus();
 }
-
-watch(
-  () => mc.value?.id,
-  () => {
-    changing.value = false;
-  },
-);
 
 onMounted(() => {
   void accounts.refreshMc();
@@ -114,7 +101,7 @@ onMounted(() => {
           <div v-else-if="mc !== null" class="lx-rows" data-mc="signed-in">
             <div class="lx-row">
               <div class="lx-row-text">
-                <div class="lx-row-title selectable" data-mc="nick">{{ accountTitle(mc) }}</div>
+                <div class="lx-row-title selectable" data-mc="nick">{{ mc.name }}</div>
                 <div
                   v-if="mc.trusted !== true && mc.trustedReason !== null"
                   class="lx-row-desc"
@@ -122,34 +109,11 @@ onMounted(() => {
                 >
                   {{ mc.trustedReason }}
                 </div>
-                <div v-if="changeFrom !== null" class="lx-row-desc" data-mc="change-from">
-                  {{ fill(ru.accounts.nickChangeFrom, { date: moscowDate(changeFrom) }) }}
-                </div>
               </div>
-              <UiButton
-                v-if="pinned !== null && !mustPick"
-                size="sm"
-                :disabled="changing"
-                data-mc="change"
-                @click="changing = true"
-              >
-                {{ ru.accounts.nickChange }}
-              </UiButton>
               <UiButton size="sm" :disabled="accounts.mcBusy.value" @click="accounts.signOut()">
                 {{ ru.accounts.signOut }}
               </UiButton>
             </div>
-            <NickPin
-              v-if="mustPick || changing"
-              ref="nickPin"
-              :key="mustPick ? 'pick' : 'change'"
-              :first="mustPick"
-              :suggestion="mustPick ? (currentNick?.name ?? '') : ''"
-              :current="pinned?.name ?? null"
-              :change-from="changeFrom"
-              @done="changing = false"
-              @cancel="changing = false"
-            />
             <dl class="stats">
               <div data-mc="votes">
                 <dt>{{ ru.accounts.mcVotes }}</dt>
@@ -187,7 +151,12 @@ onMounted(() => {
           </div>
         </section>
 
-        <form v-if="pinned === null" class="group nick" novalidate @submit.prevent="saveNick">
+        <form
+          v-if="accounts.rows.value.length === 0"
+          class="group nick"
+          novalidate
+          @submit.prevent="saveNick"
+        >
           <h2>{{ ru.accounts.nickTitle }}</h2>
           <p>{{ ru.accounts.nickNote }}</p>
           <div class="lx-rows">
@@ -282,17 +251,25 @@ onMounted(() => {
         <h2>{{ ru.accounts.whoTitle }}</h2>
         <p>{{ ru.accounts.whoNote }}</p>
         <div class="lx-rows">
-          <div class="lx-row" data-who="nick">
+          <div v-if="licenseChosen && license !== null" class="lx-row" data-who="all">
+            <div class="lx-row-text">
+              <div class="lx-row-title">{{ ru.accounts.whereAll }}</div>
+              <div v-if="license.status === 'needs-login'" class="lx-row-desc error">
+                <BiIcon name="exclamation-triangle" />{{ ru.accounts.needsLogin }}
+              </div>
+            </div>
+            <b class="who selectable">{{ license.nick }}</b>
+          </div>
+          <div v-if="!licenseChosen" class="lx-row" data-who="nick">
             <div class="lx-row-text">
               <div class="lx-row-title">{{ ru.accounts.whereNick }}</div>
             </div>
             <b v-if="accounts.playNick.value !== null" class="who selectable">{{
               accounts.playNick.value
             }}</b>
-            <span v-else-if="mustPick" class="lx-muted">{{ ru.accounts.nickNone }}</span>
             <UiButton v-else size="sm" @click="focusNick">{{ ru.accounts.nickSet }}</UiButton>
           </div>
-          <div v-if="licenseShown" class="lx-row" data-who="license">
+          <div v-if="licenseShown && !licenseChosen" class="lx-row" data-who="license">
             <div class="lx-row-text">
               <div class="lx-row-title">{{ ru.accounts.whereLicense }}</div>
               <div v-if="license?.status === 'needs-login'" class="lx-row-desc error">

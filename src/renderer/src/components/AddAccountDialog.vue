@@ -2,7 +2,6 @@
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { ru } from '@shared/i18n/ru';
-import { sameNickLetters } from '@shared/account';
 import { isValidNick } from '@shared/launch';
 import { useAccounts } from '../composables/useAccounts';
 import BiIcon from './BiIcon.vue';
@@ -24,21 +23,17 @@ const nickError = computed(() => {
   }
   return taken.value ? ru.welcome.nickTaken : null;
 });
-const signedIn = computed(() => accounts.mc.value !== null);
-const ownNick = computed(() => accounts.pinned.value?.name ?? null);
-
-// The pinned nickname is the MC Monitor row; any other is asked as a guest would be.
+// A nickname pinned to someone else's account would be refused at every launch.
 async function addNick(): Promise<void> {
   touched.value = true;
   const typed = nick.value.trim();
   if (!isValidNick(typed) || checking.value) {
     return;
   }
-  const own = ownNick.value !== null && sameNickLetters(ownNick.value, typed);
   checking.value = true;
-  const check = own ? null : await accounts.checkNick(typed, true);
+  const check = await accounts.checkNick(typed);
   checking.value = false;
-  if (check?.kind === 'nick_taken') {
+  if (check.kind === 'nick_taken') {
     taken.value = true;
     return;
   }
@@ -47,11 +42,11 @@ async function addNick(): Promise<void> {
   }
 }
 
-// Both sign-ins finish in the browser; their progress and errors live on the accounts screen.
-async function signIn(start: () => Promise<void>): Promise<void> {
+// The sign-in finishes in the browser; its progress and errors live on the accounts screen.
+async function signIn(): Promise<void> {
   emit('close');
   await router.push('/accounts');
-  await start();
+  await accounts.loginMicrosoft();
 }
 
 const FOCUSABLE = 'button:not(:disabled), input, [href]';
@@ -106,18 +101,6 @@ onBeforeUnmount(() => {
           <UiButton icon="x-lg" icon-only :label="ru.switcher.close" @click="emit('close')" />
         </header>
         <div class="add-account-options">
-          <article class="option">
-            <ProviderMark provider="mc-monitor" size="lg" />
-            <h3>{{ ru.switcher.mcTitle }}</h3>
-            <p>{{ ru.switcher.mcText }}</p>
-            <p v-if="signedIn" class="option-done">
-              <BiIcon name="check-lg" />
-              {{ ru.switcher.mcSigned }}
-            </p>
-            <UiButton v-else variant="primary" block @click="signIn(accounts.connectMc)">
-              {{ ru.switcher.mcAction }}
-            </UiButton>
-          </article>
           <form class="option" novalidate @submit.prevent="addNick">
             <BiIcon name="person-plus" class="option-icon" />
             <h3>{{ ru.switcher.nickTitle }}</h3>
@@ -145,15 +128,11 @@ onBeforeUnmount(() => {
               ru.switcher.nickAction
             }}</UiButton>
           </form>
-          <article class="option is-wide">
+          <article class="option">
             <ProviderMark provider="microsoft" size="lg" />
             <h3>{{ ru.switcher.licenseTitle }}</h3>
             <p>{{ ru.switcher.licenseText }}</p>
-            <UiButton
-              block
-              :disabled="!accounts.microsoft.value.available"
-              @click="signIn(accounts.loginMicrosoft)"
-            >
+            <UiButton block :disabled="!accounts.microsoft.value.available" @click="signIn">
               {{ ru.switcher.licenseAction }}
             </UiButton>
           </article>
@@ -212,10 +191,6 @@ onBeforeUnmount(() => {
   background: var(--mc-surface-2);
 }
 
-.option.is-wide {
-  grid-column: 1 / -1;
-}
-
 .option h3 {
   margin: 0;
   font-size: 14px;
@@ -233,15 +208,6 @@ onBeforeUnmount(() => {
 .option :deep(.btn.is-block) {
   flex: none;
   width: 100%;
-}
-
-.option .option-done {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 6px;
-  height: 38px;
-  color: var(--mc-text);
 }
 
 .option-icon {

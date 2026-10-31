@@ -16,7 +16,6 @@ import {
   type LaunchTarget,
   type PreparedGame,
   instanceIdOf,
-  launchesWithAccount,
 } from '@shared/launch';
 import {
   optionalOffFor,
@@ -140,8 +139,6 @@ export class GameLaunchService implements LaunchService {
   private lastCrash: GameCrashRecord | null = null;
   private lastRequest: LaunchRequest | null = null;
   private readonly clientModByPid = new Map<number, ClientModRun>();
-  // Only a game started from the MC Monitor row counts toward the account.
-  private guestTelemetry = false;
   private readonly crashChecks = new Set<Promise<unknown>>();
   private readonly clientModBlocks: ClientModBlocks;
   private blockedClientMods: ClientModRun[] = [];
@@ -242,7 +239,6 @@ export class GameLaunchService implements LaunchService {
       return rejected({ code: 'busy' });
     }
     const { operation, release } = claim;
-    this.guestTelemetry = false;
     try {
       const engine = await this.loadEngine();
       const installed = await engine.installer.install({ target, joinServer: true }, operation);
@@ -266,7 +262,6 @@ export class GameLaunchService implements LaunchService {
       return rejected({ code: 'busy' });
     }
     const { operation, release } = claim;
-    this.guestTelemetry = !launchesWithAccount(request.account);
     let gate: PlayGate | null = null;
     try {
       const resolved = await this.resolvePlayer(request.account);
@@ -800,7 +795,7 @@ export class GameLaunchService implements LaunchService {
 
   private report(event: LaunchTelemetryEvent): void {
     safely(() => {
-      this.options.telemetry(event, this.guestTelemetry);
+      this.options.telemetry(event);
     });
   }
 

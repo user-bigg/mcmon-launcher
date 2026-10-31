@@ -1,7 +1,7 @@
 {
   "name": "mcmonitor-launcher",
   "productName": "MC Monitor Launcher",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Minecraft launcher for servers from the MC Monitor catalog",
   "author": "MC Monitor",
   "homepage": "https://mc-mon.ru",

@@ -5,8 +5,7 @@ import type { GameWindow } from '@shared/settings';
 import type { CrashUpload, TelemetrySink } from '@shared/telemetry';
 import type { PlayerResolver } from './accounts';
 import { gameRoot } from '../data-root';
-import { withDeadline } from '../deadline';
-import { gpuList } from '../device/profile';
+import { systemGpus } from '../device/gpus';
 import { registerCrashIpc } from './crash-ipc';
 import { createCrashService, type GameCrashService } from './crash-service';
 
@@ -26,7 +25,6 @@ import type { SkinModSource } from './skins/variant';
 import { createLaunchService, type CatalogModsSource, type GameLaunchService } from './service';
 
 const DOWNLOAD_HOST = 'https://piston-data.mojang.com/';
-const GPU_INFO_DEADLINE_MS = 3000;
 
 const discardTelemetry: TelemetrySink = () => undefined;
 
@@ -107,12 +105,7 @@ export function startLaunchService(
     platform: process.platform,
     arch: process.arch,
     ...(registryArch === undefined ? {} : { registryArch }),
-    gpus: () =>
-      withDeadline(
-        app.getGPUInfo('basic').then(gpuList, () => []),
-        GPU_INFO_DEADLINE_MS,
-        [],
-      ),
+    gpus: systemGpus,
     totalMemoryBytes,
     fetch,
     fetchText,

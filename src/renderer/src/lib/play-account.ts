@@ -7,13 +7,12 @@ export type PlayAccount = { ok: true; account: LaunchAccount } | { ok: false; mi
 export interface PlayIdentities {
   nick: string | null;
   licenseId: string | null;
-  withAccount?: boolean;
   licenseChosen?: boolean;
 }
 
 export function pickPlayAccount(
   access: PlayAccess,
-  { nick, licenseId, withAccount = false, licenseChosen = false }: PlayIdentities,
+  { nick, licenseId, licenseChosen = false }: PlayIdentities,
 ): PlayAccount {
   // A chosen licence plays everywhere, as the account list promises.
   if (access === 'license' || (licenseChosen && licenseId !== null)) {
@@ -23,5 +22,5 @@ export function pickPlayAccount(
   }
   return nick === null
     ? { ok: false, missing: 'nick' }
-    : { ok: true, account: { kind: 'nick', nick, ...(withAccount ? { withAccount } : {}) } };
+    : { ok: true, account: { kind: 'nick', nick } };
 }

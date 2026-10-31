@@ -1,5 +1,5 @@
 import { PLAY_CHECK_TIMEOUT_MS, type PlayAuth, type PlayCheckQuery } from '@shared/account';
-import { launchesWithAccount, type LaunchError, type LaunchRequest } from '@shared/launch';
+import type { LaunchError, LaunchRequest } from '@shared/launch';
 import type { CheckedPlay } from '../account/nick';
 import { withDeadline } from '../deadline';
 import type { GamePlayer } from './accounts';
@@ -19,7 +19,6 @@ export function playCheckQuery(request: LaunchRequest, player: GamePlayer): Play
     serverId: request.target.serverId,
     nick: player.nick,
     auth: request.account.kind === 'nick' ? 'nick' : 'microsoft',
-    ...(launchesWithAccount(request.account) ? {} : { guest: true }),
   };
 }
 
@@ -35,8 +34,8 @@ export function admit(checked: CheckedPlay, nick: string, auth: PlayAuth): Admis
   }
   return {
     go: true,
-    nick: auth === 'nick' && check.kind === 'nick_mismatch' ? check.nick : nick,
-    code: auth === 'nick' ? checked.code : null,
+    nick,
+    code: auth === 'nick' && check.kind !== 'nick_mismatch' ? checked.code : null,
   };
 }
 

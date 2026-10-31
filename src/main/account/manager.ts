@@ -34,8 +34,6 @@ import type { PlayAllowed, Profile, SessionUser } from './parse';
 import { createPkce, type Pkce } from './pkce';
 import type { LoadedSession, StoredSession } from './token-store';
 
-const PIN_RECHECK_MARGIN_MS = 300;
-
 export interface SessionStore {
   available: () => boolean;
   load: () => Promise<LoadedSession>;
@@ -394,47 +392,17 @@ export class AccountManager {
 
   // One deadline for everything: loading the session, the requests and their guest retry.
   admitPlay(query: PlayCheckQuery): Promise<CheckedPlay> {
-    // The second request ends early enough for its answer to beat the deadlines around it.
-    const until = this.deps.now() + PLAY_CHECK_TIMEOUT_MS - PIN_RECHECK_MARGIN_MS;
-    return withDeadline(this.checkPlay(query, until), PLAY_CHECK_TIMEOUT_MS, {
+    return withDeadline(this.checkPlay(query), PLAY_CHECK_TIMEOUT_MS, {
       check: { kind: 'unchecked' },
       code: null,
     });
   }
 
-  private async checkPlay(query: PlayCheckQuery, until: number): Promise<CheckedPlay> {
+  // Any nickname of the player may differ from the one pinned on the site: the game starts
+  // under the chosen one, and a mismatch only means the site gives no code for it.
+  private async checkPlay(query: PlayCheckQuery): Promise<CheckedPlay> {
     await this.ready;
-    const session = query.guest === true ? null : this.session;
-    const checked = playCheckOf(await this.askPlay(session?.token ?? null, query));
-    const { check } = checked;
-    if (check.kind !== 'nick_mismatch' || session === null || this.session !== session) {
-      return checked;
-    }
-    this.pin(session, { name: check.nick, changeAt: session.nick?.changeAt ?? null });
-    this.emit('changed');
-    return query.serverId === null
-      ? checked
-      : this.codeForPinned(checked, query, check.nick, until);
-  }
-
-  // The site gives a code only for the pinned nickname, so the game that takes it from the
-  // mismatch asks once more; if that answer is late, the game still starts under that name.
-  private async codeForPinned(
-    checked: CheckedPlay,
-    query: PlayCheckQuery,
-    nick: string,
-    until: number,
-  ): Promise<CheckedPlay> {
-    const left = Math.max(0, until - this.deps.now());
-    const again = await withDeadline(
-      this.askPlay(this.session?.token ?? null, { ...query, nick }).then(playCheckOf),
-      left,
-      checked,
-    );
-    if (again.check.kind === 'banned') {
-      return again;
-    }
-    return again.check.kind === 'ok' ? { check: checked.check, code: again.code } : checked;
+    return playCheckOf(await this.askPlay(this.session?.token ?? null, query));
   }
 
   // A token the site no longer accepts is forgotten by the transport; the nickname still has

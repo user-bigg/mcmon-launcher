@@ -5,7 +5,7 @@ import type { ServerRow } from '@shared/catalog';
 import { fill } from '@shared/i18n/format';
 import { ru } from '@shared/i18n/ru';
 import { catalogServerRuntime } from '@shared/instance';
-import { instanceIdOf } from '@shared/launch';
+import { instanceIdOf, LAST_VERSION_WITHOUT_CORE_PROFILE } from '@shared/launch';
 import type { SiteError } from '@shared/site';
 import { decideClientMod, type SkinsAuth, type SkinsStatus } from '@shared/skin-mod';
 import BiIcon from '../components/BiIcon.vue';
@@ -551,6 +551,13 @@ async function toggleLog(): Promise<void> {
   }
 }
 
+// After an old video card the catalog opens on the servers this computer can run.
+function serversRoute(): string {
+  return error.value?.code === 'gpu-unsupported'
+    ? `/servers?version=${LAST_VERSION_WITHOUT_CORE_PROFILE}`
+    : '/servers';
+}
+
 const errorHandlers: Record<ErrorAction, () => void> = {
   retry: () => {
     start();
@@ -560,7 +567,7 @@ const errorHandlers: Record<ErrorAction, () => void> = {
   },
   settings: () => void router.push('/settings'),
   accounts: () => void router.push('/accounts'),
-  servers: () => void router.push('/servers'),
+  servers: () => void router.push(serversTarget),
   back: () => void router.push(view.value?.back ?? '/'),
   log: () => void toggleLog(),
   dismiss: () => {
@@ -568,7 +575,10 @@ const errorHandlers: Record<ErrorAction, () => void> = {
   },
 };
 
+let serversTarget = '/servers';
+
 function onErrorAction(kind: ErrorAction): void {
+  serversTarget = serversRoute();
   launch.dismiss();
   errorHandlers[kind]();
 }

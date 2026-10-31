@@ -31,6 +31,12 @@ export interface SystemAutostart {
   view: AutostartView;
 }
 
+// `ceiling` is the newest Minecraft this computer's video card can run, null when any will do.
+export interface SystemGraphics {
+  ceiling: string | null;
+  gpu: string | null;
+}
+
 export interface SystemService {
   memory: () => Promise<SystemResult<SystemMemory>>;
   java: () => Promise<SystemResult<SystemJava>>;

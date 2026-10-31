@@ -66,10 +66,10 @@ export function usePlay(): Play {
     const picked = pickPlayAccount(access, {
       nick: accounts.playNick.value,
       licenseId: accounts.license.value?.id ?? null,
-      withAccount: accounts.playsWithAccount.value,
       licenseChosen: accounts.active.value?.provider === 'microsoft',
     });
-    if (!picked.ok && picked.missing === 'nick' && accounts.pinned.value !== null) {
+    // A signed-in player with no nickname yet is asked for the first one on the accounts screen.
+    if (!picked.ok && picked.missing === 'nick' && accounts.mc.value !== null) {
       return 'pick-nick';
     }
     if (!picked.ok) {

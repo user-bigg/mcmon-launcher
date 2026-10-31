@@ -193,8 +193,7 @@ export function isBehaviorType(type: TelemetryEventType): type is BehaviorTeleme
   return (BEHAVIOR_TELEMETRY_TYPES as readonly string[]).includes(type);
 }
 
-// A guest event stays with the install even when the player is signed in to MC Monitor.
-export type TelemetrySink = (event: LaunchTelemetryEvent, guest?: boolean) => void;
+export type TelemetrySink = (event: LaunchTelemetryEvent) => void;
 
 export type TelemetryEventType = TelemetryEvent['type'];
 

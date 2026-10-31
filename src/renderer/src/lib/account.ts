@@ -1,39 +1,11 @@
-import type {
-  AccountError,
-  AccountErrorCode,
-  AccountUser,
-  NickError,
-  PinnedNick,
-} from '@shared/account';
+import type { AccountError, AccountErrorCode, AccountUser } from '@shared/account';
 import { fill } from '@shared/i18n/format';
 import { ru } from '@shared/i18n/ru';
-import { moscowDate, moscowTime } from './time';
+import { moscowTime } from './time';
 
 // A site without pinned nicknames gives nothing but its display name.
 export function accountTitle(user: AccountUser): string {
   return user.nick === null ? user.name : (user.nick.name ?? ru.accounts.nickMissing);
-}
-
-export function nickErrorText(error: NickError): string {
-  switch (error.code) {
-    case 'nick_taken':
-      return ru.accounts.nickErrors.taken;
-    case 'invalid_nick':
-      return ru.welcome.nickError;
-    case 'nick_change_too_soon':
-      return error.changeAt === undefined
-        ? ru.accounts.nickErrors.tooSoonLater
-        : fill(ru.accounts.nickErrors.tooSoon, { date: moscowDate(error.changeAt) });
-    case 'offline':
-      return ru.accounts.nickErrors.offline;
-    default:
-      return ru.accounts.nickErrors.failed;
-  }
-}
-
-export function nickChangeFrom(pinned: PinnedNick | null, now: Date): string | null {
-  const at = pinned?.changeAt ?? null;
-  return at !== null && Date.parse(at) > now.getTime() ? at : null;
 }
 
 export function accountErrorText(error: AccountError): string {

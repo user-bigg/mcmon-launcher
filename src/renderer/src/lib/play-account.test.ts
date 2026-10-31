@@ -33,11 +33,4 @@ describe('the row chosen in the account list', () => {
       account: { kind: 'account', id: 'ms-1' },
     });
   });
-
-  it('the MC Monitor row marks the nickname as played with the account', () => {
-    expect(pickPlayAccount('nick', { ...nickOnly, withAccount: true })).toEqual({
-      ok: true,
-      account: { kind: 'nick', nick: 'Kotofey', withAccount: true },
-    });
-  });
 });

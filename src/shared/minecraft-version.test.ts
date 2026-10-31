@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { legacyJoinSkipsSrv, serverJoinMode } from './minecraft-version';
+import {
+  compareReleases,
+  legacyJoinSkipsSrv,
+  serverJoinMode,
+  versionUnderCeiling,
+} from './minecraft-version';
 
 describe('serverJoinMode', () => {
   it.each([
@@ -77,5 +82,26 @@ describe('legacyJoinSkipsSrv', () => {
     expect(legacyJoinSkipsSrv({ id: 'custom', releaseTime: '2021-06-08T12:00:00+00:00' })).toBe(
       false,
     );
+  });
+});
+
+describe('a version under the video card ceiling', () => {
+  it('compares releases as typed in the catalog', () => {
+    expect(compareReleases('1.8', '1.16.5')).toBe(-1);
+    expect(compareReleases('1.16.5', '1.16.5')).toBe(0);
+    expect(compareReleases('1.20.x', '1.16.5')).toBe(1);
+    expect(compareReleases('26.3', '1.16.5')).toBe(1);
+    expect(compareReleases('b1.7.3', '1.16.5')).toBeNull();
+  });
+
+  it('a server that takes 1.16.5 is played on it, a newer-only one keeps its version', () => {
+    const wide = { from: '1.8', to: '26.3' };
+    expect(versionUnderCeiling('26.3', wide, '1.16.5')).toBe('1.16.5');
+    expect(versionUnderCeiling('26.3', { from: '1.16.5', to: '26.2' }, '1.16.5')).toBe('1.16.5');
+    expect(versionUnderCeiling('26.3', { from: '1.21.11', to: '26.3' }, '1.16.5')).toBe('26.3');
+    expect(versionUnderCeiling('1.12.2', { from: '1.8', to: '1.12.2' }, '1.16.5')).toBe('1.12.2');
+    expect(versionUnderCeiling('26.3', wide, null)).toBe('26.3');
+    expect(versionUnderCeiling('26.3', null, '1.16.5')).toBe('26.3');
+    expect(versionUnderCeiling('26.3', { from: '1.8', to: '1.12.2' }, '1.16.5')).toBe('26.3');
   });
 });

@@ -27,6 +27,7 @@ export interface CatalogQuery {
   q: string;
   sort: ServerSort;
   access?: ServerAccessFilter | undefined;
+  version?: string | undefined;
 }
 
 export type CardLoad =
@@ -100,19 +101,21 @@ export function createCatalog(
     listQuery.value !== null &&
     listQuery.value.q === query.value.q &&
     listQuery.value.sort === query.value.sort &&
-    listQuery.value.access === query.value.access;
+    listQuery.value.access === query.value.access &&
+    listQuery.value.version === query.value.version;
   const topSlots = computed(() => [...list.value.topSlots.diamond, ...list.value.topSlots.gold]);
 
   async function fetchPage(page: number): Promise<void> {
     const current = (generation += 1);
     const asked = { ...query.value };
-    const { q, sort, access } = asked;
+    const { q, sort, access, version } = asked;
     const result = await context.api.site.servers({
       sort,
       page,
       per_page: MAX_PER_PAGE,
       ...(q === '' ? {} : { q }),
       ...(access === undefined ? {} : { access }),
+      ...(version === undefined ? {} : { version }),
     });
     if (current !== generation) {
       return;
@@ -224,7 +227,7 @@ export function createCatalog(
 
   function showsFirstPage(asked: SiteChange & { topic: 'servers' }): boolean {
     const shown = listQuery.value;
-    const { q, sort, access, page, per_page: perPage } = asked.query;
+    const { q, sort, access, version, page, per_page: perPage } = asked.query;
     return (
       shown !== null &&
       (page ?? 1) === 1 &&
@@ -233,6 +236,7 @@ export function createCatalog(
       sort === shown.sort &&
       (q ?? '') === shown.q &&
       access === shown.access &&
+      version === shown.version &&
       listMatchesQuery()
     );
   }
@@ -303,7 +307,8 @@ export function createCatalog(
       if (
         next.q === query.value.q &&
         next.sort === query.value.sort &&
-        next.access === query.value.access
+        next.access === query.value.access &&
+        next.version === query.value.version
       ) {
         return;
       }

@@ -92,3 +92,57 @@ export function nickNeedsServicesBlock(version: VersionMoment): boolean {
     patch <= NICK_SERVICES_BLOCK.toPatch
   );
 }
+
+// 21w10a (1.17) moved the renderer to the OpenGL 3.2 core profile.
+const CORE_PROFILE_SNAPSHOT_WEEK = 2110;
+const NUMBERED = /^(\d+)\.(\d+)(?:\.(\d+|x))?(?:[- _].*)?$/i;
+
+export function needsCoreProfile(minecraft: string): boolean {
+  const snapshot = WEEKLY_SNAPSHOT.exec(minecraft);
+  if (snapshot !== null) {
+    return Number(snapshot[1]) * 100 + Number(snapshot[2]) >= CORE_PROFILE_SNAPSHOT_WEEK;
+  }
+  const release = RELEASE.exec(minecraft);
+  if (release === null) {
+    return false;
+  }
+  const major = Number(release[1]);
+  return major > 1 || (major === 1 && Number(release[2]) >= 17);
+}
+
+// Catalog ranges come as typed by owners ("1.8.x", "26.3"); "x" counts as the first patch.
+export function compareReleases(left: string, right: string): number | null {
+  const a = NUMBERED.exec(left.trim());
+  const b = NUMBERED.exec(right.trim());
+  if (a === null || b === null) {
+    return null;
+  }
+  const parts = (match: RegExpExecArray): number[] => [
+    Number(match[1]),
+    Number(match[2]),
+    match[3] === undefined || match[3].toLowerCase() === 'x' ? 0 : Number(match[3]),
+  ];
+  const [x, y] = [parts(a), parts(b)];
+  for (let index = 0; index < 3; index += 1) {
+    const diff = (x[index] ?? 0) - (y[index] ?? 0);
+    if (diff !== 0) {
+      return Math.sign(diff);
+    }
+  }
+  return 0;
+}
+
+// A server whose range reaches down to the ceiling is played on the ceiling version: the game
+// the site names would not start on this computer's video card.
+export function versionUnderCeiling(
+  minecraft: string,
+  range: { from: string; to: string } | null,
+  ceiling: string | null,
+): string {
+  if (ceiling === null || range === null || !needsCoreProfile(minecraft)) {
+    return minecraft;
+  }
+  const from = compareReleases(range.from, ceiling);
+  const to = compareReleases(range.to, ceiling);
+  return from !== null && from <= 0 && to !== null && to >= 0 ? ceiling : minecraft;
+}

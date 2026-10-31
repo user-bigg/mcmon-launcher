@@ -1,15 +1,19 @@
 import { totalmem } from 'node:os';
 import { IpcChannels } from '@shared/ipc';
 import { defaultMemoryMb } from '@shared/memory';
+import { LAST_VERSION_WITHOUT_CORE_PROFILE } from '@shared/launch';
+import type { DeviceGpu } from '@shared/telemetry';
 import type {
   AutostartView,
   SystemAutostart,
+  SystemGraphics,
   SystemJava,
   SystemMemory,
   SystemResult,
   SystemService,
 } from '@shared/system';
 import { gameRoot } from './data-root';
+import { gpuLimit } from './launch/gpu-support';
 import { handleInvokes, UNTRUSTED_SENDER } from './ipc';
 import { installedJavaMajors } from './launch/java-installed';
 import { gameLayout } from './launch/layout';
@@ -30,6 +34,14 @@ const NO_AUTOSTART: AutostartControl = {
 
 function autostartOf(view: AutostartView): SystemResult<SystemAutostart> {
   return { ok: true, value: { view } };
+}
+
+// The video card check works on Windows only: macOS has no such old chips in Apple Silicon Macs.
+export function graphicsOf(platform: NodeJS.Platform, gpus: readonly DeviceGpu[]): SystemGraphics {
+  const limit = platform === 'win32' ? gpuLimit(gpus) : null;
+  return limit === null
+    ? { ceiling: null, gpu: null }
+    : { ceiling: LAST_VERSION_WITHOUT_CORE_PROFILE, gpu: limit.name };
 }
 
 export function createSystemService(
