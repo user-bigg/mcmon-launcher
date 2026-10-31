@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch, watchEffect } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import type { ServerRow } from '@shared/catalog';
-import { fill, formatNumber } from '@shared/i18n/format';
+import { formatNumber } from '@shared/i18n/format';
 import { ru } from '@shared/i18n/ru';
 import { useAccounts } from '../composables/useAccounts';
 import { useCatalog } from '../composables/useCatalog';
@@ -12,12 +12,10 @@ import { useMods } from '../composables/useMods';
 import { useOwner } from '../composables/useOwner';
 import { ghostRows, MAX_GHOST_ROWS, rowsFitting } from '../lib/ghost-rows';
 import type { Section } from '../router';
+import AccountSwitcher from './AccountSwitcher.vue';
 import BiIcon from './BiIcon.vue';
 import type { IconName } from './icons';
 import OnlineCount from './OnlineCount.vue';
-import PlayerHead from './PlayerHead.vue';
-import SkinFace from './SkinFace.vue';
-import ProviderMark from './ProviderMark.vue';
 import ServerIcon from './ServerIcon.vue';
 import SkelBar from './SkelBar.vue';
 
@@ -37,11 +35,6 @@ const favorites = useFavorites();
 const accounts = useAccounts();
 const owner = useOwner();
 const mods = useMods();
-const account = computed(() => accounts.player.value);
-const nickMissing = computed(() => accounts.pinned.value?.name === null);
-const wornSkin = computed(() =>
-  account.value?.provider === 'nick' ? (accounts.mc.value?.skin?.url ?? null) : null,
-);
 
 const catalogSize = ref<number | null>(null);
 watchEffect(() => {
@@ -202,16 +195,6 @@ watch(() => slots.value.length, measure, { flush: 'post' });
 function isActive(section: Section): boolean {
   return route.meta.section === section && !(section === 'servers' && onFavorite.value);
 }
-
-const emptyLabel = computed(() => (nickMissing.value ? ru.nav.pickNick : ru.nav.noAccount));
-const accountLabel = computed(() => {
-  if (!accounts.settled.value) {
-    return ru.state.loading;
-  }
-  return account.value === null
-    ? emptyLabel.value
-    : fill(ru.nav.account, { name: account.value.name });
-});
 </script>
 
 <template>
@@ -297,34 +280,7 @@ const accountLabel = computed(() => {
           {{ ru.nav.settings }}
         </RouterLink>
       </nav>
-      <RouterLink
-        to="/accounts"
-        class="account"
-        :class="{ 'is-active': isActive('accounts') }"
-        :aria-label="accountLabel"
-        :aria-current="isActive('accounts') ? 'page' : undefined"
-      >
-        <template v-if="!accounts.settled.value">
-          <SkelBar class="is-late is-raised" :w="30" :h="30" />
-          <span class="account-text" data-account="loading">
-            <SkelBar class="is-late is-raised" :w="96" :h="12" round />
-            <SkelBar class="is-late is-raised" :w="56" :h="10" round />
-          </span>
-        </template>
-        <template v-else-if="account !== null">
-          <SkinFace v-if="wornSkin !== null" :skin="wornSkin" />
-          <PlayerHead v-else :head="account.head" />
-          <span class="account-text">
-            <span class="account-name">{{ account.name }}</span>
-            <ProviderMark :provider="account.provider" size="sm" />
-          </span>
-        </template>
-        <template v-else>
-          <span class="account-add"><BiIcon name="person-plus" /></span>
-          <span class="account-text">{{ emptyLabel }}</span>
-        </template>
-        <BiIcon name="chevron-expand" />
-      </RouterLink>
+      <AccountSwitcher />
     </div>
   </aside>
 </template>
@@ -538,55 +494,5 @@ const accountLabel = computed(() => {
   margin-left: -10px;
   padding: 10px 10px 0;
   border-top: 1px solid var(--mc-border);
-}
-
-.account {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 8px;
-  border-radius: var(--mc-radius-sm);
-  color: var(--mc-text);
-  text-decoration: none;
-}
-
-.account {
-  min-height: 46px;
-}
-
-.account-add {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--mc-radius-sm);
-  border: 1px solid var(--mc-border);
-  background: var(--mc-surface-2);
-  color: var(--mc-text-muted);
-  font-size: 16px;
-}
-
-.account:hover,
-.account.is-active {
-  background: var(--mc-surface-2);
-}
-
-.account-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.account-name {
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 1.15;
-}
-
-.account > [data-icon='chevron-expand'] {
-  margin-left: auto;
-  color: var(--lx-text-faint);
 }
 </style>

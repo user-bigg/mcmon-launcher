@@ -1,5 +1,5 @@
 import { PLAY_CHECK_TIMEOUT_MS, type PlayAuth, type PlayCheckQuery } from '@shared/account';
-import type { LaunchError, LaunchRequest } from '@shared/launch';
+import { launchesWithAccount, type LaunchError, type LaunchRequest } from '@shared/launch';
 import type { CheckedPlay } from '../account/nick';
 import { withDeadline } from '../deadline';
 import type { GamePlayer } from './accounts';
@@ -19,6 +19,7 @@ export function playCheckQuery(request: LaunchRequest, player: GamePlayer): Play
     serverId: request.target.serverId,
     nick: player.nick,
     auth: request.account.kind === 'nick' ? 'nick' : 'microsoft',
+    ...(launchesWithAccount(request.account) ? {} : { guest: true }),
   };
 }
 

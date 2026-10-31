@@ -193,7 +193,8 @@ export function isBehaviorType(type: TelemetryEventType): type is BehaviorTeleme
   return (BEHAVIOR_TELEMETRY_TYPES as readonly string[]).includes(type);
 }
 
-export type TelemetrySink = (event: LaunchTelemetryEvent) => void;
+// A guest event stays with the install even when the player is signed in to MC Monitor.
+export type TelemetrySink = (event: LaunchTelemetryEvent, guest?: boolean) => void;
 
 export type TelemetryEventType = TelemetryEvent['type'];
 
@@ -321,3 +322,24 @@ export interface TelemetryPacket {
 }
 
 export const TELEMETRY_BATCH_SIZE = 50;
+
+export interface CrashUpload {
+  launch_id?: string;
+  server_id?: number;
+  minecraft: string;
+  loader: string;
+  client_mod?: 'on';
+  java_major?: number;
+  exit_code?: number;
+  duration_s: number;
+  problem: string;
+  log_tail: string;
+  crash_report?: string;
+}
+
+export interface CrashReportPacket extends CrashUpload {
+  install: string;
+  launcher: string;
+  os: string;
+  arch: string;
+}

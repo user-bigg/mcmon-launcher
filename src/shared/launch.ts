@@ -15,7 +15,14 @@ export interface LaunchTarget {
   address: string;
 }
 
-export type LaunchAccount = { kind: 'nick'; nick: string } | { kind: 'account'; id: string };
+// `withAccount` marks the nickname pinned to the MC Monitor account: only such a launch shows
+// the account to the site, the others go as a guest.
+export type LaunchAccount =
+  { kind: 'nick'; nick: string; withAccount?: boolean } | { kind: 'account'; id: string };
+
+export function launchesWithAccount(account: LaunchAccount): boolean {
+  return account.kind === 'nick' && account.withAccount === true;
+}
 
 export interface LaunchRequest {
   target: LaunchTarget;
@@ -72,9 +79,12 @@ export type GameEvent =
     }
   | { type: 'crash'; code: number | null; reportPath: string | null };
 
+export const LAST_VERSION_WITHOUT_CORE_PROFILE = '1.16.5';
+
 export type LaunchError =
   | { code: 'java-missing'; component: string; major: number }
   | { code: 'rosetta-missing'; minecraft: string }
+  | { code: 'gpu-unsupported'; minecraft: string; gpu: string; openGl: string }
   | { code: 'network'; url: string | null; reason?: NetworkErrorReason }
   | { code: 'disk-full'; path: string | null; bytesNeeded: number | null }
   | { code: 'checksum-mismatch'; file: string }

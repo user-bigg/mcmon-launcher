@@ -7,11 +7,19 @@ export interface NickRecord {
   nick: string;
 }
 
-export type ActivePlayer = { kind: 'nick'; id: string } | { kind: 'microsoft'; id: string };
+export const MC_MONITOR_PLAYER_ID = 'mc-monitor';
 
+export type ActivePlayer =
+  | { kind: 'nick'; id: string }
+  | { kind: 'microsoft'; id: string }
+  | { kind: 'mc-monitor'; id: typeof MC_MONITOR_PLAYER_ID };
+
+// `picked` is set once the player chooses a row in the account list; before that a player
+// signed in to MC Monitor plays under the pinned nickname, as earlier versions did.
 export interface StoredPlayers {
   nicks: NickRecord[];
   active: ActivePlayer | null;
+  picked?: boolean;
 }
 
 export type PlayersResult =
@@ -62,6 +70,9 @@ function activeOf(value: unknown, nicks: NickRecord[]): ActivePlayer | null {
   if (kind === 'nick') {
     return nicks.some((record) => record.id === id) ? { kind, id } : null;
   }
+  if (kind === 'mc-monitor') {
+    return id === MC_MONITOR_PLAYER_ID ? { kind, id } : null;
+  }
   return kind === 'microsoft' && ACCOUNT_ID_PATTERN.test(id) ? { kind, id } : null;
 }
 
@@ -81,7 +92,7 @@ export function parsePlayers(value: unknown): StoredPlayers | null {
   if (value.active !== null && active === null) {
     return null;
   }
-  return { nicks, active };
+  return { nicks, active, ...(value.picked === true ? { picked: true } : {}) };
 }
 
 export function normalizePlayers(value: unknown): StoredPlayers {
@@ -93,5 +104,9 @@ export function normalizePlayers(value: unknown): StoredPlayers {
   // Files written before Microsoft accounts kept the active nickname as a bare id.
   const stored =
     typeof source.activeId === 'string' ? { kind: 'nick', id: source.activeId } : source.active;
-  return { nicks, active: activeOf(stored, nicks) };
+  return {
+    nicks,
+    active: activeOf(stored, nicks),
+    ...(source.picked === true ? { picked: true } : {}),
+  };
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gameNick, pickPlayAccount } from './play-account';
+import { pickPlayAccount } from './play-account';
 
 const both = { nick: 'Kotofey', licenseId: 'ms-1' };
 const nickOnly = { nick: 'Kotofey', licenseId: null };
@@ -26,21 +26,18 @@ describe('who goes into the game', () => {
   });
 });
 
-describe('the nickname of a signed-in player', () => {
-  it('without an account, or on a site that pins nothing, the local nickname plays', () => {
-    expect(gameNick('Kotofey', null)).toBe('Kotofey');
-    expect(gameNick(null, null)).toBeNull();
-  });
-
-  it('signed in: only the pinned nickname, the local one is not used', () => {
-    expect(gameNick('Kotofey', { name: 'Test_User', changeAt: null })).toBe('Test_User');
-  });
-
-  it('signed in with no nickname picked yet: nobody to play as, the local one is no fallback', () => {
-    const picked = pickPlayAccount('nick', {
-      nick: gameNick('Kotofey', { name: null, changeAt: null }),
-      licenseId: 'ms-1',
+describe('the row chosen in the account list', () => {
+  it('a chosen licence plays on a server open to nicknames too', () => {
+    expect(pickPlayAccount('nick', { ...both, licenseChosen: true })).toEqual({
+      ok: true,
+      account: { kind: 'account', id: 'ms-1' },
     });
-    expect(picked).toEqual({ ok: false, missing: 'nick' });
+  });
+
+  it('the MC Monitor row marks the nickname as played with the account', () => {
+    expect(pickPlayAccount('nick', { ...nickOnly, withAccount: true })).toEqual({
+      ok: true,
+      account: { kind: 'nick', nick: 'Kotofey', withAccount: true },
+    });
   });
 });

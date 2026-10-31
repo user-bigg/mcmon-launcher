@@ -16,6 +16,7 @@ import {
   type LaunchTarget,
   type PreparedGame,
   instanceIdOf,
+  launchesWithAccount,
 } from '@shared/launch';
 import {
   optionalOffFor,
@@ -26,7 +27,7 @@ import {
 import { parseServerAddress } from '@shared/server-address';
 import type { GameWindow } from '@shared/settings';
 import { skinsOffBeforeTable, wantsClientMod, type SkinModTable } from '@shared/skin-mod';
-import type { LaunchTelemetryEvent, TelemetrySink } from '@shared/telemetry';
+import type { DeviceGpu, LaunchTelemetryEvent, TelemetrySink } from '@shared/telemetry';
 import { resolveOfflinePlayer, type GamePlayer, type PlayerResolver } from './accounts';
 import type { LaunchDependencies } from './dependencies';
 import type { Engine } from './engine';
@@ -67,6 +68,7 @@ export interface LaunchServiceOptions {
   arch: string;
   registryArch?: RegistryArchReader;
   rosetta?: () => boolean;
+  gpus?: () => Promise<readonly DeviceGpu[]>;
   totalMemoryBytes: number;
   fetch: FetchJson;
   fetchText?: FetchText;
@@ -138,6 +140,8 @@ export class GameLaunchService implements LaunchService {
   private lastCrash: GameCrashRecord | null = null;
   private lastRequest: LaunchRequest | null = null;
   private readonly clientModByPid = new Map<number, ClientModRun>();
+  // Only a game started from the MC Monitor row counts toward the account.
+  private guestTelemetry = false;
   private readonly crashChecks = new Set<Promise<unknown>>();
   private readonly clientModBlocks: ClientModBlocks;
   private blockedClientMods: ClientModRun[] = [];
@@ -238,6 +242,7 @@ export class GameLaunchService implements LaunchService {
       return rejected({ code: 'busy' });
     }
     const { operation, release } = claim;
+    this.guestTelemetry = false;
     try {
       const engine = await this.loadEngine();
       const installed = await engine.installer.install({ target, joinServer: true }, operation);
@@ -261,6 +266,7 @@ export class GameLaunchService implements LaunchService {
       return rejected({ code: 'busy' });
     }
     const { operation, release } = claim;
+    this.guestTelemetry = !launchesWithAccount(request.account);
     let gate: PlayGate | null = null;
     try {
       const resolved = await this.resolvePlayer(request.account);
@@ -534,6 +540,7 @@ export class GameLaunchService implements LaunchService {
         arch: this.options.arch,
         registryArch: this.options.registryArch,
         rosetta: this.options.rosetta,
+        gpus: this.options.gpus,
         totalMemoryBytes: this.options.totalMemoryBytes,
         fetch: this.options.fetch,
         fetchText: this.options.fetchText,
@@ -793,7 +800,7 @@ export class GameLaunchService implements LaunchService {
 
   private report(event: LaunchTelemetryEvent): void {
     safely(() => {
-      this.options.telemetry(event);
+      this.options.telemetry(event, this.guestTelemetry);
     });
   }
 

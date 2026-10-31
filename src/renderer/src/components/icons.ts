@@ -11,6 +11,7 @@ import arrowsFullscreenIcon from 'bootstrap-icons/icons/arrows-fullscreen.svg?ra
 import bellIcon from 'bootstrap-icons/icons/bell.svg?raw';
 import boxArrowInDownIcon from 'bootstrap-icons/icons/box-arrow-in-down.svg?raw';
 import boxArrowInRightIcon from 'bootstrap-icons/icons/box-arrow-in-right.svg?raw';
+import boxArrowRightIcon from 'bootstrap-icons/icons/box-arrow-right.svg?raw';
 import boxArrowUpRightIcon from 'bootstrap-icons/icons/box-arrow-up-right.svg?raw';
 import boxSeamIcon from 'bootstrap-icons/icons/box-seam.svg?raw';
 import boxesIcon from 'bootstrap-icons/icons/boxes.svg?raw';
@@ -124,6 +125,7 @@ export const icons = {
   bell: bellIcon,
   'box-arrow-in-down': boxArrowInDownIcon,
   'box-arrow-in-right': boxArrowInRightIcon,
+  'box-arrow-right': boxArrowRightIcon,
   'box-arrow-up-right': boxArrowUpRightIcon,
   'box-seam': boxSeamIcon,
   boxes: boxesIcon,

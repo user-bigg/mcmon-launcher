@@ -32,7 +32,7 @@ describe('install and launch', () => {
         minecraft: '1.21.4',
         address: 'play.cubeisland.example:25565',
       },
-      account: { kind: 'nick', nick: 'Frostbyte' },
+      account: { kind: 'nick', nick: 'Frostbyte', withAccount: true },
       joinServer: true,
       name: serverName(SERVER_IDS.cubeIsland),
       launchId: expect.stringMatching(/^[0-9a-f-]{36}$/) as string,
@@ -239,5 +239,35 @@ describe('install and launch', () => {
       .findAll('.step')
       .map((step) => step.classes().find((name) => name.startsWith('is-')));
     expect(statuses.slice(0, 2)).toEqual(['is-done', 'is-active']);
+  });
+});
+
+describe('the account list in the sidebar', () => {
+  it('opens from the plate, adds a nickname through the dialog and locks while the game runs', async () => {
+    const { app, emit } = await open(`/server/${String(SERVER_IDS.cubeIsland)}`);
+    await app.find('.switcher .account').trigger('click');
+    expect(app.find('.switcher-panel h2').text()).toBe(ru.switcher.title);
+    expect(app.findAll('.switcher-row .account-name').map((row) => row.text())).toContain(
+      'Frostbyte',
+    );
+    const add = app
+      .findAll('.switcher-panel button')
+      .find((item) => item.text() === ru.switcher.add);
+    await add?.trigger('click');
+    const input = document.body.querySelector<HTMLInputElement>('.add-account input');
+    if (input === null) {
+      throw new Error('no dialog');
+    }
+    input.value = 'New_Guest';
+    input.dispatchEvent(new Event('input'));
+    document.body.querySelector('.add-account form')?.dispatchEvent(new Event('submit'));
+    await flushPromises();
+    expect(document.body.querySelector('.add-account')).toBeNull();
+    expect(app.find('.switcher .account .account-name').text()).toBe('New_Guest');
+    emit(launchEvent({ kind: 'phase', phase: 'running', operationId: 1 }, { phase: 'running' }));
+    await flushPromises();
+    await app.find('.switcher .account').trigger('click');
+    expect(app.find('.switcher-locked').text()).toBe(ru.switcher.locked);
+    expect(app.find('.switcher-pick').attributes('disabled')).toBeDefined();
   });
 });

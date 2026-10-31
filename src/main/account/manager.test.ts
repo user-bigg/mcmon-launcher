@@ -1148,6 +1148,16 @@ describe('pinned nickname', () => {
     });
   });
 
+  it('admitPlay: a nickname played as a guest goes without the token even when signed in', async () => {
+    const { manager, calls } = setup(
+      { 'GET /me': () => json(ME), 'POST /play/check': () => json({ ok: true }) },
+      { token: TOKEN, user: { id: 7, name: 'Игрок', avatarUrl: null }, nick: null },
+    );
+    await manager.admitPlay({ serverId: 68, nick: 'Alex', auth: 'nick', guest: true });
+    const [check] = calls.filter((call) => call.key === 'POST /play/check');
+    expect(authorization(check)).toBeUndefined();
+  });
+
   it('playCheck: the site does not answer — the game may start', async () => {
     const { manager } = setup({
       'POST /play/check': () => {

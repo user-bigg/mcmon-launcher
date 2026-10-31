@@ -401,8 +401,8 @@ export class TelemetryQueue {
     return this.events.length;
   }
 
-  push(event: TelemetryEvent): void {
-    void this.add(event);
+  push(event: TelemetryEvent, guest = false): void {
+    void this.add(event, guest);
   }
 
   async close(event: TelemetryEvent): Promise<void> {
@@ -435,12 +435,13 @@ export class TelemetryQueue {
     }
   }
 
-  private async add(event: TelemetryEvent): Promise<QueuedEvent | null> {
+  private async add(event: TelemetryEvent, guest = false): Promise<QueuedEvent | null> {
     const clean = sanitizeEvent(event, this.deps.behavior);
     if (clean === null || clean.type === 'app.alive') {
       return null;
     }
-    const queued = { user: this.deps.session()?.user ?? null, event: this.identified(clean) };
+    const user = guest ? null : (this.deps.session()?.user ?? null);
+    const queued = { user, event: this.identified(clean) };
     await this.load();
     this.events = capped([...this.events, queued]);
     this.persist();

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ru } from '@shared/i18n/ru';
 import microsoftLogo from '../assets/brand/microsoft.svg';
+import mcMonitorLogo from '../assets/logo.svg';
 import type { AccountProvider } from '@shared/player';
 import BiIcon from './BiIcon.vue';
 
@@ -16,6 +17,7 @@ const {
 
 const logos: Partial<Record<AccountProvider, string>> = {
   microsoft: microsoftLogo,
+  'mc-monitor': mcMonitorLogo,
 };
 </script>
 

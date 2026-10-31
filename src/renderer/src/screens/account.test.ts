@@ -437,6 +437,7 @@ describe('nickname account after a restart', () => {
     expect(stub.players.stored).toEqual({
       nicks: [{ id: 'nick-artdirector', nick: 'ArtDirector' }],
       active: { kind: 'nick', id: 'nick-artdirector' },
+      picked: true,
     });
     first.app.unmount();
     document.body.replaceChildren();

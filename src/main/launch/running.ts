@@ -76,7 +76,7 @@ export function startedTelemetry(
     at: running.session.startedAt,
     server_id: running.serverId,
     minecraft: installed.entry.id,
-    loader: installed.profile.runtime.loader,
+    loader: installed.runtime.loader,
     account: player.telemetry,
     ram_mb: running.session.memoryMb,
     java_major: installed.java.major,

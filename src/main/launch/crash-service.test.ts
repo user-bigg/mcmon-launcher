@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CrashAnalysis, CrashEvent } from '@shared/crash';
+import type { CrashUpload } from '@shared/telemetry';
 import type {
   GameSession,
   LaunchEvent,
@@ -511,5 +512,63 @@ describe('a crash at start caused by the MC Monitor client mod', () => {
     expect(launch.holds).toHaveLength(1);
     await Promise.all(launch.holds);
     expect(launch.blockClientMod).toHaveBeenCalledOnce();
+  });
+});
+
+describe('crash reports to the site', () => {
+  let uploads: CrashUpload[];
+
+  beforeEach(() => {
+    service.dispose();
+    uploads = [];
+    service = createCrashService({
+      root,
+      platform: 'win32',
+      arch: 'x64',
+      osRelease: '10.0.22631',
+      totalMemoryBytes: 16 * GIB,
+      launch,
+      launcher: { name: 'MC Monitor', version: '0.1.0' },
+      userName: 'vasya',
+      homeDir: '/Users/vasya',
+      openPath: vi.fn(() => Promise.resolve('')),
+      upload: (report) => uploads.push(report),
+      now: () => NOW,
+      settle: { intervalMs: 1, timeoutMs: 20 },
+    });
+  });
+
+  it('sends a crash with the launch id and the log tail', async () => {
+    launch.request = {
+      target: { kind: 'server', serverId: 12, minecraft: '1.21.11', address: 'a.ru' },
+      account: { kind: 'nick', nick: 'Frostbyte' },
+      launchId: 'f3c1a3c2-6a0e-4c43-9a3e-1b2f1b2f1b2f',
+    };
+    await writeGameLog(log4j('Render thread', 'ERROR', 'GLFW error 65543: WGL: OpenGL'));
+    await play({ code: 1, signal: null }, true);
+    expect(uploads).toEqual([
+      expect.objectContaining({
+        launch_id: 'f3c1a3c2-6a0e-4c43-9a3e-1b2f1b2f1b2f',
+        server_id: 12,
+        minecraft: '1.21.11',
+        loader: 'vanilla',
+        exit_code: 1,
+        log_tail: expect.stringContaining('GLFW error 65543'),
+      }),
+    ]);
+  });
+
+  it('sends nothing when the player closed the game', async () => {
+    await writeGameLog(log4j('Render thread', 'INFO', 'Stopping!'));
+    launch.emitGame({ type: 'started', pid: session.pid, session });
+    launch.emitGame({ type: 'exit', code: 1, signal: null, byUser: true });
+    await service.idle();
+    expect(uploads).toEqual([]);
+  });
+
+  it('sends nothing after a clean exit', async () => {
+    await writeGameLog(log4j('Render thread', 'INFO', 'Stopping!'));
+    await play({ code: 0, signal: null }, false);
+    expect(uploads).toEqual([]);
   });
 });

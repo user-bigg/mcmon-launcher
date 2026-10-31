@@ -12,22 +12,29 @@ function checked(check: PlayCheck, code: string | null = null): CheckedPlay {
 }
 
 describe('play check before the game starts', () => {
-  it('asks with the server id, the nick and the way of signing in', () => {
+  it('asks with the server id, the nick and the way of signing in; only the MC Monitor row shows the account', () => {
     const target = {
       kind: 'server',
       serverId: 5,
       minecraft: '26.2',
       address: 'mc.example.org',
     } as const;
-    expect(playCheckQuery({ target, account: { kind: 'nick', nick: 'Steve' } }, player)).toEqual(
-      query,
-    );
+    expect(
+      playCheckQuery(
+        { target, account: { kind: 'nick', nick: 'Steve', withAccount: true } },
+        player,
+      ),
+    ).toEqual(query);
+    expect(playCheckQuery({ target, account: { kind: 'nick', nick: 'Steve' } }, player)).toEqual({
+      ...query,
+      guest: true,
+    });
     expect(
       playCheckQuery(
         { target, account: { kind: 'account', id: 'ms-1' } },
         { ...player, nick: 'Licensed' },
       ),
-    ).toEqual({ serverId: 5, nick: 'Licensed', auth: 'microsoft' });
+    ).toEqual({ serverId: 5, nick: 'Licensed', auth: 'microsoft', guest: true });
   });
 
   it('starts the game on ok and whenever the site said nothing useful', () => {

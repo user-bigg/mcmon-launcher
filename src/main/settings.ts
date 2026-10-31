@@ -147,6 +147,7 @@ export class LauncherSettingsStore {
     return {
       nicks: this.data.players.nicks.map((record) => ({ ...record })),
       active: this.data.players.active === null ? null : { ...this.data.players.active },
+      ...(this.data.players.picked === true ? { picked: true } : {}),
     };
   }
 

@@ -1,0 +1,15 @@
+{
+  "about": "Account list and the add-account dialog in the demo build, run with SHOT_MAIN=dist/demo-out/main/index.js.",
+  "steps": [
+    {
+      "name": "39-accounts-list",
+      "route": "/",
+      "wait": ".hero",
+      "click": ".switcher .account"
+    },
+    {
+      "name": "39-accounts-add",
+      "click": ".switcher-panel .btn.is-primary"
+    }
+  ]
+}

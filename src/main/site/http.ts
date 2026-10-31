@@ -15,8 +15,9 @@ export interface AuthSource {
   reject: (token: string, code: RevokedCode) => void;
 }
 
-export type RateBucket = 'catalog' | 'account' | 'skin' | 'cape' | 'telemetry' | 'behavior';
-export type PostBucket = Extract<RateBucket, 'telemetry' | 'behavior'>;
+export type RateBucket =
+  'catalog' | 'account' | 'skin' | 'cape' | 'telemetry' | 'behavior' | 'crash';
+export type PostBucket = Extract<RateBucket, 'telemetry' | 'behavior' | 'crash'>;
 
 export interface SiteHttpOptions {
   base: string;

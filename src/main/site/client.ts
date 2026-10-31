@@ -4,7 +4,7 @@ import type { Scene } from '@shared/scenes';
 import type { ServerLive, ServerQuery, SiteError, SiteMeta, SiteResult } from '@shared/site';
 import type { ModCatalog } from '@shared/mods';
 import type { SkinModTable } from '@shared/skin-mod';
-import type { TelemetryLane, TelemetryPacket } from '@shared/telemetry';
+import type { CrashReportPacket, TelemetryLane, TelemetryPacket } from '@shared/telemetry';
 import type { Fetched, Posted, SiteReader } from './http';
 import { parseCapePresets, parseSkinPresets } from './look';
 import {
@@ -251,6 +251,10 @@ export class SiteClient {
       token,
       lane === 'behavior' ? 'behavior' : 'telemetry',
     );
+  }
+
+  sendCrashReport(report: CrashReportPacket): Promise<Posted> {
+    return this.options.http.post('/crash-reports', report, null, 'crash');
   }
 
   private async liveBatch(ids: readonly number[]): Promise<SiteResult<ServerLive[]>> {

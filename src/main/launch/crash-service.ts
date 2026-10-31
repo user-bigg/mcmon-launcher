@@ -19,6 +19,8 @@ import { redactText, serverWords, type RedactOptions } from './crash-redact';
 import { buildCrashReport, writeCrashReport } from './crash-report';
 import { NO_LOG_ORDER } from './crash-rules';
 import { collectCrashFiles, waitForStableFile, type CrashFiles } from './crash-sources';
+import type { CrashUpload } from '@shared/telemetry';
+import { buildCrashUpload, shouldUpload } from './crash-upload';
 import type { ClientModRun } from './skins/client-mod-blocks';
 import { crashedOnClientMod, readStartLog } from './skins/client-mod-crash';
 import { withDeadline } from '../deadline';
@@ -47,6 +49,7 @@ export interface CrashServiceOptions {
   homeDir: string | null;
   openPath: (path: string) => Promise<string>;
   virtualMachine?: () => Promise<boolean | null>;
+  upload?: (report: CrashUpload) => void;
   now?: () => number;
   settle?: { intervalMs: number; timeoutMs: number };
 }
@@ -236,15 +239,17 @@ export class GameCrashService implements CrashService {
       const exit = { code: game.code, signal: game.signal };
       const byUser = game.byUser ?? (tracked.crash === null && exit.code !== 0);
       const task = this.analyze(tracked, exit, byUser, game.gameDialog === true)
-        .catch(() => {
-          this.publish(tracked, exit, emptyFiles(), {
+        .catch(async () => {
+          const verdict: CrashVerdict = {
             cause: { code: 'unknown' },
             rule: null,
             source: null,
             evidence: null,
             fixes: [{ type: 'open-log' }, { type: 'report' }],
             autoFixable: false,
-          });
+          };
+          this.publish(tracked, exit, emptyFiles(), verdict);
+          await this.upload(tracked, exit, byUser, emptyFiles(), verdict);
         })
         .finally(() => {
           this.pending.delete(task);
@@ -336,6 +341,45 @@ export class GameCrashService implements CrashService {
     });
     await this.blockClientModAfter(tracked, exit, stoppedByUser, files, verdict);
     this.publish(tracked, exit, files, verdict);
+    await this.upload(tracked, exit, stoppedByUser, files, verdict);
+  }
+
+  private async upload(
+    tracked: TrackedGame,
+    exit: { code: number | null; signal: string | null },
+    stoppedByUser: boolean,
+    files: CrashFiles,
+    verdict: CrashVerdict,
+  ): Promise<void> {
+    const send = this.options.upload;
+    const uptimeMs = this.now() - tracked.startedAt;
+    const moment = {
+      stoppedByUser,
+      crashed: tracked.crash !== null,
+      exitCode: exit.code,
+      uptimeMs,
+      cause: verdict.cause,
+    };
+    if (send === undefined || !shouldUpload(moment)) {
+      return;
+    }
+    const report = await buildCrashUpload({
+      instanceDir: instanceDir(this.layout, tracked.session.instance),
+      folderId: tracked.session.instance,
+      minecraft: tracked.session.minecraft,
+      loader: tracked.session.loader,
+      launchId: tracked.request?.launchId ?? null,
+      clientMod: tracked.clientMod !== null,
+      javaMajor: files.javaMajor,
+      exitCode: exit.code,
+      uptimeMs,
+      cause: verdict.cause,
+      crashReport: files.crashReport?.text ?? files.jvmReport?.text ?? null,
+      since: tracked.startedAt - 1000,
+    }).catch(() => null);
+    if (report !== null) {
+      send(report);
+    }
   }
 
   private async blockClientModAfter(

@@ -66,6 +66,8 @@ export function usePlay(): Play {
     const picked = pickPlayAccount(access, {
       nick: accounts.playNick.value,
       licenseId: accounts.license.value?.id ?? null,
+      withAccount: accounts.playsWithAccount.value,
+      licenseChosen: accounts.active.value?.provider === 'microsoft',
     });
     if (!picked.ok && picked.missing === 'nick' && accounts.pinned.value !== null) {
       return 'pick-nick';

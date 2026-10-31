@@ -216,7 +216,7 @@ describe('launch with MC Monitor skins', () => {
     expect(launched[0]?.javaPath).toBe('/java/bin/java');
     expect(loaders).toEqual([{ minecraft: '26.3', loader: 'fabric', loaderVersion: '0.19.5' }]);
     expect(telemetry.find((event) => event.type === 'launch.started')).toMatchObject({
-      loader: 'vanilla',
+      loader: 'fabric',
     });
     await finish(service);
   });

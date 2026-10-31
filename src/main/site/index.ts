@@ -12,6 +12,7 @@ import { ICON_CACHE_PATH, SITE_PAGE_KEYS, type SiteResult, type SiteService } fr
 import type {
   AppAliveState,
   AppStartReason,
+  CrashUpload,
   TelemetryDevice,
   TelemetryEvent,
   TelemetrySink,
@@ -56,6 +57,7 @@ import { createSiteService, ServerLaunches } from './service';
 import { readJarEntry } from './jar-entry';
 import { MAX_SKIN_BYTES, StandardSkin } from './standard-skin';
 import { TelemetryQueue, type TelemetryHeader, type TelemetrySession } from './telemetry';
+import { sendCrashReport, type CrashReportHeader } from './crash-reports';
 
 // Folder names are case-insensitive on Windows and macOS: 'cache' would collide with
 // Chromium's own 'Cache'.
@@ -94,6 +96,7 @@ export interface SiteRuntime {
   mods: () => Promise<ModCatalog | null>;
   serverMods: (serverId: number) => Promise<ServerModsSource>;
   launcherOnly: (serverId: number) => boolean;
+  crashReport: (report: CrashUpload) => void;
   registryArch: () => Promise<string | null>;
   virtualMachine: () => Promise<boolean | null>;
   cacheRoot: string;
@@ -330,8 +333,8 @@ export function startSite(
   };
   return {
     service,
-    telemetry: (event): void => {
-      telemetry.push(event);
+    telemetry: (event, guest): void => {
+      telemetry.push(event, guest);
     },
     playCheck: (query): Promise<CheckedPlay> => manager.admitPlay(query),
     skinMod: async (): Promise<SkinModTable | null> => {
@@ -351,6 +354,22 @@ export function startSite(
       return serverModsOf(card.ok ? card.value.launch : launches.of(serverId));
     },
     launcherOnly: (serverId): boolean => isLauncherOnly(launches.of(serverId)),
+    crashReport: (report): void => {
+      void sendCrashReport(
+        {
+          header: async (): Promise<CrashReportHeader> => ({
+            install: await installId,
+            launcher: app.getVersion(),
+            os: telemetryOs(process.platform),
+            arch: process.arch,
+          }),
+          post: (packet) => client.sendCrashReport(packet),
+          sleep: (ms): Promise<void> => sleep(ms, undefined, { ref: false }),
+          log,
+        },
+        report,
+      ).catch(() => undefined);
+    },
     registryArch,
     virtualMachine: async (): Promise<boolean | null> => isVirtualMachine((await device()).vm),
     cacheRoot,

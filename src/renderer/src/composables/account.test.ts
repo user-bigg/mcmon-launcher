@@ -148,3 +148,98 @@ describe('nickname accounts in main storage', () => {
     expect(stub.players.stored.active).toEqual({ kind: 'nick', id: 'nick-alex-2' });
   });
 });
+
+describe('the account list', () => {
+  const pinnedUser: AccountUser = { ...TEST_USER, nick: { name: 'Pinned_7', changeAt: null } };
+
+  function signedIn(stub: Stub): void {
+    stub.api.account.state = vi.fn(() => Promise.resolve(state(1, pinnedUser)));
+  }
+
+  it('a signed-in player keeps the pinned nickname until a row is picked, then plays as a guest', async () => {
+    const stub = stubLauncher();
+    signedIn(stub);
+    stub.players.stored = { nicks: [{ id: 'nick-alex', nick: 'Alex' }], active: null };
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    expect(accounts.rows.value.map((row) => [row.provider, row.name])).toEqual([
+      ['mc-monitor', 'Pinned_7'],
+      ['nick', 'Alex'],
+    ]);
+    expect(accounts.playNick.value).toBe('Pinned_7');
+    expect(accounts.playsWithAccount.value).toBe(true);
+    const alex = accounts.rows.value.find((row) => row.name === 'Alex');
+    if (alex === undefined) {
+      throw new Error('no row');
+    }
+    accounts.select(alex);
+    await flushPromises();
+    expect(accounts.playNick.value).toBe('Alex');
+    expect(accounts.playsWithAccount.value).toBe(false);
+    expect(stub.players.stored).toEqual({
+      nicks: [{ id: 'nick-alex', nick: 'Alex' }],
+      active: { kind: 'nick', id: 'nick-alex' },
+      picked: true,
+    });
+  });
+
+  it('the pinned nickname typed as a guest picks the MC Monitor row instead', async () => {
+    const stub = stubLauncher();
+    signedIn(stub);
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    expect(accounts.addNick('pinned_7')?.provider).toBe('mc-monitor');
+    expect(accounts.nick.value).toBeNull();
+    expect(stub.players.stored.active).toEqual({ kind: 'mc-monitor', id: 'mc-monitor' });
+  });
+
+  it('removing the chosen nickname falls back to the next row', async () => {
+    const stub = stubLauncher();
+    stub.players.stored = {
+      nicks: [
+        { id: 'nick-alex', nick: 'Alex' },
+        { id: 'nick-steve', nick: 'Steve' },
+      ],
+      active: { kind: 'nick', id: 'nick-steve' },
+      picked: true,
+    };
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    accounts.removeNick('nick-steve');
+    await flushPromises();
+    expect(accounts.active.value?.name).toBe('Alex');
+    expect(stub.players.stored).toEqual({
+      nicks: [{ id: 'nick-alex', nick: 'Alex' }],
+      active: null,
+      picked: true,
+    });
+  });
+
+  it('a guest nickname pinned later stands for the MC Monitor row', async () => {
+    const stub = stubLauncher();
+    signedIn(stub);
+    stub.players.stored = {
+      nicks: [{ id: 'nick-pinned', nick: 'pinned_7' }],
+      active: { kind: 'nick', id: 'nick-pinned' },
+      picked: true,
+    };
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    expect(accounts.active.value?.provider).toBe('mc-monitor');
+    expect(accounts.playsWithAccount.value).toBe(true);
+  });
+
+  it('a removed licence is not sent back as the active one', async () => {
+    const stub = stubLauncher();
+    stub.players.stored = {
+      nicks: [{ id: 'nick-alex', nick: 'Alex' }],
+      active: { kind: 'microsoft', id: 'ms-gone' },
+      picked: true,
+    };
+    const accounts = createAccounts(contextOf(stub));
+    await flushPromises();
+    accounts.removeNick('nick-other');
+    await flushPromises();
+    expect(stub.players.stored.active).toBeNull();
+  });
+});

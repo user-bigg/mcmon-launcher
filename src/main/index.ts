@@ -455,6 +455,7 @@ async function start(): Promise<void> {
       choices: () => Promise.resolve(settings.modChoices),
     },
     started.launcherOnly,
+    started.crashReport,
   );
   services = launched;
   updates = startUpdates({

@@ -1,5 +1,5 @@
 import { MinecraftFolder } from '@xmcl/core';
-import type { LaunchTelemetryEvent } from '@shared/telemetry';
+import type { DeviceGpu, LaunchTelemetryEvent } from '@shared/telemetry';
 import { defaultLaunchDependencies, type LaunchDependencies } from './dependencies';
 import type { RegistryArchReader } from './game-arch';
 import { GameInstaller } from './install';
@@ -15,6 +15,7 @@ export interface EngineOptions {
   arch: string;
   registryArch?: RegistryArchReader | undefined;
   rosetta?: (() => boolean) | undefined;
+  gpus?: (() => Promise<readonly DeviceGpu[]>) | undefined;
   totalMemoryBytes: number;
   fetch: FetchJson;
   fetchText?: FetchText | undefined;
@@ -40,6 +41,7 @@ export function createEngine(options: EngineOptions): Engine {
     arch: options.arch,
     registryArch: options.registryArch,
     rosetta: options.rosetta,
+    gpus: options.gpus,
     fetch: options.fetch,
     fetchText: options.fetchText,
     instances: options.instances,

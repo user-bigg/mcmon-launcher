@@ -125,6 +125,7 @@ export interface PlayCheckQuery {
   serverId: number | null;
   nick: string;
   auth: PlayAuth;
+  guest?: boolean;
 }
 
 // `until` is the end of the ban, `forever` a ban without an end; neither means the site sent a
@@ -169,12 +170,15 @@ export function parsePlayCheckQuery(value: unknown): PlayCheckQuery | null {
   if (typeof value !== 'object' || value === null) {
     return null;
   }
-  const { serverId, nick, auth } = value as Record<string, unknown>;
+  const { serverId, nick, auth, guest } = value as Record<string, unknown>;
   const known = serverId === null || isValidServerId(serverId);
   if (!known || typeof nick !== 'string' || !isValidNick(nick)) {
     return null;
   }
-  return auth === 'nick' || auth === 'microsoft' ? { serverId, nick, auth } : null;
+  if (auth !== 'nick' && auth !== 'microsoft') {
+    return null;
+  }
+  return { serverId, nick, auth, ...(guest === true ? { guest: true } : {}) };
 }
 
 export interface AccountService {

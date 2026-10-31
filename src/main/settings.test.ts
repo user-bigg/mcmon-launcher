@@ -184,6 +184,21 @@ describe('launcher settings in main', () => {
     expect((await service.get()).ok && store.settings.whileGame).toBe('minimize');
   });
 
+  it('the choice made in the account list survives a restart', async () => {
+    const fs = memoryFs('{}');
+    const store = new LauncherSettingsStore('/data/settings.json', fs);
+    await store.load();
+    const players = {
+      nicks: [{ id: 'nick-alex', nick: 'Alex' }],
+      active: { kind: 'mc-monitor' as const, id: 'mc-monitor' as const },
+      picked: true,
+    };
+    expect(await createPlayersService(store).save(players)).toEqual({ ok: true, value: players });
+    const again = new LauncherSettingsStore('/data/settings.json', fs);
+    await again.load();
+    expect(await createPlayersService(again).get()).toEqual({ ok: true, value: players });
+  });
+
   it('nickname accounts survive a restart, with no secrets in the file', async () => {
     const fs = memoryFs(JSON.stringify({ settings: { ramGb: 8 } }));
     const store = new LauncherSettingsStore('/data/settings.json', fs);

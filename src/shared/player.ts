@@ -1,6 +1,6 @@
 import type { ServerCover } from './catalog';
 
-export type AccountProvider = 'microsoft' | 'nick';
+export type AccountProvider = 'microsoft' | 'nick' | 'mc-monitor';
 
 export interface GameAccount {
   id: string;

@@ -181,6 +181,21 @@ function looksLikeIpv6(value: string): boolean {
   return /[0-9a-f]/i.test(value) && (value.includes('::') || colons === 7);
 }
 
+const LAUNCH_SECRET = /(--(?:accessToken|clientId|xuid)\s+)\S+/gi;
+const SECRET_VARIABLE = /^(\s*\w*(?:token|key|secret|passw|credential|auth)\w*\s*=).*$/gim;
+
+// Reports to MC Monitor keep paths and nicks (the site uses them against spam); only what
+// signs in as the player goes, plus secret-looking variables from a JVM report's environment.
+// Long hashes stay: asset paths are full of them and they are what the report is read for.
+export function redactSecrets(text: string): string {
+  return text
+    .replace(SECRET_VARIABLE, '$1<hidden>')
+    .replace(LAUNCH_SECRET, '$1<hidden>')
+    .replace(KEY_SECRET, '$1<hidden>')
+    .replace(SESSION_TOKEN, 'token:<hidden>')
+    .replace(JWT, '<token>');
+}
+
 export function redactText(text: string, options: RedactOptions): string {
   const concealed = options.server === undefined ? text : concealServer(text, options.server);
   let result = replacePath(concealed, options.gameRoot, '<game>');

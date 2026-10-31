@@ -912,7 +912,10 @@ describe('GameLaunchService', () => {
         answer = resolve;
       });
     });
-    const pending = service.launch(request);
+    const pending = service.launch({
+      ...request,
+      account: { kind: 'nick', nick: 'Steve', withAccount: true },
+    });
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(launched).toHaveLength(0);
     answer({ check: { kind: 'nick_mismatch', nick: 'Test_User' }, code: null });

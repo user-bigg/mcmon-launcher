@@ -357,7 +357,7 @@ describe('launch with server and player mods', () => {
     expect(await readFile(join(modsDir() ?? '', 'voice.jar'))).toEqual(bytesOf('voice'));
     await expect(readdir(join(instance(), 'mods'))).rejects.toThrow();
     expect(started()).toMatchObject({
-      loader: 'vanilla',
+      loader: 'fabric',
       skins: 'on',
       mods: [
         { slug: 'voice', state: 'on', version: 'voice-1.0' },

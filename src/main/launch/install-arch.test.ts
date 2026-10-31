@@ -6,6 +6,7 @@ import { Version, type Platform, type ResolvedVersion } from '@xmcl/core';
 import type { InstallRuntime } from '@xmcl/installer';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { LaunchTarget } from '@shared/launch';
+import type { DeviceGpu } from '@shared/telemetry';
 import type { TrackedRuntime } from './download';
 import type { RegistryArchReader } from './game-arch';
 import { writeInstanceOverrides } from './instance-overrides';
@@ -38,6 +39,7 @@ interface Machine {
   platform: NodeJS.Platform;
   arch: string;
   rosetta?: () => boolean;
+  gpus?: () => Promise<readonly DeviceGpu[]>;
 }
 
 const WINDOWS: Machine = { platform: 'win32', arch: 'x64' };
@@ -120,6 +122,7 @@ function makeService(
     arch: machine.arch,
     ...(registryArch === undefined ? {} : { registryArch }),
     ...(machine.rosetta === undefined ? {} : { rosetta: machine.rosetta }),
+    ...(machine.gpus === undefined ? {} : { gpus: machine.gpus }),
     totalMemoryBytes: 16 * 1024 ** 3,
     fetch: () => Promise.resolve({}),
     instances,
@@ -296,5 +299,40 @@ describe('Java for the game on Apple Silicon', () => {
     });
     service.dispose();
     expect(javaCalls).toEqual([]);
+  });
+});
+
+describe('An old video card on Windows', () => {
+  const sandyBridge: Machine = {
+    ...WINDOWS,
+    gpus: () => Promise.resolve([{ vendor: 0x8086, device: 0x0106, name: 'Intel(R) HD Graphics' }]),
+  };
+
+  it('stops 1.19 before anything is downloaded', async () => {
+    const { service, target } = makeService('1.19', undefined, sandyBridge);
+    expect(await service.prepare(target)).toEqual({
+      ok: false,
+      error: {
+        code: 'gpu-unsupported',
+        minecraft: '1.19',
+        gpu: 'Intel(R) HD Graphics',
+        openGl: '3.1',
+      },
+    });
+    service.dispose();
+    expect(javaCalls).toEqual([]);
+  });
+
+  it('installs 1.19 when the laptop also has a discrete card', async () => {
+    const { service, target } = makeService('1.19', undefined, {
+      ...WINDOWS,
+      gpus: () =>
+        Promise.resolve([
+          { vendor: 0x8086, device: 0x0106, name: 'Intel(R) HD Graphics' },
+          { vendor: 0x10de, device: 0x0de9, name: 'NVIDIA GeForce GT 630M' },
+        ]),
+    });
+    expect(await service.prepare(target)).toMatchObject({ ok: true });
+    service.dispose();
   });
 });

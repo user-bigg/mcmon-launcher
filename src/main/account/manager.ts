@@ -404,7 +404,7 @@ export class AccountManager {
 
   private async checkPlay(query: PlayCheckQuery, until: number): Promise<CheckedPlay> {
     await this.ready;
-    const session = this.session;
+    const session = query.guest === true ? null : this.session;
     const checked = playCheckOf(await this.askPlay(session?.token ?? null, query));
     const { check } = checked;
     if (check.kind !== 'nick_mismatch' || session === null || this.session !== session) {

@@ -2,11 +2,14 @@ import { app, net, session, shell } from 'electron';
 import { homedir, release, totalmem, userInfo } from 'node:os';
 import { LAUNCHER_NAME } from '@shared/launch';
 import type { GameWindow } from '@shared/settings';
-import type { TelemetrySink } from '@shared/telemetry';
+import type { CrashUpload, TelemetrySink } from '@shared/telemetry';
 import type { PlayerResolver } from './accounts';
 import { gameRoot } from '../data-root';
+import { withDeadline } from '../deadline';
+import { gpuList } from '../device/profile';
 import { registerCrashIpc } from './crash-ipc';
 import { createCrashService, type GameCrashService } from './crash-service';
+
 import type { RegistryArchReader } from './game-arch';
 import { registerInstanceIpc } from './instance-ipc';
 import { GameInstanceService } from './instance-service';
@@ -23,6 +26,7 @@ import type { SkinModSource } from './skins/variant';
 import { createLaunchService, type CatalogModsSource, type GameLaunchService } from './service';
 
 const DOWNLOAD_HOST = 'https://piston-data.mojang.com/';
+const GPU_INFO_DEADLINE_MS = 3000;
 
 const discardTelemetry: TelemetrySink = () => undefined;
 
@@ -52,6 +56,7 @@ interface CrashServiceDeps {
   totalMemoryBytes: number;
   devServerUrl: string | undefined;
   virtualMachine: (() => Promise<boolean | null>) | undefined;
+  upload: ((report: CrashUpload) => void) | undefined;
 }
 
 function startCrashService(deps: CrashServiceDeps): GameCrashService {
@@ -67,6 +72,7 @@ function startCrashService(deps: CrashServiceDeps): GameCrashService {
     homeDir: homedir(),
     openPath: (path) => shell.openPath(path),
     ...(deps.virtualMachine === undefined ? {} : { virtualMachine: deps.virtualMachine }),
+    ...(deps.upload === undefined ? {} : { upload: deps.upload }),
   });
   registerCrashIpc(service, deps.devServerUrl);
   return service;
@@ -88,6 +94,7 @@ export function startLaunchService(
   gameWindow?: () => GameWindow,
   mods?: CatalogModsSource,
   launcherOnly?: (serverId: number) => boolean,
+  crashUpload?: (report: CrashUpload) => void,
 ): LaunchServices {
   const totalMemoryBytes = totalmem();
   const layout = gameLayout(gameRoot());
@@ -100,6 +107,12 @@ export function startLaunchService(
     platform: process.platform,
     arch: process.arch,
     ...(registryArch === undefined ? {} : { registryArch }),
+    gpus: () =>
+      withDeadline(
+        app.getGPUInfo('basic').then(gpuList, () => []),
+        GPU_INFO_DEADLINE_MS,
+        [],
+      ),
     totalMemoryBytes,
     fetch,
     fetchText,
@@ -132,6 +145,7 @@ export function startLaunchService(
     totalMemoryBytes,
     devServerUrl,
     virtualMachine,
+    upload: crashUpload,
   });
   return {
     service,

@@ -5,11 +5,12 @@ import type { LaunchStepId, LaunchTarget, PreparedGame } from '@shared/launch';
 import { serverJoinMode } from '@shared/minecraft-version';
 import { modsLoaderMin, type ModsPlan } from '@shared/mods';
 import type { ClientModStatus, SkinsStatus } from '@shared/skin-mod';
-import type { LaunchTelemetryEvent } from '@shared/telemetry';
+import type { DeviceGpu, LaunchTelemetryEvent } from '@shared/telemetry';
 import type { LaunchDependencies } from './dependencies';
 import type { TrackedRuntime } from './download';
 import { failure, toLaunchError } from './errors';
 import { needsMacGlfw } from './mac-glfw';
+import { checkGpuSupport, needsCoreProfile } from './gpu-support';
 import { gameArch, readMachineArch, rosettaInstalled, type RegistryArchReader } from './game-arch';
 import { withFolderOverrides } from './instance-overrides';
 import type { InstanceStore } from './instances';
@@ -57,6 +58,7 @@ export interface InstallerOptions {
   arch: string;
   registryArch?: RegistryArchReader | undefined;
   rosetta?: (() => boolean) | undefined;
+  gpus?: (() => Promise<readonly DeviceGpu[]>) | undefined;
   fetch: FetchJson;
   fetchText?: FetchText | undefined;
   instances: InstanceStore;
@@ -115,6 +117,7 @@ export class GameInstaller {
       instanceDir(this.options.layout, folderId),
     );
     try {
+      await this.checkGpu(profile.runtime.minecraft);
       const installed = await this.installSteps(
         profile,
         {
@@ -222,6 +225,14 @@ export class GameInstaller {
   private machineArch(): Promise<string> {
     const { platform, arch, registryArch } = this.options;
     return readMachineArch(platform, arch, registryArch);
+  }
+
+  private async checkGpu(minecraft: string): Promise<void> {
+    const { platform, gpus } = this.options;
+    if (platform !== 'win32' || gpus === undefined || !needsCoreProfile(minecraft)) {
+      return;
+    }
+    checkGpuSupport(minecraft, platform, await gpus().catch(() => []));
   }
 
   private rosettaReady(): boolean {

@@ -1,6 +1,7 @@
 import { countOf, fill } from '@shared/i18n/format';
 import { ru } from '@shared/i18n/ru';
 import {
+  LAST_VERSION_WITHOUT_CORE_PROFILE,
   LAUNCH_STEPS,
   type LaunchError,
   type LaunchStep,
@@ -31,6 +32,7 @@ export interface ErrorView {
 const errorActions: Record<ErrorKey, ErrorAction> = {
   'java-missing': 'retry',
   'rosetta-missing': 'retry',
+  'gpu-unsupported': 'servers',
   'file-locked': 'retry',
   'file-missing': 'retry',
   'too-many-files': 'retry',
@@ -93,6 +95,13 @@ function errorParams(error: LaunchError): Record<string, string | number> {
     case 'join-unsupported':
     case 'rosetta-missing':
       return { minecraft: error.minecraft };
+    case 'gpu-unsupported':
+      return {
+        minecraft: error.minecraft,
+        gpu: error.gpu,
+        openGl: error.openGl,
+        last: LAST_VERSION_WITHOUT_CORE_PROFILE,
+      };
     case 'mods-required-missing':
     case 'mods-required-failed':
       return {
