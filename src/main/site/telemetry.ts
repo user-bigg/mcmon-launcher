@@ -26,6 +26,7 @@ import {
   TELEMETRY_FIELDS,
   TELEMETRY_SCREENS,
   TELEMETRY_SKINS,
+  FABRIC_ERRORS,
   UPDATE_FAILURES,
   UPDATE_STAGES,
   UPDATE_VIAS,
@@ -271,6 +272,7 @@ function launchEvent(event: Fields & { at: string }): LaunchTelemetryEvent | nul
       const launchId = isLaunchId(event.launch_id) ? { launch_id: event.launch_id } : {};
       const skins = TELEMETRY_SKINS.find((value) => value === event.skins);
       const clientMod = TELEMETRY_SKINS.find((value) => value === event.client_mod);
+      const fabricError = FABRIC_ERRORS.find((value) => value === event.fabric_error);
       return {
         type: 'launch.started',
         at: event.at,
@@ -284,6 +286,7 @@ function launchEvent(event: Fields & { at: string }): LaunchTelemetryEvent | nul
         ...launchId,
         ...(skins === undefined ? {} : { skins }),
         ...(clientMod === undefined ? {} : { client_mod: clientMod }),
+        ...(fabricError === undefined ? {} : { fabric_error: fabricError }),
         ...telemetryModsOf(event.mods),
       };
     }

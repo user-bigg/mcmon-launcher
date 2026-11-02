@@ -302,3 +302,24 @@ describe('an old video card', () => {
     expect(router.currentRoute.value.fullPath).toBe('/servers');
   });
 });
+
+describe('a retry after a failed attempt', () => {
+  it('keeps the launch_id of the click it repeats', async () => {
+    const { app, api } = await open(`/server/${String(SERVER_IDS.cubeIsland)}`);
+    const failed = vi.fn(() =>
+      Promise.resolve({ ok: false as const, error: { code: 'mods-server-unknown' as const } }),
+    );
+    api.launch.launch = failed;
+    await app.find('[data-launch="direct"]').trigger('click');
+    await flushPromises();
+    const first = (failed.mock.calls[0] as unknown as [{ launchId?: string }])[0].launchId;
+    expect(first).toMatch(/^[0-9a-f-]{36}$/);
+    await app
+      .findAll('button')
+      .find((item) => item.text() === ru.launchError['mods-server-unknown'].action)
+      ?.trigger('click');
+    await flushPromises();
+    expect(failed).toHaveBeenCalledTimes(2);
+    expect(failed.mock.calls[1]).toEqual([expect.objectContaining({ launchId: first })]);
+  });
+});

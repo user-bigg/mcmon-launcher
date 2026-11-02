@@ -5,6 +5,9 @@ import { UPDATE_ERROR_CODES } from './update';
 export const TELEMETRY_SKINS = ['on', 'off', 'unavailable'] as const;
 export type TelemetrySkins = (typeof TELEMETRY_SKINS)[number];
 
+export const FABRIC_ERRORS = ['table', 'meta', 'maven', 'files', 'other'] as const;
+export type FabricError = (typeof FABRIC_ERRORS)[number];
+
 export type TelemetryLoader = LoaderId;
 export type TelemetryAccount = 'nick' | 'microsoft';
 
@@ -32,6 +35,7 @@ export type LaunchTelemetryEvent =
       launch_id?: string;
       skins?: TelemetrySkins;
       client_mod?: TelemetrySkins;
+      fabric_error?: FabricError;
       mods?: TelemetryMod[];
     }
   | {
@@ -252,6 +256,7 @@ export const TELEMETRY_FIELDS = {
     'launch_id',
     'skins',
     'client_mod',
+    'fabric_error',
     'mods',
   ],
   'launch.finished': ['at', 'server_id', 'outcome', 'exit_code', 'duration_s', 'time_to_window_s'],

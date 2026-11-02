@@ -61,7 +61,7 @@ function contentTransfer(contents: Map<string, string>): TrackedRuntime {
 }
 
 describe('declaredSourceOnly', () => {
-  it('only the address from the profile, and only from a trusted host', () => {
+  it('the address from the profile and its copy on the site, only from a trusted host', () => {
     const library = (url: string): ResolvedLibrary =>
       ({
         download: { url, path: 'a/b/1/b-1.jar', sha1: '', size: 0 },
@@ -69,6 +69,10 @@ describe('declaredSourceOnly', () => {
     expect(declaredSourceOnly(library(''))).toEqual([]);
     expect(declaredSourceOnly(library('https://maven.fabricmc.net/a.jar'))).toEqual([
       'https://maven.fabricmc.net/a.jar',
+      'https://mc-mon.ru/mirror/fabric-maven/a.jar',
+    ]);
+    expect(declaredSourceOnly(library('https://libraries.minecraft.net/a.jar'))).toEqual([
+      'https://libraries.minecraft.net/a.jar',
     ]);
     expect(() => declaredSourceOnly(library('https://repo.spongepowered.org/a.jar'))).toThrow(
       LoaderStageError,

@@ -346,6 +346,9 @@ describe('launch with MC Monitor skins', () => {
     const failing = makeService(() => Promise.reject(new Error('offline')));
     expect(await failing.launch(byNick)).toMatchObject({ ok: true, value: { skins: 'table' } });
     expect(loaders).toEqual([]);
+    expect(telemetry.find((event) => event.type === 'launch.started')).toMatchObject({
+      fabric_error: 'table',
+    });
     await finish(failing);
   });
 
@@ -379,6 +382,9 @@ describe('launch with MC Monitor skins', () => {
     const service = makeService(() => Promise.resolve(table));
     const result = await service.launch(byNick);
     expect(result).toMatchObject({ ok: true, value: { loader: 'vanilla', skins: 'unavailable' } });
+    expect(telemetry.find((event) => event.type === 'launch.started')).toMatchObject({
+      fabric_error: 'other',
+    });
     expect(launched[0]?.version).toMatchObject({ id: '26.3' });
     expect(modsFolderArg()).toBeUndefined();
     await finish(service);

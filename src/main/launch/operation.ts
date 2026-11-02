@@ -1,6 +1,7 @@
 import type { LaunchStepId, ModsAnswer } from '@shared/launch';
 import type { ModLabel, ModsStepState, ModStep } from '@shared/mods';
 import type { ClientModStatus, SkinsStatus } from '@shared/skin-mod';
+import type { FabricError } from '@shared/telemetry';
 import type { TrackedRuntime, TransferCounters } from './download';
 import { DIRECT_NETWORK, type NetworkSetup } from './network';
 import { ProgressModel } from './progress';
@@ -21,6 +22,7 @@ export class Operation {
   network: NetworkSetup = DIRECT_NETWORK;
   skins: SkinsStatus | null = null;
   clientMod: ClientModStatus | null = null;
+  fabricError: FabricError | null = null;
   joinServer = true;
   joinFixed = false;
   private transfer: Transfer | null = null;

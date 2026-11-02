@@ -84,6 +84,7 @@ export function startedTelemetry(
     ...(launchId === undefined ? {} : { launch_id: launchId }),
     ...(installed.skins === null ? {} : { skins: telemetrySkins(installed.skins) }),
     ...(installed.clientMod === null ? {} : { client_mod: installed.clientMod }),
+    ...(installed.fabricError === null ? {} : { fabric_error: installed.fabricError }),
     ...modsField(installed),
   };
 }

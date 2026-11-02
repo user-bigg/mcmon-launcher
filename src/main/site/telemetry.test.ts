@@ -366,6 +366,7 @@ describe('nickname and extra fields', () => {
       nick: 'Frostbyte',
       skins: 'on',
       client_mod: 'on',
+      fabric_error: 'maven',
       mods: [{ slug: 'sodium', state: 'on', version: '0.6.13' }],
     });
     for (const event of [full, finished(1), installed]) {

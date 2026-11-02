@@ -11,6 +11,7 @@ import {
   fetchMavenSha1,
   isNotFound,
   LoaderStageError,
+  sourcesOf,
   requireTrustedSource,
   segment,
   type FetchText,
@@ -71,7 +72,7 @@ export function declaredSourceOnly(library: ResolvedLibrary): string[] {
   if (url.length === 0) {
     return [];
   }
-  return [requireTrustedSource(url)];
+  return sourcesOf(requireTrustedSource(url));
 }
 
 async function verifySha256(

@@ -58,6 +58,7 @@ export interface PlannedSkins {
   clientMod: ClientModStatus | null;
   plan: SkinsPlan | null;
   blocked?: ClientModRun;
+  tableMissing?: boolean;
 }
 
 export interface SkinFilesOptions {
@@ -193,7 +194,10 @@ export async function planSkins(
   const floor = floorOf(runtime.minecraft, table);
   const status = decision.install ? 'on' : decision.reason;
   const clientStatus = blocked === null ? clientModStatus(wanted, table, clientMod) : 'unavailable';
-  const extra = blocked === null ? {} : { blocked };
+  const extra = {
+    ...(blocked === null ? {} : { blocked }),
+    ...(table === null ? { tableMissing: true } : {}),
+  };
   if (catalog === null && (table === null || (entry === null && clientMod === null))) {
     return { status, clientMod: clientStatus, plan: null, ...extra };
   }

@@ -29,6 +29,11 @@ export function launchRoute(target: LaunchTarget): string {
   return `/launch/${String(target.serverId)}`;
 }
 
+// A retry after a failed attempt keeps the id of the click it repeats, so the site still ties
+// the 'Play' action to the launch that finally started; a started game uses the id up.
+let lastClick: { serverId: number; launchId: string; at: number } | null = null;
+const RETRY_KEEPS_ID_MS = 15 * 60_000;
+
 export function usePlay(): Play {
   const launch = useLaunch();
   const accounts = useAccounts();
@@ -37,12 +42,16 @@ export function usePlay(): Play {
   const track = useTrack();
 
   // Only a click on 'Play' that the launcher accepted is an action; a retry from the launch or
-  // crash screen comes without a source and stays silent.
+  // crash screen comes without a source, stays silent and reuses the id of the last click.
   function clicked(target: LaunchTarget, options: PlayOptions): string | null {
     if (options.source === undefined) {
-      return null;
+      return lastClick?.serverId === target.serverId &&
+        Date.now() - lastClick.at < RETRY_KEEPS_ID_MS
+        ? lastClick.launchId
+        : null;
     }
     const launchId = options.launchId ?? newLaunchId();
+    lastClick = { serverId: target.serverId, launchId, at: Date.now() };
     track({
       type: 'action',
       name: 'play',
@@ -95,7 +104,12 @@ export function usePlay(): Play {
     });
     const launchId = clicked(target, options);
     const named = { ...request, name };
-    return launch.start(job, launchId === null ? named : { ...named, launchId });
+    return launch.start(job, launchId === null ? named : { ...named, launchId }).then((started) => {
+      if (started && lastClick?.launchId === launchId) {
+        lastClick = null;
+      }
+      return started;
+    });
   }
 
   async function play(

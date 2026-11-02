@@ -1,4 +1,5 @@
 import type { LoaderInstallStage } from '@shared/launch';
+import { SITE_URL } from '@shared/links';
 import { failure } from '../errors';
 import type { FetchLike } from '../json-cache';
 
@@ -15,6 +16,64 @@ const TRUSTED_HOSTS = new Set([
   'maven.fabricmc.net',
   'libraries.minecraft.net',
 ]);
+
+// Some networks cannot reach the Fabric hosts; the site keeps a copy of them under these paths.
+const MIRRORS: ReadonlyMap<string, string> = new Map([
+  ['meta.fabricmc.net', `${SITE_URL}/mirror/fabric-meta/`],
+  ['maven.fabricmc.net', `${SITE_URL}/mirror/fabric-maven/`],
+]);
+
+export function mirrorOf(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  const mirror = MIRRORS.get(parsed.hostname);
+  return parsed.protocol === 'https:' && mirror !== undefined && parsed.search === ''
+    ? `${mirror}${parsed.pathname.slice(1)}`
+    : null;
+}
+
+// The site decodes the path before it routes it, so an encoded separator or dot could climb out
+// of the mirror prefix there.
+const ENCODED_STEP = /%2f|%5c|%2e/i;
+
+function isMirror(parsed: URL): boolean {
+  const href = `${parsed.origin}${parsed.pathname}`;
+  return (
+    parsed.search === '' &&
+    !ENCODED_STEP.test(parsed.pathname) &&
+    !parsed.pathname.includes('//') &&
+    !parsed.pathname.split('/').includes('..') &&
+    [...MIRRORS.values()].some((mirror) => href.startsWith(mirror))
+  );
+}
+
+// A host that did not answer once in this session is asked after its copy, so every later file
+// does not wait for the same timeout again.
+const unreachable = new Set<string>();
+
+function hostnameOf(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return '';
+  }
+}
+
+export function sourcesOf(url: string): string[] {
+  const mirror = mirrorOf(url);
+  if (mirror === null) {
+    return [url];
+  }
+  return unreachable.has(hostnameOf(url)) ? [mirror, url] : [url, mirror];
+}
+
+export function forgetUnreachableHosts(): void {
+  unreachable.clear();
+}
 
 export class LoaderStageError extends Error {
   constructor(
@@ -62,7 +121,50 @@ async function limitedText(response: Response, url: string): Promise<string> {
   return Buffer.concat(chunks).toString('utf8');
 }
 
+// Fabric Meta answers 400 for a version it does not have, so that answer is final; a block on
+// the way to the host shows as a refusal, a rate limit or a server error and goes to the copy.
+const BLOCKED_STATUSES = new Set([403, 429, 451]);
+
+function shouldTryOther(error: unknown, signal: AbortSignal): boolean {
+  if (signal.aborted) {
+    return false;
+  }
+  if (error instanceof LoaderStageError) {
+    return (error as { redirected?: boolean }).redirected === true;
+  }
+  const status = (error as { statusCode?: unknown } | null)?.statusCode;
+  return typeof status !== 'number' || status >= 500 || BLOCKED_STATUSES.has(status);
+}
+
+// When both fail, the player hears what the original host said: the copy may lack a route, and
+// its 404 must not turn into 'no such Fabric version'.
 export function createFetchText(fetchImpl: FetchLike): FetchText {
+  const once = fetchOnce(fetchImpl);
+  return async (url, signal) => {
+    const [first, second] = sourcesOf(url);
+    if (first === undefined || second === undefined) {
+      return once(url, signal);
+    }
+    try {
+      return await once(first, signal);
+    } catch (error) {
+      const viaCopy = first !== url;
+      if (viaCopy ? signal.aborted : !shouldTryOther(error, signal)) {
+        throw error;
+      }
+      if (!viaCopy) {
+        unreachable.add(hostnameOf(url));
+      }
+      try {
+        return await once(second, signal);
+      } catch (secondError) {
+        throw signal.aborted || second === url ? secondError : error;
+      }
+    }
+  };
+}
+
+function fetchOnce(fetchImpl: FetchLike): FetchText {
   return async (url, signal) => {
     requireTrustedSource(url);
     let response: Response;
@@ -78,7 +180,10 @@ export function createFetchText(fetchImpl: FetchLike): FetchText {
     const finalUrl = response.url.length > 0 ? response.url : url;
     if (!isTrustedSource(finalUrl)) {
       await response.body?.cancel().catch(() => undefined);
-      throw new LoaderStageError('library', `redirect to untrusted host ${hostOf(finalUrl)}`);
+      throw Object.assign(
+        new LoaderStageError('library', `redirect to untrusted host ${hostOf(finalUrl)}`),
+        { redirected: true },
+      );
     }
     if (!response.ok) {
       await response.body?.cancel().catch(() => undefined);
@@ -93,7 +198,7 @@ export const fetchText: FetchText = createFetchText((url, init) => fetch(url, in
 export function isTrustedSource(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return parsed.protocol === 'https:' && TRUSTED_HOSTS.has(parsed.hostname);
+    return parsed.protocol === 'https:' && (TRUSTED_HOSTS.has(parsed.hostname) || isMirror(parsed));
   } catch {
     return false;
   }

@@ -250,7 +250,7 @@ describe('action play: only an accepted click', () => {
     expect(stub.api.launch.launch).not.toHaveBeenCalled();
   });
 
-  it('a retry from the launch screen launches again without a new action or launch_id', async () => {
+  it('a retry from the launch screen launches again with the same launch_id and no new action', async () => {
     const stub = signedLive();
     const { app, emit } = await mountScreen('/servers', { stub, demo: false });
     await app.find('.rows:not(.top-slots) [data-launch="direct"]').trigger('click');
@@ -263,7 +263,8 @@ describe('action play: only an accepted click', () => {
     await retry?.trigger('click');
     await flushPromises();
     expect(stub.api.launch.launch).toHaveBeenCalledTimes(2);
-    expect(vi.mocked(stub.api.launch.launch).mock.calls[1]?.[0]).not.toHaveProperty('launchId');
+    const calls = vi.mocked(stub.api.launch.launch).mock.calls;
+    expect(calls[1]?.[0].launchId).toBe(calls[0]?.[0].launchId);
     expect(actions(stub, 'play')).toHaveLength(1);
   });
 });

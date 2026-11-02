@@ -4,7 +4,7 @@ import { installedRuntimeOf, type InstanceRuntime } from '@shared/instance';
 import type { LaunchStepId, LaunchTarget, PreparedGame } from '@shared/launch';
 import { serverJoinMode } from '@shared/minecraft-version';
 import { modsLoaderMin, type ModsPlan } from '@shared/mods';
-import type { ClientModStatus, SkinsStatus } from '@shared/skin-mod';
+import { telemetrySkins, type ClientModStatus, type SkinsStatus } from '@shared/skin-mod';
 import type { DeviceGpu, LaunchTelemetryEvent } from '@shared/telemetry';
 import type { LaunchDependencies } from './dependencies';
 import type { TrackedRuntime } from './download';
@@ -12,6 +12,7 @@ import { failure, toLaunchError } from './errors';
 import { needsMacGlfw } from './mac-glfw';
 import { checkGpuSupport, needsCoreProfile } from './gpu-support';
 import { gameArch, readMachineArch, rosettaInstalled, type RegistryArchReader } from './game-arch';
+import { fabricErrorOf } from './fabric-error';
 import { withFolderOverrides } from './instance-overrides';
 import type { InstanceStore } from './instances';
 import { javaRequirement, type installJava, type JavaRequirement } from './java';
@@ -49,6 +50,7 @@ import {
   type SkinsRequest,
 } from './skins/variant';
 import type { ClientModRun } from './skins/client-mod-blocks';
+import type { FabricError } from '@shared/telemetry';
 import type { VersionEntry, VersionManifestSource } from './version-manifest';
 
 export interface InstallerOptions {
@@ -75,6 +77,7 @@ export interface Installed {
   runtime: InstanceRuntime;
   skins: SkinsStatus | null;
   clientMod: ClientModStatus | null;
+  fabricError: FabricError | null;
   clientModRun: ClientModRun | null;
   mods: ModsPlan | null;
   modsDir: string | null;
@@ -332,6 +335,14 @@ export class GameInstaller {
       catalog.run = lose(catalog.run, this.fabricSlugs(catalog.run), operation);
     }
     operation.clientMod = planned.clientMod;
+    if (
+      planned.tableMissing === true &&
+      planned.plan === null &&
+      ((planned.status !== null && telemetrySkins(planned.status) === 'unavailable') ||
+        planned.clientMod === 'unavailable')
+    ) {
+      operation.fabricError = 'table';
+    }
     if (planned.blocked !== undefined) {
       const { minecraft, sha256 } = planned.blocked;
       this.log(`client mod: left out, it crashed ${minecraft} at start (sha256 ${sha256})`);
@@ -397,6 +408,7 @@ export class GameInstaller {
       runtime: outcome.runtime,
       skins: operation.skins,
       clientMod: operation.clientMod,
+      fabricError: operation.fabricError,
       clientModRun: ranClientMod,
       mods: catalog.run?.plan ?? null,
       modsDir: outcome.modsDir,
@@ -536,6 +548,7 @@ export class GameInstaller {
     if (catalog.run !== null) {
       catalog.run = loseAll(catalog.run, operation);
     }
+    operation.fabricError ??= fabricErrorOf(error);
     if (error !== null) {
       this.log(`skins: loader not installed: ${toLaunchError(error).code}`);
     }
