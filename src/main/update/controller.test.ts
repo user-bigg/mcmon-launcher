@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import type { LaunchPhase } from '@shared/launch';
+import type { UpdateReport, UpdateVia } from '@shared/telemetry';
 import {
   UPDATE_BASE_URL,
   UPDATE_CHECK_INTERVAL_MS,
@@ -9,6 +10,7 @@ import {
 } from '@shared/update';
 import {
   engineChannel,
+  QUIET_INSTALL_DELAY_MS,
   UpdateController,
   updateErrorCode,
   type EngineEvent,
@@ -78,11 +80,18 @@ class FakeEngine implements UpdaterEngine {
   }
 }
 
+interface FakeTimer {
+  run: () => void;
+  ms: number;
+  cancelled: boolean;
+}
+
 interface Setup {
   controller: UpdateController;
   engine: FakeEngine;
   states: UpdateState[];
-  timers: { run: () => void; ms: number }[];
+  timers: FakeTimer[];
+  aborted: { count: number };
   removed: string[];
   logs: string[];
   skipped: string[];
@@ -90,6 +99,8 @@ interface Setup {
   setPhase: (phase: LaunchPhase) => void;
   signature: ReturnType<typeof vi.fn<(url: string) => Promise<SignatureFetch>>>;
   hash: { value: string };
+  reports: UpdateReport[];
+  installs: [string, UpdateVia][];
 }
 
 function setup(
@@ -104,13 +115,16 @@ function setup(
   let failedLoads = options.failedLoads ?? 0;
   const engine = new FakeEngine();
   const states: UpdateState[] = [];
-  const timers: { run: () => void; ms: number }[] = [];
+  const timers: FakeTimer[] = [];
+  const aborted = { count: 0 };
   const removed: string[] = [];
   const logs: string[] = [];
   const skipped: string[] = [];
   const prefs: UpdatePreferences = { channel: 'stable', autoDownload: true, ...options.prefs };
   let phase: LaunchPhase = 'idle';
   const hash = { value: sha('0.2.0') };
+  const reports: UpdateReport[] = [];
+  const installs: [string, UpdateVia][] = [];
   const signature = vi.fn<(url: string) => Promise<SignatureFetch>>(() =>
     Promise.resolve(signatureOf()),
   );
@@ -139,6 +153,15 @@ function setup(
     launchPhase: (): LaunchPhase => phase,
     ...(options.background === undefined ? {} : { background: options.background }),
     ...(options.installBlocker === undefined ? {} : { installBlocker: options.installBlocker }),
+    onInstall: (version, via): void => {
+      installs.push([version, via]);
+    },
+    onInstallAborted: (): void => {
+      aborted.count += 1;
+    },
+    report: (report): void => {
+      reports.push(report);
+    },
     fetchSignature: signature,
     hashFile: (): Promise<string> => Promise.resolve(hash.value),
     removeFile: (path): Promise<void> => {
@@ -148,8 +171,11 @@ function setup(
     isOnline: (): boolean => true,
     now: (): number => Date.parse('2026-10-03T12:00:00Z'),
     setTimer: (run, ms): (() => void) => {
-      timers.push({ run, ms });
-      return (): void => undefined;
+      const timer: FakeTimer = { run, ms, cancelled: false };
+      timers.push(timer);
+      return (): void => {
+        timer.cancelled = true;
+      };
     },
     log: (message): void => {
       logs.push(message);
@@ -173,7 +199,14 @@ function setup(
     },
     signature,
     hash,
+    reports,
+    installs,
+    aborted,
   };
+}
+
+function quietTimers(s: Setup): FakeTimer[] {
+  return s.timers.filter((timer) => timer.ms === QUIET_INSTALL_DELAY_MS);
 }
 
 async function settle(): Promise<void> {
@@ -539,16 +572,130 @@ describe('updates: installing and playing', () => {
     expect(s.engine.downloads).toBe(1);
   });
 
-  it('in the tray without a window only learns about an update, downloads once the window opens', async () => {
+  it('in the tray downloads, verifies and installs the update a minute later', async () => {
+    const s = setup({ background: () => true });
+    await available(s);
+    expect(s.engine.downloads).toBe(1);
+    await downloaded(s);
+    expect(s.controller.state().status.kind).toBe('ready');
+    const quiet = quietTimers(s);
+    expect(quiet).toHaveLength(1);
+    expect(s.engine.installed).toBe(0);
+    quiet[0]?.run();
+    expect(s.engine.installed).toBe(1);
+    expect(s.installs).toEqual([['0.2.0', 'tray']]);
+    s.controller.prepareQuit();
+    expect(s.installs).toHaveLength(1);
+  });
+
+  it('with the window open waits until it closes, and a window opened again keeps it waiting', async () => {
+    let background = false;
+    const s = setup({ background: () => background });
+    await available(s);
+    await downloaded(s);
+    expect(quietTimers(s)).toHaveLength(0);
+    background = true;
+    s.controller.onBackground();
+    const quiet = quietTimers(s);
+    expect(quiet).toHaveLength(1);
+    background = false;
+    quiet[0]?.run();
+    expect(s.engine.installed).toBe(0);
+    background = true;
+    s.controller.onBackground();
+    quietTimers(s).at(1)?.run();
+    expect(s.engine.installed).toBe(1);
+  });
+
+  it('does not install from the tray during a game or for a skipped version', async () => {
+    const s = setup({ background: () => true });
+    await available(s);
+    await downloaded(s);
+    s.setPhase('running');
+    quietTimers(s).at(0)?.run();
+    expect(s.engine.installed).toBe(0);
+    await s.controller.skip('0.2.0');
+    s.setPhase('idle');
+    expect(quietTimers(s)).toHaveLength(1);
+    await s.controller.unskip('0.2.0');
+    s.setPhase('running');
+    s.setPhase('idle');
+    quietTimers(s).at(1)?.run();
+    expect(s.engine.installed).toBe(1);
+  });
+
+  it('reports every stage of an update and an install on quit once', async () => {
+    const s = setup();
+    await s.controller.check();
+    s.engine.emit({ type: 'not-available' });
+    s.engine.emit({ type: 'not-available' });
+    await available(s);
+    await downloaded(s);
+    s.controller.prepareQuit();
+    s.controller.prepareQuit();
+    const quiet = { from: null, via: null, error_code: null };
+    expect(s.reports).toEqual([
+      { stage: 'checked', to: null, ...quiet },
+      { stage: 'checked', to: null, ...quiet },
+      { stage: 'available', to: '0.2.0', ...quiet },
+      { stage: 'downloaded', to: '0.2.0', ...quiet },
+      { stage: 'verified', to: '0.2.0', ...quiet },
+      { stage: 'installing', to: '0.2.0', from: null, via: 'quit', error_code: null },
+    ]);
+    expect(s.installs).toEqual([['0.2.0', 'quit']]);
+  });
+
+  it('a window opened before the minute is over keeps the update waiting', async () => {
     let background = true;
     const s = setup({ background: () => background });
     await available(s);
-    expect(s.engine.downloads).toBe(0);
-    expect(s.controller.state().status.kind).toBe('available');
+    await downloaded(s);
     background = false;
     s.controller.onForeground();
-    await settle();
-    expect(s.engine.downloads).toBe(1);
+    expect(quietTimers(s).at(0)?.cancelled).toBe(true);
+    background = true;
+    s.controller.onBackground();
+    expect(quietTimers(s)).toHaveLength(2);
+  });
+
+  it('an install that does not start or a cancelled quit takes the install mark back', async () => {
+    const s = setup({ background: () => true });
+    await available(s);
+    await downloaded(s);
+    s.engine.installResult = false;
+    quietTimers(s).at(0)?.run();
+    expect(s.aborted.count).toBe(1);
+    expect(s.controller.state().status).toMatchObject({ kind: 'error', code: 'install' });
+    const t = setup();
+    await available(t);
+    await downloaded(t);
+    expect(await t.controller.restart()).toEqual({ ok: true });
+    t.controller.cancelRestart();
+    t.controller.cancelRestart();
+    expect(t.aborted.count).toBe(1);
+  });
+
+  it('a version found again on every check is reported once', async () => {
+    const s = setup({ prefs: { autoDownload: false } });
+    await available(s);
+    await available(s);
+    expect(s.reports.filter((report) => report.stage === 'available')).toHaveLength(1);
+    s.controller.rememberFailedInstall('0.3.0');
+    expect(s.reports.some((report) => report.error_code === 'install')).toBe(false);
+  });
+
+  it('reports a rejected download with its error code', async () => {
+    const s = setup();
+    await available(s);
+    s.hash.value = sha('tampered');
+    await downloaded(s);
+    expect(s.reports.at(-1)).toEqual({
+      stage: 'failed',
+      to: '0.2.0',
+      from: null,
+      via: null,
+      error_code: 'signature',
+    });
   });
 
   it('an error on the next check does not cancel a ready update', async () => {

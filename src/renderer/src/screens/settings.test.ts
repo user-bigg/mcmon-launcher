@@ -313,7 +313,7 @@ describe('settings: memory and behavior', () => {
     const lines = row.findAll('.telemetry li').map((item) => item.text());
     expect(lines).toHaveLength(BEHAVIOR_TELEMETRY_TYPES.length);
     expect(app.find('[data-privacy="telemetry"]').text()).toContain(ru.telemetry.fields.launch_id);
-    expect(row.text()).not.toMatch(/обновлени/i);
+    expect(row.text()).toContain(ru.telemetry.events.update);
     expect(labelOf('app.closed', 'duration_s')).not.toBe(labelOf('launch.finished', 'duration_s'));
     expect(row.find('.packet-action').exists()).toBe(false);
   });

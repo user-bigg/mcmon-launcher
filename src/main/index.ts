@@ -5,6 +5,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { deepLinkFromArgv, parseDeepLink, type DeepLink } from '@shared/deep-link';
 import { SITE_URL } from '@shared/links';
 import { gameWindowOf } from '@shared/settings';
+import type { AppStartReason } from '@shared/telemetry';
 import { windowReportsEnabled } from '@shared/window-failure';
 import { DeepLinkInbox, registerProtocolClient, type ProtocolRegistration } from './deep-links';
 import { deviceReportPath, writeDeviceReport } from './device';
@@ -43,6 +44,14 @@ import { createAppTray, type AppTray } from './tray';
 import { offerMoveToApplications, shouldOfferMove } from './move-to-applications';
 import { appBundleOf, isWritable, macInstallBlocker } from './update/mac-install';
 import { startUpdates, type UpdateRuntime } from './update';
+import {
+  failedRelaunch,
+  INSTALL_MARK_FILE,
+  installOutcome,
+  relaunchesHidden,
+  takeInstallMark,
+  type InstallMark,
+} from './update/install-mark';
 import {
   createMainWindow,
   navigateWindow,
@@ -171,6 +180,7 @@ function createLifecycle(
       windowOpen = true;
       window.once('closed', () => {
         windowOpen = false;
+        updates?.controller.onBackground();
       });
       updates?.controller.onForeground();
       return window;
@@ -377,6 +387,13 @@ function stayOpen(): void {
   }
 }
 
+function startReason(installed: InstallMark | null, background: boolean): AppStartReason {
+  if (installed !== null && installed.via !== 'quit' && installed.to === app.getVersion()) {
+    return 'update';
+  }
+  return background ? 'autostart' : 'user';
+}
+
 async function start(): Promise<void> {
   app.setAppUserModelId('com.mcmonitor.launcher');
   if (needsDockIcon(process.platform, app.isPackaged)) {
@@ -384,9 +401,15 @@ async function start(): Promise<void> {
   }
   const settings = new LauncherSettingsStore(join(app.getPath('userData'), SETTINGS_FILE));
   await settings.load();
+  const installed = smoke
+    ? null
+    : takeInstallMark(join(app.getPath('userData'), INSTALL_MARK_FILE));
   const background =
-    !smoke && inbox.size === 0 && isBackgroundStart(process.argv, app, autostartHost);
-  const startedBy = background ? 'autostart' : 'user';
+    !smoke &&
+    inbox.size === 0 &&
+    (isBackgroundStart(process.argv, app, autostartHost) ||
+      relaunchesHidden(installed, app.getVersion(), Date.now()));
+  const startedBy = startReason(installed, background);
   const bundle = process.platform === 'darwin' ? appBundleOf(process.execPath) : null;
   const moveOffer = {
     packaged: app.isPackaged,
@@ -468,7 +491,15 @@ async function start(): Promise<void> {
       installing = true;
       farewell?.skip();
     },
+    report: started.updateReport,
   });
+  if (installed !== null) {
+    started.updateReport(installOutcome(installed, app.getVersion()));
+    const failed = failedRelaunch(installed, app.getVersion());
+    if (failed !== null) {
+      updates.controller.rememberFailedInstall(failed);
+    }
+  }
   const current = createLifecycle(launched.service, settings);
   lifecycle = current;
   watchGameDialog(launched.service, current);

@@ -1,5 +1,6 @@
 import type { LoaderId } from './instance';
 import type { TelemetryMod } from './mods';
+import { UPDATE_ERROR_CODES } from './update';
 
 export const TELEMETRY_SKINS = ['on', 'off', 'unavailable'] as const;
 export type TelemetrySkins = (typeof TELEMETRY_SKINS)[number];
@@ -113,6 +114,36 @@ export type CatalogTab = (typeof CATALOG_TABS)[number];
 export const VOTE_OUTCOMES = ['ok', 'paused', 'captcha_required', 'error'] as const;
 export type VoteOutcome = (typeof VOTE_OUTCOMES)[number];
 
+export const UPDATE_STAGES = [
+  'checked',
+  'available',
+  'downloaded',
+  'verified',
+  'installing',
+  'installed',
+  'failed',
+] as const;
+export type UpdateStage = (typeof UPDATE_STAGES)[number];
+
+export const UPDATE_VIAS = ['tray', 'quit', 'restart', 'start'] as const;
+export type UpdateVia = (typeof UPDATE_VIAS)[number];
+
+export const UPDATE_FAILURES = [...UPDATE_ERROR_CODES, 'not_installed'] as const;
+export type UpdateFailure = (typeof UPDATE_FAILURES)[number];
+
+export interface UpdateEvent {
+  type: 'update';
+  id?: string;
+  at: string;
+  stage: UpdateStage;
+  to: string | null;
+  from: string | null;
+  via: UpdateVia | null;
+  error_code: UpdateFailure | null;
+}
+
+export type UpdateReport = Omit<UpdateEvent, 'type' | 'id' | 'at'>;
+
 export interface ScreenViewedEvent {
   type: 'screen.viewed';
   id?: string;
@@ -141,6 +172,7 @@ export type BehaviorTelemetryEvent =
   | { type: 'app.alive'; id?: string; at: string; state: AppAliveState }
   | ScreenViewedEvent
   | ActionEvent
+  | UpdateEvent
   | {
       type: 'vote.finished';
       id?: string;
@@ -156,6 +188,7 @@ export const BEHAVIOR_TELEMETRY_TYPES = [
   'screen.viewed',
   'action',
   'vote.finished',
+  'update',
 ] as const satisfies readonly BehaviorTelemetryEvent['type'][];
 
 export type TelemetryEvent = LaunchTelemetryEvent | BehaviorTelemetryEvent;
@@ -240,6 +273,7 @@ export const TELEMETRY_FIELDS = {
     'launch_id',
   ],
   'vote.finished': ['id', 'at', 'server_id', 'outcome'],
+  update: ['id', 'at', 'stage', 'to', 'from', 'via', 'error_code'],
 } as const satisfies { [T in TelemetryEventType]: readonly TelemetryFieldOf<T>[] };
 
 // The site learns these fields together with the behavior events, so until the flag is on

@@ -16,6 +16,7 @@ import type {
   TelemetryDevice,
   TelemetryEvent,
   TelemetrySink,
+  UpdateReport,
 } from '@shared/telemetry';
 import { createAccountApi } from '../account/api';
 import { deviceLabel } from '../account/device';
@@ -92,6 +93,7 @@ export interface SiteClosing {
 export interface SiteRuntime {
   service: SiteService;
   telemetry: TelemetrySink;
+  updateReport: (report: UpdateReport) => void;
   playCheck: (query: PlayCheckQuery) => Promise<CheckedPlay>;
   skinMod: () => Promise<SkinModTable | null>;
   modCatalog: () => Promise<SiteResult<ModCatalog>>;
@@ -345,6 +347,9 @@ export function startSite(
     service,
     telemetry: (event): void => {
       telemetry.push(event);
+    },
+    updateReport: (report): void => {
+      telemetry.push({ type: 'update', at: new Date().toISOString(), ...report });
     },
     playCheck: (query): Promise<CheckedPlay> => manager.admitPlay(query),
     skinMod: async (): Promise<SkinModTable | null> => {

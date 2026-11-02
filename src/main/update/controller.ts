@@ -1,5 +1,6 @@
 import type { LaunchPhase } from '@shared/launch';
 import type { Channel } from '@shared/settings';
+import type { UpdateReport, UpdateVia } from '@shared/telemetry';
 import {
   compareUpdateVersions,
   MAX_SKIPPED_VERSIONS,
@@ -66,6 +67,9 @@ export interface UpdateControllerOptions {
   skipped: SkippedStore;
   launchPhase: () => LaunchPhase;
   background?: () => boolean;
+  onInstall?: (version: string, via: UpdateVia) => void;
+  onInstallAborted?: () => void;
+  report?: (report: UpdateReport) => void;
   fetchSignature: (url: string) => Promise<SignatureFetch>;
   hashFile: (path: string) => Promise<string>;
   removeFile: (path: string) => Promise<void>;
@@ -76,6 +80,7 @@ export interface UpdateControllerOptions {
 }
 
 const SIGNATURE_RETRY_MS = 10 * 60_000;
+export const QUIET_INSTALL_DELAY_MS = 60_000;
 
 const OFFLINE_ERRORS =
   /net::ERR_(INTERNET_DISCONNECTED|NAME_NOT_RESOLVED|NETWORK_CHANGED|CONNECTION_|TIMED_OUT|PROXY_|ADDRESS_UNREACHABLE)|ENOTFOUND|ECONNREFUSED|ECONNRESET|ETIMEDOUT|EAI_AGAIN/;
@@ -113,6 +118,26 @@ function blockOf(phase: LaunchPhase): UpdateBlock {
   return phase === 'preparing' ? 'install' : null;
 }
 
+function reportOf(previous: UpdateStatus, next: UpdateStatus): UpdateReport | null {
+  const quiet = { from: null, via: null, error_code: null };
+  switch (next.kind) {
+    case 'none':
+      return { stage: 'checked', to: null, ...quiet };
+    case 'available':
+      return { stage: 'available', to: next.version, ...quiet };
+    case 'verifying':
+      return { stage: 'downloaded', to: next.version, ...quiet };
+    case 'ready':
+      return previous.kind === 'verifying'
+        ? { stage: 'verified', to: next.version, ...quiet }
+        : null;
+    case 'error':
+      return { stage: 'failed', to: next.version, from: null, via: null, error_code: next.code };
+    default:
+      return null;
+  }
+}
+
 function isBusy(status: UpdateStatus): boolean {
   return status.kind === 'checking' || status.kind === 'downloading' || status.kind === 'verifying';
 }
@@ -130,6 +155,10 @@ export class UpdateController {
   private readonly rejected = new Set<string>();
   private readonly listeners = new Set<(state: UpdateState) => void>();
   private cancelTimer: (() => void) | null = null;
+  private cancelQuiet: (() => void) | null = null;
+  private installing = false;
+  private muted = false;
+  private readonly reported = new Set<string>();
   private disposed = false;
   private failedInstall: string | null = null;
 
@@ -147,6 +176,8 @@ export class UpdateController {
     this.disposed = true;
     this.cancelTimer?.();
     this.cancelTimer = null;
+    this.cancelQuiet?.();
+    this.cancelQuiet = null;
   }
 
   onEvent(listener: (state: UpdateState) => void): () => void {
@@ -218,8 +249,7 @@ export class UpdateController {
     if (this.options.skipped.list().includes(ready)) {
       await this.unskip(ready);
     }
-    if (!this.loaded.installNow()) {
-      this.failInstall(ready);
+    if (!this.install(ready, 'restart')) {
       return { ok: false, error: { code: 'not-ready' } };
     }
     return { ok: true };
@@ -232,10 +262,17 @@ export class UpdateController {
       return;
     }
     this.failedInstall = version;
+    // The new version's start reports this failed swap from the install mark already.
+    this.muted = true;
     this.failInstall(version);
+    this.muted = false;
   }
 
   cancelRestart(): void {
+    if (this.installing) {
+      this.installing = false;
+      this.options.onInstallAborted?.();
+    }
     this.loaded?.cancelRestart?.();
   }
 
@@ -244,13 +281,21 @@ export class UpdateController {
       this.downloadAfterGame = false;
       this.maybeAutoDownload();
     }
+    if (phase === 'idle') {
+      this.maybeQuietInstall();
+    }
     this.emit();
   }
 
-  // A launcher waiting in the tray only learns about an update; the installer is downloaded
-  // once its window is opened.
+  // Players rarely quit a launcher that lives in the tray, so a verified update waiting there
+  // restarts it into the new version while nothing is on screen and no game runs.
+  onBackground(): void {
+    this.maybeQuietInstall();
+  }
+
   onForeground(): void {
-    this.maybeAutoDownload();
+    this.cancelQuiet?.();
+    this.cancelQuiet = null;
   }
 
   onPreferencesChanged(previous: UpdatePreferences): void {
@@ -284,7 +329,74 @@ export class UpdateController {
   // Runs synchronously from the app "quit" listener registered before electron-updater's own,
   // so the updater reads the final decision when it decides whether to start the installer.
   prepareQuit(): void {
-    this.loaded?.setInstallOnQuit(this.installOnQuitAllowed());
+    const allowed = this.installOnQuitAllowed();
+    const ready = this.readyVersion();
+    if (allowed && ready !== null && !this.installing) {
+      this.installing = true;
+      this.options.onInstall?.(ready, 'quit');
+      this.report({ stage: 'installing', to: ready, from: null, via: 'quit', error_code: null });
+    }
+    this.loaded?.setInstallOnQuit(allowed);
+  }
+
+  private install(version: string, via: UpdateVia): boolean {
+    if (this.loaded === null) {
+      return false;
+    }
+    this.installing = true;
+    this.options.onInstall?.(version, via);
+    this.report({ stage: 'installing', to: version, from: null, via, error_code: null });
+    if (!this.loaded.installNow()) {
+      this.installing = false;
+      this.options.onInstallAborted?.();
+      this.failInstall(version);
+      return false;
+    }
+    return true;
+  }
+
+  private quietInstallAllowed(): boolean {
+    const ready = this.readyVersion();
+    return (
+      ready !== null &&
+      !this.installing &&
+      !this.disposed &&
+      this.options.background?.() === true &&
+      this.options.launchPhase() === 'idle' &&
+      !this.options.skipped.list().includes(ready)
+    );
+  }
+
+  // The delay lets a player who closed the window by mistake open it again undisturbed.
+  private maybeQuietInstall(): void {
+    if (this.cancelQuiet !== null || !this.quietInstallAllowed()) {
+      return;
+    }
+    this.cancelQuiet = this.options.setTimer(() => {
+      this.cancelQuiet = null;
+      const ready = this.readyVersion();
+      if (ready !== null && this.quietInstallAllowed()) {
+        this.options.log(`update: ${ready} installs from the tray`);
+        this.install(ready, 'tray');
+      }
+    }, QUIET_INSTALL_DELAY_MS);
+  }
+
+  // A stage is reported once per version until the next check finds nothing new, so the checks
+  // every six hours and the signature retries do not repeat it.
+  private report(report: UpdateReport): void {
+    if (this.muted) {
+      return;
+    }
+    const key = `${report.stage} ${report.to ?? ''} ${report.error_code ?? ''}`;
+    if (report.stage === 'checked') {
+      this.reported.clear();
+    } else if (this.reported.has(key)) {
+      return;
+    } else {
+      this.reported.add(key);
+    }
+    this.options.report?.(report);
   }
 
   private failInstall(version: string | null): void {
@@ -415,8 +527,7 @@ export class UpdateController {
       this.status.kind !== 'available' ||
       offer === null ||
       !this.options.preferences().autoDownload ||
-      this.options.skipped.list().includes(offer.version) ||
-      this.options.background?.() === true
+      this.options.skipped.list().includes(offer.version)
     ) {
       return;
     }
@@ -520,6 +631,7 @@ export class UpdateController {
       }
       this.verified = release.version;
       this.setStatus({ kind: 'ready', version: release.version, notes: this.notes });
+      this.maybeQuietInstall();
     } catch (error) {
       await this.reject(file, release.version, release.sha512, logTextOf(error));
     }
@@ -543,7 +655,12 @@ export class UpdateController {
   }
 
   private setStatus(status: UpdateStatus): void {
+    const previous = this.status;
     this.status = status;
+    const report = reportOf(previous, status);
+    if (report !== null) {
+      this.report(report);
+    }
     this.emit();
   }
 

@@ -6,6 +6,12 @@ type InstallingUpdater = AppUpdater & {
   quitAndInstall: (isSilent?: boolean, isForceRunAfter?: boolean) => void;
 };
 
+// BaseUpdater keeps this flag set once an installer has started and resets it when the start
+// failed; a second call while it is set is ignored without an error.
+function installStarted(updater: InstallingUpdater): boolean {
+  return (updater as unknown as { quitAndInstallCalled?: boolean }).quitAndInstallCalled === true;
+}
+
 function ignore(): undefined {
   return undefined;
 }
@@ -37,8 +43,11 @@ export function engineOf(
     check: (): Promise<void> => updater.checkForUpdates().then(ignore, ignore),
     download: (): Promise<void> => updater.downloadUpdate().then(ignore, ignore),
     installNow: (): boolean => {
+      if (installStarted(updater)) {
+        return false;
+      }
       updater.quitAndInstall(true, true);
-      return true;
+      return installStarted(updater);
     },
     setInstallOnQuit: (allowed): void => {
       updater.autoInstallOnAppQuit = allowed;

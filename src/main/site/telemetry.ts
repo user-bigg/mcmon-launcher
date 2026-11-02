@@ -8,6 +8,7 @@ import {
   type TelemetryMod,
 } from '@shared/mods';
 import type { SiteError } from '@shared/site';
+import { isUpdateVersion } from '@shared/update';
 import {
   ACTION_NAMES,
   APP_ALIVE_STATES,
@@ -25,6 +26,9 @@ import {
   TELEMETRY_FIELDS,
   TELEMETRY_SCREENS,
   TELEMETRY_SKINS,
+  UPDATE_FAILURES,
+  UPDATE_STAGES,
+  UPDATE_VIAS,
   VOTE_OUTCOMES,
   type ActionEvent,
   type AppAliveState,
@@ -61,7 +65,7 @@ interface QueuedEvent {
 
 const EVICTION_ORDER: readonly (readonly TelemetryEventType[])[] = [
   ['screen.viewed', 'action'],
-  ['app.started', 'app.closed', 'vote.finished'],
+  ['app.started', 'app.closed', 'vote.finished', 'update'],
   LAUNCH_TELEMETRY_TYPES,
 ];
 
@@ -164,6 +168,38 @@ function appEvent(at: string, event: Fields): BehaviorTelemetryEvent | null {
   }
 }
 
+function versionOrNull(value: unknown): string | null | undefined {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  return isUpdateVersion(value) ? value : undefined;
+}
+
+function listedOrNull<T extends string>(
+  allowed: readonly T[],
+  value: unknown,
+): T | null | undefined {
+  return value === null || value === undefined ? null : (oneOf(allowed, value) ?? undefined);
+}
+
+function updateEvent(at: string, event: Fields): BehaviorTelemetryEvent | null {
+  const stage = oneOf(UPDATE_STAGES, event.stage);
+  const to = versionOrNull(event.to);
+  const from = versionOrNull(event.from);
+  const via = listedOrNull(UPDATE_VIAS, event.via);
+  const errorCode = listedOrNull(UPDATE_FAILURES, event.error_code);
+  if (
+    stage === null ||
+    to === undefined ||
+    from === undefined ||
+    via === undefined ||
+    errorCode === undefined
+  ) {
+    return null;
+  }
+  return { type: 'update', at, stage, to, from, via, error_code: errorCode };
+}
+
 function behaviorEvent(at: string, event: Fields): BehaviorTelemetryEvent | null {
   switch (event.type) {
     case 'screen.viewed': {
@@ -180,6 +216,8 @@ function behaviorEvent(at: string, event: Fields): BehaviorTelemetryEvent | null
         ? null
         : { type: 'vote.finished', at, server_id: event.server_id, outcome };
     }
+    case 'update':
+      return updateEvent(at, event);
     default:
       return appEvent(at, event);
   }

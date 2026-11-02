@@ -1,6 +1,8 @@
 import { app, net } from 'electron';
 import { rm } from 'node:fs/promises';
+import { join } from 'node:path';
 import type { LaunchEvent, LaunchPhase } from '@shared/launch';
+import type { UpdateReport } from '@shared/telemetry';
 import { UPDATE_BASE_URL } from '@shared/update';
 import { UPDATE_PUBLIC_KEY } from '@shared/update-key';
 import type { LauncherSettingsStore } from '../settings';
@@ -11,6 +13,7 @@ import {
   type UpdaterEngine,
 } from './controller';
 import { loadNsisEngine } from './electron-engine';
+import { INSTALL_MARK_FILE, removeInstallMark, writeInstallMark } from './install-mark';
 import { registerUpdateIpc } from './ipc';
 import { appBundleOf, isWritable, macInstallBlocker, removeLeftovers } from './mac-install';
 import { sha512File } from './signature';
@@ -32,6 +35,7 @@ export interface UpdateDeps {
   checks: boolean;
   background: () => boolean;
   beforeInstall: () => void;
+  report: (report: UpdateReport) => void;
 }
 
 function log(message: string): void {
@@ -76,6 +80,10 @@ async function loadPlatformEngine(): Promise<UpdaterEngine> {
   return loadNsisEngine(log);
 }
 
+function markFile(): string {
+  return join(app.getPath('userData'), INSTALL_MARK_FILE);
+}
+
 function preferencesOf(settings: LauncherSettingsStore): UpdatePreferences {
   const { channel, autoDownload } = settings.settings;
   return { channel, autoDownload };
@@ -115,6 +123,18 @@ export function startUpdates(deps: UpdateDeps): UpdateRuntime {
     },
     launchPhase: (): LaunchPhase => phase,
     background: deps.background,
+    onInstall: (version, via): void => {
+      writeInstallMark(markFile(), {
+        from: app.getVersion(),
+        to: version,
+        via,
+        at: Date.now(),
+      });
+    },
+    onInstallAborted: (): void => {
+      removeInstallMark(markFile());
+    },
+    report: deps.report,
     fetchSignature,
     hashFile: sha512File,
     removeFile: (path): Promise<void> => rm(path, { force: true }),

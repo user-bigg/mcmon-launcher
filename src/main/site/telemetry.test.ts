@@ -392,6 +392,7 @@ describe('behavior events: cleaning', () => {
       'screen.viewed': { screen: 'server', server_id: 7 },
       action: { name: 'copy_address', server_id: 7 },
       'vote.finished': { server_id: 7, outcome: 'paused' },
+      update: { stage: 'installed', to: '0.2.8', from: '0.2.6', via: 'tray', error_code: null },
     };
     const extra = { path: 'C:\\Users\\x', nick: 'Frostbyte', message: 'boom', host: 'pc' };
     for (const type of BEHAVIOR_TELEMETRY_TYPES) {
@@ -413,6 +414,19 @@ describe('behavior events: cleaning', () => {
     expect(clean({ type: 'action', name: 'rm_rf', server_id: null })).toBeNull();
     expect(clean({ type: 'vote.finished', server_id: 7, outcome: 'maybe' })).toBeNull();
     expect(clean({ type: 'vote.finished', server_id: null, outcome: 'ok' })).toBeNull();
+    expect(clean({ type: 'update', stage: 'rolled_back', to: null })).toBeNull();
+    expect(clean({ type: 'update', stage: 'failed', to: 'C:\\Users\\x' })).toBeNull();
+    expect(clean({ type: 'update', stage: 'failed', to: '0.2.8', error_code: 'boom' })).toBeNull();
+    expect(clean({ type: 'update', stage: 'installing', to: '0.2.8', via: 'cron' })).toBeNull();
+    expect(clean({ type: 'update', stage: 'checked' })).toEqual({
+      type: 'update',
+      at: AT,
+      stage: 'checked',
+      to: null,
+      from: null,
+      via: null,
+      error_code: null,
+    });
     expect(
       clean({
         type: 'update.finished',
