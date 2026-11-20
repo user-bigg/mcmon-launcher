@@ -9,8 +9,8 @@ const IMPORT_BOTH = [
   'console.log(typeof installer.diagnoseInstallation, typeof unzip.open);',
 ].join('\n');
 
-// @xmcl/installer 6.3.4 and @xmcl/unzip 2.2.0 were published broken and only work with the
-// patches in patches/. The import runs in a separate Node, as in main, not via the Vite resolver.
+// @xmcl/unzip 2.2.0 was published broken and only works with the patch in patches/;
+// @xmcl/installer is loaded too because it depends on it. The import runs in a separate Node, as in main, not via the Vite resolver.
 describe('@xmcl patches from patches/', () => {
   it('after an XMCL update, the patch still fixes loading as both ESM and CommonJS', () => {
     const output = execFileSync(process.execPath, ['--input-type=module', '-e', IMPORT_BOTH], {

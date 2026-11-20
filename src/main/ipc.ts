@@ -127,7 +127,7 @@ export function registerWindowIpc(
   devServerUrl: string | undefined,
   onBoot: (contents: WebContents, mounted: boolean) => void = () => undefined,
 ): void {
-  const trusted = (event: IpcEvent): BrowserWindow | null => {
+  const trusted = (event: IpcEvent): Electron.BrowserWindow | null => {
     if (!isTrustedSender(event, devServerUrl)) {
       return null;
     }

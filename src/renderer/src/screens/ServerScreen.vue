@@ -913,8 +913,7 @@ watch(
                     rel="noopener noreferrer"
                     @click.prevent="openOwnSite(ownSite.url)"
                   >
-                    <span>{{ ownSite.host }}</span
-                    ><BiIcon name="box-arrow-up-right" />
+                    <span>{{ ownSite.host }}</span><BiIcon name="box-arrow-up-right" />
                   </a>
                 </div>
                 <div v-if="links.length > 0" class="links">

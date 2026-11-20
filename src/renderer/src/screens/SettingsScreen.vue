@@ -276,8 +276,9 @@ function restartNow(): void {
             <div v-if="!state.autoMemory" class="ram" data-memory="manual">
               <div class="ram-head">
                 <div>
-                  <span class="ram-value">{{ state.ramGb }}</span
-                  >&nbsp;<span class="lx-muted">{{ ru.units.gbShort }}</span>
+                  <span class="ram-value">{{ state.ramGb }}</span>&nbsp;<span class="lx-muted">{{
+                    ru.units.gbShort
+                  }}</span>
                 </div>
                 <TagChip tone="accent" icon="stars">
                   {{ fill(ru.settings.memoryRecommended, machine.recommended) }}

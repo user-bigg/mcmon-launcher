@@ -109,7 +109,10 @@ export default tseslint.config(
   },
   {
     files: ['**/*.test.ts'],
-    rules: { '@typescript-eslint/no-unsafe-assignment': 'off' },
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-class-instance-assignment': 'off',
+    },
   },
   prettier,
 );
